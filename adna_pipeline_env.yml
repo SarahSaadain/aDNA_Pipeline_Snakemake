@@ -1,0 +1,48 @@
+  name: adna_pipeline
+  
+  channels:
+    - conda-forge
+    - bioconda
+    - defaults
+
+  channel_priority: strict
+
+  dependencies:
+    # Core languages
+    - python
+    - r-base
+
+    # Python packages (latest via conda)
+    - pip
+    - cython
+    - gsl
+    - pysam
+    - pandas
+    - pyyaml
+    - biopython
+
+    # Bioinformatics tools (latest available)
+    - fastqc
+    - multiqc
+    - fastp
+    - bwa-mem2
+    - samtools
+    - angsd
+    - bedtools
+    - seqkit
+    - pip:
+      - mapdamage # newest version only available via pip
+
+    # R packages (latest available via conda)
+    - r-ggplot2
+    - r-dplyr
+    - r-tidyr
+    - r-scales
+    - r-readr
+    - r-ggpubr
+    - r-purrr
+    - r-stringr
+    - r-inline
+    - r-gam
+    - r-rcpp
+    - r-rcppgsl
