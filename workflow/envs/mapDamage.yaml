@@ -1,0 +1,17 @@
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python
+  - pip
+  - pysam
+  - pip:
+    - mapdamage # newest version only available via pip
+  
+  - r-base
+  - r-rcpp 
+  - r-rcppgsl
+  - r-gam
+  - r-inline
+

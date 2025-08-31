@@ -1,0 +1,15 @@
+name: bioenv
+channels:
+  - conda-forge
+  - bioconda
+  - agbiome
+  - defaults
+dependencies:
+  - python=3.11
+  - numpy
+  - r-base=4.3
+  - r-tidyverse
+  - minimap2
+  - agbiome::bbtools
+  - pigz
+  - openjdk=17

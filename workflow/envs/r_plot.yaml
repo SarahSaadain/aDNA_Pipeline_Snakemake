@@ -1,0 +1,14 @@
+name: r_plot
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - r-base=4.3
+  - r-ggplot2
+  - r-dplyr
+  - r-tidyr
+  - r-scales
+  - r-viridis
+  - r-readr
+  - r-ggpubr

@@ -1,0 +1,45 @@
+rule coverage_violin_plot:
+    input:
+        "{species}/results/{ref_genome}/coverage/{ref_genome}_combined_coverage_analysis_detailed.csv"
+    output:
+        report("{species}/results/{ref_genome}/plots/coverage/{species}_{ref_genome}_breadth_coverage_violin.png")
+    params:
+        species="{species}"
+    conda:
+        "../../../envs/r_plot.yaml"
+    script:
+        "../../../scripts/reads_to_reference_genome/plotting/plot_coverage_breadth_violin.R"
+
+rule coverage_bins_plot:
+    input:
+        "{species}/results/{ref_genome}/coverage/{ref_genome}_combined_coverage_analysis_detailed.csv"
+    output:
+        report("{species}/results/{ref_genome}/plots/coverage/{species}_{ref_genome}_breadth_coverage_bins.png")
+    conda:
+        "../../../envs/r_plot.yaml"
+    script:
+        "../../../scripts/reads_to_reference_genome/plotting/plot_coverage_breadth_bins.R"
+
+rule coverage_breadth_violin:
+    input:
+        "{species}/results/{ref_genome}/coverage/{ref_genome}_combined_coverage_analysis_detailed.csv"
+    output:
+        report("{species}/results/{ref_genome}/plots/coverage/{species}_{ref_genome}_individual_coverage_breadth_violin.png")
+    params:
+        species="{species}"
+    conda:
+        "../../../envs/r_plot.yaml"
+    script:
+        "../../../scripts/reads_to_reference_genome/plotting/plot_coverage_breadth_by_individuals_violin.R"
+
+rule coverage_breadth_bar:
+    input:
+        "{species}/results/{ref_genome}/coverage/{ref_genome}_combined_coverage_analysis_detailed.csv"
+    output:
+        report("{species}/results/{ref_genome}/plots/coverage/{species}_{ref_genome}_individual_coverage_breadth_bar.png")
+    params:
+        species="{species}"
+    conda:
+        "../../../envs/r_plot.yaml"
+    script:
+        "../../../scripts/reads_to_reference_genome/plotting/plot_coverage_breadth_by_individuals_bar.R"

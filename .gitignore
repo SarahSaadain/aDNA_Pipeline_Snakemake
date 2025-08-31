@@ -10,3 +10,12 @@ aDNA.code-workspace
 results/
 __pycache__
 config.yaml
+.snakemake/
+Bger
+trial_Phortica
+obsolete
+fetch_results.sh
+todo
+update_roco_scripts.sh
+report.html
+logs

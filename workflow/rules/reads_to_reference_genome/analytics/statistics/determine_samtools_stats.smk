@@ -1,0 +1,9 @@
+rule samtools_stats:
+    input:
+        bam="{species}/processed/{ref_genome}/mapped/{individual}_{ref_genome}_sorted.rescaled.bam"
+    output:
+        "{species}/results/{ref_genome}/statistics/{individual}/{individual}_{ref_genome}.bam.stats"
+    log:
+        "{species}/results/{ref_genome}/statistics/{individual}/{individual}_{ref_genome}.bam.stats.log"
+    wrapper:
+        "v7.2.0/bio/samtools/stats"
