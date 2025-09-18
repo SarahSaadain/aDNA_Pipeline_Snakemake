@@ -13,6 +13,7 @@ config.yaml
 .snakemake/
 Bger
 trial_Phortica
+trial_Phum
 obsolete
 fetch_results.sh
 todo
