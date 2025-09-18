@@ -41,6 +41,9 @@ def get_individuals_for_species(species):
 
     files = get_files_in_folder_matching_pattern(os.path.join(species, "raw", "reads"), "*R1*.fastq.gz")
 
+    if len(files) == 0:
+        raise Exception(f"No raw reads found for species {species}.")
+
     individuals = set()
     for f in files:
         basename = os.path.basename(f)
@@ -62,6 +65,10 @@ def get_sample_ids_for_species(species):
     for raw_file in files:
         filename = os.path.basename(raw_file).replace('.fastq.gz','').split("_R1")[0]
         samples.append(filename)
+
+    if samples:
+        print(f"Found {len(samples)} samples for species {species}.")
+        print (f"Samples: {samples}")
     
     return samples
 
@@ -167,7 +174,11 @@ def get_all_inputs(species_list):
         #all_inputs += get_input_multiqc_raw(species)
         #all_inputs += get_input_multiqc_trimmed(species)
         #all_inputs += get_input_multiqc_quality_filtered(species)
-        all_inputs += get_input_multiqc_merged(species)
+        #all_inputs += get_input_multiqc_merged(species)
+
+        # Add QC report
+        all_inputs.append(os.path.join(species_folder, "results","qualitycontrol", f"quality_check_report_{species}.html"))
+
 
         #all_inputs += get_input_reads_processing_raw(species)
         #all_inputs += get_input_reads_processing_trimmed(species)
@@ -188,55 +199,50 @@ def get_all_inputs(species_list):
             #all_inputs.append(os.path.join(species_folder, "processed", "merged", f"{ind}.fastq.gz"))
 
             #{species}/results/qualitycontrol/fastqc/merged/{individual}_merged_fastqc.html"
-            
+            try:
+                ref_genome_list = get_reference_genome_file_list_for_species(species)
+                
+                for ref_genome_tuple in ref_genome_list:
 
-            for ref_genome_tuple in get_reference_genome_file_list_for_species(species):
+                    ref_genome_id = ref_genome_tuple[0]
+                    #all_inputs.append(os.path.join(species_folder, "processed" ,ref_genome_id, "mapped", f"{ind}_{ref_genome_id}_sorted.bam"))
+                    #all_inputs.append(os.path.join(species_folder, "processed" ,ref_genome_id, "mapped", f"{ind}_{ref_genome_id}_sorted.bam.bai"))
+                    #all_inputs.append(os.path.join(species_folder, "processed" ,ref_genome_id, "mapped", f"{ind}_{ref_genome_id}_sorted.rescaled.bam"))
+                    #all_inputs.append(os.path.join(species_folder, "processed" ,ref_genome_id, "mapped", f"{ind}_{ref_genome_id}_sorted.rescaled.bam.bai"))
 
-                ref_genome_id = ref_genome_tuple[0]
-                #all_inputs.append(os.path.join(species_folder, "processed" ,ref_genome_id, "mapped", f"{ind}_{ref_genome_id}_sorted.bam"))
-                #all_inputs.append(os.path.join(species_folder, "processed" ,ref_genome_id, "mapped", f"{ind}_{ref_genome_id}_sorted.bam.bai"))
-                #all_inputs.append(os.path.join(species_folder, "processed" ,ref_genome_id, "mapped", f"{ind}_{ref_genome_id}_sorted.rescaled.bam"))
-                #all_inputs.append(os.path.join(species_folder, "processed" ,ref_genome_id, "mapped", f"{ind}_{ref_genome_id}_sorted.rescaled.bam.bai"))
+                    #all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "coverage", ind, f"{ind}_{ref_genome_id}_coverage_analysis.csv"))
 
-                #all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "coverage", ind, f"{ind}_{ref_genome_id}_coverage_analysis.csv"))
+                    #all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "coverage", f"{ref_genome_id}_combined_coverage_analysis.csv"))
+                    #all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "coverage", f"{ref_genome_id}_combined_coverage_analysis_detailed.csv"))
 
-                #all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "coverage", f"{ref_genome_id}_combined_coverage_analysis.csv"))
-                #all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "coverage", f"{ref_genome_id}_combined_coverage_analysis_detailed.csv"))
+                    #"{species}/results/{ref_genome}/endogenous/{individual}/{individual}_{ref_genome}.endogenous.csv"
+                    #all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "endogenous", ind, f"{ind}_{ref_genome_id}.endogenous.csv"))
 
-                #"{species}/results/{ref_genome}/endogenous/{individual}/{individual}_{ref_genome}.endogenous.csv"
-                #all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "endogenous", ind, f"{ind}_{ref_genome_id}.endogenous.csv"))
+                    #"{species}/results/{ref_genome}/plots/endogenous_reads/{species}_endogenous_reads_pie_chart.png"
+                    all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "plots", "endogenous_reads", f"{species}_{ref_genome_id}_endogenous_reads_pie_chart.pdf"))
 
-                #"{species}/results/{ref_genome}/plots/endogenous_reads/{species}_endogenous_reads_pie_chart.png"
-                all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "plots", "endogenous_reads", f"{species}_{ref_genome_id}_endogenous_reads_pie_chart.pdf"))
+                    #depth plots
+                    all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "plots", "endogenous_reads", f"{species}_{ref_genome_id}_endogenous_reads_bar_chart.png"))
+                    all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_breadth_coverage_violin.png"))
+                    all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_individual_depth_coverage_violin.png"))
+                    all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_individual_depth_coverage_bar.png"))
 
-                #depth plots
-                all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "plots", "endogenous_reads", f"{species}_{ref_genome_id}_endogenous_reads_bar_chart.png"))
-                all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_breadth_coverage_violin.png"))
-                all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_individual_depth_coverage_violin.png"))
-                all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_individual_depth_coverage_bar.png"))
+                    # breadth plots
+                    all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_breadth_coverage_bins.png"))
+                    all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_depth_violin.png"))                
+                    all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_individual_coverage_breadth_bar.png"))
+                    all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_individual_coverage_breadth_violin.png"))
 
-                # breadth plots
-                all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_breadth_coverage_bins.png"))
-                all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_depth_violin.png"))                
-                all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_individual_coverage_breadth_bar.png"))
-                all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_individual_coverage_breadth_violin.png"))
-
-                all_inputs.append(os.path.join(species_folder, "processed" ,ref_genome_id, "consensus", f"{ind}_{ref_genome_id}", f"{ind}_{ref_genome_id}_consensus.fa.gz"))
-                all_inputs.append(os.path.join(species_folder, "processed" ,ref_genome_id, "snp", f"{ind}_{ref_genome_id}", f"{ind}_{ref_genome_id}_snp.mafs.gz"))
+                    all_inputs.append(os.path.join(species_folder, "processed" ,ref_genome_id, "consensus", f"{ind}_{ref_genome_id}", f"{ind}_{ref_genome_id}_consensus.fa.gz"))
+                    #all_inputs.append(os.path.join(species_folder, "processed" ,ref_genome_id, "snp", f"{ind}_{ref_genome_id}", f"{ind}_{ref_genome_id}_snp.mafs.gz"))
+            except Exception as e: 
+                print(e)
+                pass
 
         #for ref_genome_tuple in get_reference_genome_file_list_for_species(species):
             #{species}/results/{ref_genome}/endogenous/{ref_genome}_endogenous.csv
             #all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_tuple[0], "endogenous", f"{ref_genome_tuple[0]}_endogenous.csv"))
-
-        #"{species}/results/qualitycontrol/multiqc/raw/multiqc.html",
-        #all_inputs.append(os.path.join(species_folder, "results" , "qualitycontrol", "multiqc", "raw", "multiqc.html"))
-        #all_inputs.append(os.path.join(species_folder, "results" , "qualitycontrol", "multiqc", "trimmed", "multiqc.html"))
-        #all_inputs.append(os.path.join(species_folder, "results" , "qualitycontrol", "multiqc", "quality_filtered", "multiqc.html"))
-        #all_inputs.append(os.path.join(species_folder, "results" , "qualitycontrol", "multiqc", "merged", "multiqc.html"))
-
-        # Add QC report
-        all_inputs.append(os.path.join(species_folder, "results","qualitycontrol", f"quality_check_report_{species}.html"))
-
+        
     logging.info("Determined input for rule 'all':")
     for input in all_inputs:
         logging.info("\t" + "- " + input)
