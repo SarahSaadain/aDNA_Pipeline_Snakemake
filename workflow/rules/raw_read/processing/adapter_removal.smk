@@ -1,24 +1,34 @@
-def get_reads(wc, readpair="R1"):
+def get_reads_list(wc):
     """
-    Returns the correct file for R1/R2, with optional suffix (_001, etc).
+    Returns a list of read files for R1/R2 if available.
+    If only R1 exists, returns a single-element list [R1].
     """
-    base = f"{wc.species}/raw/reads/{wc.individual}_{wc.rest}_{readpair}"
-
-    # look for files that match base + (maybe something) + .fastq.gz
-    candidates = [f for f in os.listdir(os.path.dirname(base))
-                  if re.match(os.path.basename(base) + r"(\S*)\.fastq\.gz", f)]
-        
-    if not candidates:
-        return None
-    # pick the first candidate (or implement custom logic if multiple)
-    return os.path.join(os.path.dirname(base), sorted(candidates)[0])
+    reads_dir = f"{wc.species}/raw/reads"
+    
+    # R1
+    base_r1 = f"{wc.individual}_{wc.rest}_R1"
+    candidates_r1 = [f for f in os.listdir(reads_dir)
+                     if re.match(base_r1 + r"(\S*)?\.fastq\.gz", f)]
+    if not candidates_r1:
+        raise FileNotFoundError(f"No R1 found for {wc.individual}_{wc.rest}")
+    r1 = os.path.join(reads_dir, sorted(candidates_r1)[0])
+    
+    # R2
+    base_r2 = f"{wc.individual}_{wc.rest}_R2"
+    candidates_r2 = [f for f in os.listdir(reads_dir)
+                     if re.match(base_r2 + r"(\S*)?\.fastq\.gz", f)]
+    
+    if candidates_r2:
+        r2 = os.path.join(reads_dir, sorted(candidates_r2)[0])
+        return [r1, r2]  # Paired-end
+    else:
+        return [r1]      # Single-end
 
 rule adapter_removal:
     input:
-        r1 = lambda wc: str(get_reads(wc, "R1")),
-        r2 = lambda wc: str(get_reads(wc, "R2"))
+        reads = lambda wc: get_reads_list(wc)
     output:
-        trimmed="{species}/processed/trimmed/{individual}_{rest}_trimmed.fastq.gz",
+        trimmed=temp("{species}/processed/trimmed/{individual}_{rest}_trimmed.fastq.gz"),
         report_json="{species}/processed/trimmed/{individual}_{rest}_report.json",
         report_html="{species}/processed/trimmed/{individual}_{rest}_report.html"
     threads: workflow.cores
@@ -27,35 +37,9 @@ rule adapter_removal:
         adapter_sequence_r2 = config["pipeline"]["raw_reads_processing"]["adapter_removal"]["settings"]["adapters_sequences"]["r2"]
     conda:
         "../../../envs/fastp.yaml"
-    shell:
-        """
-        if [ "{input.r2}" != "None" ]; then
-            fastp \
-                --adapter_sequence {params.adapter_sequence_r1} \
-                --adapter_sequence_r2 {params.adapter_sequence_r2} \
-                --in1 {input.r1} --in2 {input.r2} \
-                --merged_out {output.trimmed} \
-                --json {output.report_json} \
-                --html {output.report_html} \
-                --merge \
-                --thread {threads} \
-                --length_required 15 \
-                --trim_poly_x 5 \
-                --qualified_quality_phred 5 \
-                --unqualified_percent_limit 40 \
-                --n_base_limit 5
-        else
-            fastp \
-                --adapter_sequence {params.adapter_sequence_r1} \
-                -i {input.r1} \
-                -o {output.trimmed} \
-                --json {output.report_json} \
-                --html {output.report_html} \
-                --thread {threads} \
-                --length_required 15 \
-                --trim_poly_x 5 \
-                --qualified_quality_phred 5 \
-                --unqualified_percent_limit 40 \
-                --n_base_limit 5
-        fi
-        """
+    run:
+        reads = input.reads
+        if len(reads) == 2:
+            shell(f"fastp --adapter_sequence {params.adapter_sequence_r1} --adapter_sequence_r2 {params.adapter_sequence_r2} --in1 {reads[0]} --in2 {reads[1]} --merged_out {output.trimmed} --json {output.report_json} --html {output.report_html} --merge --length_required 15 --trim_poly_x 5 --qualified_quality_phred 5 --unqualified_percent_limit 40 --n_base_limit 5 --thread {threads}")
+        else:
+            shell(f"fastp --adapter_sequence {params.adapter_sequence_r1} -i {reads[0]} -o {output.trimmed} --json {output.report_json} --html {output.report_html} --length_required 15 --trim_poly_x 5  --qualified_quality_phred 5 --unqualified_percent_limit 40 --n_base_limit 5 --thread {threads}")
