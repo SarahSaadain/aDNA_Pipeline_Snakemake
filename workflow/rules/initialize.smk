@@ -23,7 +23,7 @@ logging.basicConfig(  # Basic config ASAP (for fallback)
 )
 
 # Ensure min Snakemake version
-snakemake.utils.min_version("9.10.0")
+snakemake.utils.min_version("9.9.0")
 basedir = workflow.basedir
 
 aDNA_Pipeline_version = "0.0.1" 
