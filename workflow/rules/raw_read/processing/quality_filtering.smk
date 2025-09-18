@@ -2,7 +2,7 @@ rule quality_filter:
     input:
         trimmed="{species}/processed/trimmed/{individual}_{rest}_trimmed.fastq.gz"
     output:
-        filtered="{species}/processed/quality_filtered/{individual}_{rest}_quality_filtered.fastq.gz",
+        filtered=temp("{species}/processed/quality_filtered/{individual}_{rest}_quality_filtered.fastq.gz"),
         report_json="{species}/processed/quality_filtered/{individual}_{rest}_quality_filtered_report.json",
         report_html="{species}/processed/quality_filtered/{individual}_{rest}_quality_filtered_report.html",
         failed="{species}/processed/quality_filtered/{individual}_{rest}_quality_filtered_failed.fastq.gz"
