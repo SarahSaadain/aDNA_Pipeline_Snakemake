@@ -13,7 +13,7 @@ rule fastqc_raw:
     resources:
         mem_mb = 1024,
     wrapper:
-        "v7.2.0/bio/fastqc"
+        "v7.5.0/bio/fastqc"
 
 rule fastqc_adapter_removed:
     input:
@@ -30,7 +30,7 @@ rule fastqc_adapter_removed:
     resources:
         mem_mb = 1024,
     wrapper:
-        "v7.2.0/bio/fastqc"
+        "v7.5.0/bio/fastqc"
 
 rule fastqc_quality_filtered:
     input:
@@ -47,7 +47,7 @@ rule fastqc_quality_filtered:
     resources:
         mem_mb = 1024,
     wrapper:
-        "v7.2.0/bio/fastqc"
+        "v7.5.0/bio/fastqc"
 
 rule fastqc_merged:
     input:
