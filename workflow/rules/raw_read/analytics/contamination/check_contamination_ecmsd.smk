@@ -11,6 +11,7 @@ rule ecmsd_analysis:
     threads: workflow.cores
     conda:
         config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["ecmsd"]["settings"]["conda_env"]
+    message: "Running eCMSD contamination analysis for {input.fastq}"
     shell:
         """
         bash {params.executable} \

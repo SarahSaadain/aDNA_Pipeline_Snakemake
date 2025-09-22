@@ -1,9 +1,20 @@
+def get_fastqc_adapter_removed_input_reads(wildcards):
+    # Determine if the sample is paired-end or single-end
+    reads = get_adapter_removal_input_reads(wildcards)
+    if len(reads) == 2:
+        # Paired-end: use the merged reads from fastp_pe
+        return f"{wildcards.species}/processed/trimmed/{wildcards.sample}_trimmed.pe.fastq.gz"
+    else:
+        # Single-end: use the trimmed reads from fastp_se
+        return f"{wildcards.species}/processed/trimmed/{wildcards.sample}_trimmed.se.fastq.gz"
+
 rule fastqc_raw:
     input:
         "{species}/raw/reads/{sample}.fastq.gz"
     output:
         html="{species}/results/qualitycontrol/fastqc/raw/{sample}_fastqc.html",
         zip="{species}/results/qualitycontrol/fastqc/raw/{sample}_fastqc.zip"
+    message: "Running FastQC on raw reads for sample {wildcards.sample} in species {wildcards.species}"
     params:
         extra="--quiet",
         mem_overhead_factor=0.1,
@@ -17,10 +28,11 @@ rule fastqc_raw:
 
 rule fastqc_adapter_removed:
     input:
-        "{species}/processed/trimmed/{sample}_trimmed.fastq.gz"
+        get_fastqc_adapter_removed_input_reads
     output:
         html="{species}/results/qualitycontrol/fastqc/trimmed/{sample}_trimmed_fastqc.html",
         zip="{species}/results/qualitycontrol/fastqc/trimmed/{sample}_trimmed_fastqc.zip"
+    message: "Running FastQC on adapter-trimmed reads for sample {wildcards.sample} in species {wildcards.species}"
     params:
         extra="--quiet",
         mem_overhead_factor=0.1,
@@ -38,6 +50,7 @@ rule fastqc_quality_filtered:
     output:
         html="{species}/results/qualitycontrol/fastqc/quality_filtered/{sample}_quality_filtered_fastqc.html",
         zip="{species}/results/qualitycontrol/fastqc/quality_filtered/{sample}_quality_filtered_fastqc.zip"
+    message: "Running FastQC on quality-filtered reads for sample {wildcards.sample} in species {wildcards.species}"
     params:
         extra="--quiet",
         mem_overhead_factor=0.1,
@@ -55,6 +68,7 @@ rule fastqc_merged:
     output:
         html="{species}/results/qualitycontrol/fastqc/merged/{individual}_fastqc.html",
         zip="{species}/results/qualitycontrol/fastqc/merged/{individual}_fastqc.zip"
+    message: "Running FastQC on merged reads for individual {wildcards.individual} in species {wildcards.species}"
     params:
         extra="--quiet",
         mem_overhead_factor=0.1,

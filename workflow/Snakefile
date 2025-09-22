@@ -2,15 +2,13 @@
 import os
 import sys
 
-import scripts.setup_snakemake as setup
-import input_manager as im
-
 include: "rules/initialize.smk"
+include: "scripts/input_manager.py"
 
 include: "rules/raw_reads_processing.smk"
 include: "rules/reads_to_reference_genome_processing.smk"
 
 rule all:
     input:
-        lambda wildcards: im.get_all_inputs(config["species"])
+        get_all_inputs
 

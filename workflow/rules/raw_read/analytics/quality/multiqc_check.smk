@@ -1,8 +1,8 @@
-import input_manager as sm
+#import input_manager as sm
 
 rule multiqc_raw:
     input:
-        lambda wc: sm.get_input_multiqc_raw(wc.species)
+        lambda wc: get_input_multiqc_raw(wc.species)
     output:
         "{species}/results/qualitycontrol/multiqc/raw/multiqc.html",
         #directory("{species}/results/qualitycontrol/multiqc/raw//multiqc_data"),
@@ -15,7 +15,7 @@ rule multiqc_raw:
 
 rule multiqc_trimmed:
     input:
-        lambda wc: sm.get_input_multiqc_trimmed(wc.species)
+        lambda wc: get_input_multiqc_trimmed(wc.species)
     output:
         "{species}/results/qualitycontrol/multiqc/trimmed/multiqc.html",
         #directory("{species}/results/qualitycontrol/multiqc/raw//multiqc_data"),
@@ -28,7 +28,7 @@ rule multiqc_trimmed:
 
 rule multiqc_quality_filtered:
     input:
-        lambda wc: sm.get_input_multiqc_quality_filtered(wc.species)
+        lambda wc: get_input_multiqc_quality_filtered(wc.species)
     output:
         "{species}/results/qualitycontrol/multiqc/quality_filtered/multiqc.html",
         #directory("{species}/results/qualitycontrol/multiqc/raw//multiqc_data"),
@@ -41,7 +41,7 @@ rule multiqc_quality_filtered:
 
 rule multiqc_merged:
     input:
-        lambda wc: sm.get_input_multiqc_merged(wc.species)
+        lambda wc: get_input_multiqc_merged(wc.species)
     output:
         "{species}/results/qualitycontrol/multiqc/merged/multiqc.html",
         #directory("{species}/results/qualitycontrol/multiqc/raw//multiqc_data"),

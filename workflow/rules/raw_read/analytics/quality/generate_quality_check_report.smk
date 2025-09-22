@@ -1,11 +1,11 @@
-import scripts.setup_snakemake as setup
-import input_manager as im
+#import scripts.setup_snakemake as setup
+#import input_manager as im
 
 rule generate_qc_report:
     input:
-        fastqc_raw = lambda wc: im.get_input_multiqc_raw(wc.species),
-        fastqc_trimmed = lambda wc: im.get_input_multiqc_trimmed(wc.species),
-        fastqc_quality_filtered = lambda wc: im.get_input_multiqc_quality_filtered(wc.species),
+        fastqc_raw = lambda wc: get_input_multiqc_raw(wc.species),
+        fastqc_trimmed = lambda wc: get_input_multiqc_trimmed(wc.species),
+        fastqc_quality_filtered = lambda wc: get_input_multiqc_quality_filtered(wc.species),
         multiqc_raw = "{species}/results/qualitycontrol/multiqc/raw/multiqc.html",
         multiqc_trimmed = "{species}/results/qualitycontrol/multiqc/raw/multiqc.html",
         multiqc_quality_filtered = "{species}/results/qualitycontrol/multiqc/merged/multiqc.html"

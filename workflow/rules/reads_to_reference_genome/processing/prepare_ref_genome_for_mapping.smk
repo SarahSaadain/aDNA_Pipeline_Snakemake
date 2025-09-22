@@ -1,15 +1,12 @@
-# rules/reference_indexing.smk
-import os
-import scripts.setup_snakemake as setup
-
-# extensions we will accept for the original reference
-REF_EXTS = ["fa", "fasta", "fna", "fas", "fsa"]
-
 def find_reference_input(wc):
     """
     Return the first existing reference file for {species}/{ref_genome_name}
     among the allowed extensions.
     """
+
+    # extensions we will accept for the original reference
+    REF_EXTS = ["fa", "fasta", "fna", "fas", "fsa"]
+
     base = f"{wc.species}/raw/ref_genome/{wc.ref_genome_name}"
     for ext in REF_EXTS:
         p = f"{base}.{ext}"
@@ -25,6 +22,8 @@ rule standardize_reference_extension_to_fa:
         fasta=find_reference_input
     output:
         fa="{species}/raw/ref_genome/{ref_genome_name}.fa"
+    message:
+        "Standardizing reference genome extension to .fa for {output.fa}"
     shell:
         "mv {input.fasta} {output.fa}"
 
@@ -38,7 +37,8 @@ rule bwa_index:
         bwt="{species}/raw/ref_genome/{ref_genome_name}.fa.bwt",
         pac="{species}/raw/ref_genome/{ref_genome_name}.fa.pac",
         sa="{species}/raw/ref_genome/{ref_genome_name}.fa.sa"
+    message: "Indexing reference genome {input.fasta} with BWA"
     conda:
-        os.path.join(setup.project_root, "envs/bwa.yaml")
+        "../../../envs/bwa.yaml"
     shell:
         "bwa index {input.fasta}"

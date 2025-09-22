@@ -1,6 +1,6 @@
 import pandas as pd
 import gzip
-import input_manager as im
+#import input_manager as im
 
 def get_fastq_read_count(fastq_file):
     """
@@ -16,12 +16,12 @@ def get_fastq_read_count(fastq_file):
         with open(fastq_file, "r") as f:
             return sum(1 for _ in f) // 4
 
-def get_samples_per_species(species):
-    im.get_input_reads_processing_raw(species)
+#def get_samples_per_species(species):
+#    im.get_input_reads_processing_raw(species)
 
 rule count_reads_raw:
     input:
-        fastq=lambda wildcards: im.get_files_in_folder_matching_pattern(os.path.join(wildcards.species, "raw", "reads"), f"{wildcards.sample}*R1*.fastq.gz")[0]
+        fastq=lambda wildcards: get_files_in_folder_matching_pattern(os.path.join(wildcards.species, "raw", "reads"), f"{wildcards.sample}*R1*.fastq.gz")[0]
     output:
         counted=temp("{species}/processed/qualitycontrol/statistics/{sample}_raw_reads.count")
     run:
@@ -34,6 +34,7 @@ rule count_reads_trimmed:
         fastq="{species}/processed/trimmed/{sample}_trimmed.fastq.gz"
     output:
         counted=temp("{species}/processed/qualitycontrol/statistics/{sample}_trimmed_reads.count")
+    message: "Counting reads in {input.fastq}"
     run:
         count = get_fastq_read_count(input.fastq)
         with open(output.counted, "w") as f:
@@ -44,6 +45,7 @@ rule count_reads_quality_filtered:
         fastq="{species}/processed/quality_filtered/{sample}_quality_filtered.fastq.gz"
     output:
         counted=temp("{species}/processed/qualitycontrol/statistics/{sample}_quality_filtered_reads.count")
+    message: "Counting reads in {input.fastq}"
     run:
         count = get_fastq_read_count(input.fastq)
         with open(output.counted, "w") as f:
@@ -56,13 +58,14 @@ rule combine_counts_per_sample:
         quality_filtered_reads="{species}/processed/qualitycontrol/statistics/{sample}_quality_filtered_reads.count"
     output:
         counts=temp("{species}/processed/qualitycontrol/statistics/{sample}_reads_processing.csv")
+    message: "Combining read counts for sample {wildcards.sample}"
     run:
 
-        print(input.raw_reads)
-        print(input.trimmed_reads)
-        print(input.quality_filtered_reads)
-        print(output.counts)
-        print(wildcards.sample)
+        #print(input.raw_reads)
+        #print(input.trimmed_reads)
+        #print(input.quality_filtered_reads)
+        #print(output.counts)
+        #print(wildcards.sample)
 
         with open(input.raw_reads, "r") as f:
             raw = int(f.read())
@@ -80,7 +83,7 @@ rule combine_counts_per_sample:
 rule combine_counts_per_species:
     input:
         lambda wildcards: expand("{species}/processed/qualitycontrol/statistics/{sample}_reads_processing.csv",
-            sample=im.get_sample_ids_for_species(wildcards.species),
+            sample=get_sample_ids_for_species(wildcards.species),
             species=wildcards.species)
     output:
         counts="{species}/results/qualitycontrol/statistics/{species}_reads_processing.csv"

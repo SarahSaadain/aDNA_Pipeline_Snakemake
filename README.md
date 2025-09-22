@@ -66,7 +66,6 @@ project_name: "aDNA_Project"
 project_description: "Analysis of ancient DNA data"
 
 pipeline:
-
   raw_reads_processing:     # stage
     execute: true           # disable or enable this stage
     quality_checking_raw:   # process step
@@ -157,7 +156,7 @@ The aDNA pipeline is implemented using Snakemake, a workflow management system. 
 To run the pipeline, navigate to the root directory containing the `Snakefile` and execute:
 
 ```bash
-snakemake --cores <number_of_threads>
+snakemake --cores <number_of_threads> --use-conda
 ```
 
 Replace `<number_of_threads>` with the number of CPU threads you want to allocate for the pipeline.
@@ -167,7 +166,7 @@ Replace `<number_of_threads>` with the number of CPU threads you want to allocat
 Depending on the size of the data, it may take some time to complete the pipeline. Thus it is recommended to run the pipeline in the background. You can do this by running the following command:
 
 ```bash
-nohup snakemake --cores <number_of_threads> > pipeline.log 2>&1 &
+nohup snakemake --cores <number_of_threads> --use-conda > pipeline.log 2>&1 &
 ```
 
 ### Restarting the Pipeline

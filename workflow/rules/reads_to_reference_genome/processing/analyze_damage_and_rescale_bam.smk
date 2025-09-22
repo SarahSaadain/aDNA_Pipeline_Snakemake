@@ -1,4 +1,4 @@
-import scripts.setup_snakemake as setup
+
 rule analyze_damage_and_rescale_bam:
     """
     Estimates post-mortem DNA damage patterns and rescales base qualities.
@@ -24,37 +24,37 @@ rule analyze_damage_and_rescale_bam:
     benchmark:
         "benchmark/{species}_{individual}_{ref_genome}_mapdamage2.benchmark.json",
     log:
-        "logs/{species}/{individual}_{ref_genome}_mapdamage2.log",
+        "{species}/results/{ref_genome}/damage/{individual}/mapdamage2.log",
     wrapper:
         "v7.2.0/bio/mapdamage2"
 
 # 3 Sort BAM
 rule sort_rescaled_bam:
     input:
-        rescaled_bam="{species}/results/{ref_genome}/damage/{individual}/{individual}_{ref_genome}.bam"
+        "{species}/results/{ref_genome}/damage/{individual}/{individual}_{ref_genome}.bam"
     output:
-        sorted_bam="{species}/results/{ref_genome}/damage/{individual}/{individual}_{ref_genome}_sorted.bam"
+        "{species}/results/{ref_genome}/damage/{individual}/{individual}_{ref_genome}_sorted.bam"
+    log:
+        "{species}/results/{ref_genome}/damage/{individual}/{individual}_{ref_genome}_sorted.bam.log"
+    message:
+        "Sort rescaled BAM for {input}",
     threads: workflow.cores 
-    conda:
-        os.path.join(setup.project_root, "envs/samtools.yaml")
-    shell:
-        """
-        samtools sort -@ {threads} {input.rescaled_bam} -o {output.sorted_bam}
-        """
+    wrapper:
+        "v7.5.0/bio/samtools/sort"
 
 # 4 Index BAM
 rule index_rescaled_bam:
     input:
-        sorted_bam="{species}/results/{ref_genome}/damage/{individual}/{individual}_{ref_genome}_sorted.bam"
+        "{species}/results/{ref_genome}/damage/{individual}/{individual}_{ref_genome}_sorted.bam"
     output:
-        bam_index="{species}/results/{ref_genome}/damage/{individual}/{individual}_{ref_genome}_sorted.bam.bai"
+        "{species}/results/{ref_genome}/damage/{individual}/{individual}_{ref_genome}_sorted.bam.bai"
+    log:
+        "{species}/results/{ref_genome}/damage/{individual}/{individual}_{ref_genome}_sorted.bam.bai.log"
+    message:
+        "Index rescaled BAM for {input}",
     threads: workflow.cores 
-    conda:
-        os.path.join(setup.project_root, "envs/samtools.yaml")
-    shell:
-        """
-        samtools index -@ {threads} {input.sorted_bam} {output.bam_index}
-        """
+    wrapper:
+        "v7.5.0/bio/samtools/index"
 
 rule move_rescaled_bam:
     input:
@@ -63,6 +63,8 @@ rule move_rescaled_bam:
     output:
         sorted_bam="{species}/processed/{ref_genome}/mapped/{individual}_{ref_genome}_sorted.rescaled.bam",
         bam_index="{species}/processed/{ref_genome}/mapped/{individual}_{ref_genome}_sorted.rescaled.bam.bai"
+    message:
+        "Move rescaled BAM and index to processed directory for {input.sorted_bam}",
     shell:
         """
         mv {input.sorted_bam} {output.sorted_bam} 

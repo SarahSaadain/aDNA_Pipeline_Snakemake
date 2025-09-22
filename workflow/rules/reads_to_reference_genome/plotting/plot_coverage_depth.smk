@@ -3,6 +3,7 @@ rule plot_depth_violin:
         depth_file = "{species}/results/{ref_genome}/coverage/{ref_genome}_combined_coverage_analysis_detailed.csv"
     output:
         plot = report("{species}/results/{ref_genome}/plots/coverage/{species}_{ref_genome}_depth_violin.png")
+    message: "Plotting depth violin for species {wildcards.species} and reference genome {wildcards.ref_genome}"
     params:
         species="{species}"
     conda:
@@ -15,6 +16,7 @@ rule depth_coverage_violin:
         "{species}/results/{ref_genome}/coverage/{ref_genome}_combined_coverage_analysis_detailed.csv"
     output:
         report("{species}/results/{ref_genome}/plots/coverage/{species}_{ref_genome}_individual_depth_coverage_violin.png")
+    message: "Plotting depth coverage violin for species {wildcards.species} and reference genome {wildcards.ref_genome}"
     params:
         species="{species}"
     conda:
@@ -27,6 +29,7 @@ rule depth_coverage_bar:
         "{species}/results/{ref_genome}/coverage/{ref_genome}_combined_coverage_analysis_detailed.csv"
     output:
         report("{species}/results/{ref_genome}/plots/coverage/{species}_{ref_genome}_individual_depth_coverage_bar.png")
+    message: "Plotting depth coverage bar for species {wildcards.species} and reference genome {wildcards.ref_genome}"
     params:
         species="{species}"
     conda:

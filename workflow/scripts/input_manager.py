@@ -163,12 +163,12 @@ def get_input_multiqc_merged(species):
     return all_inputs
 
 
-def get_all_inputs(species_list):
+def get_all_inputs(wildcards):
 
     # Generate inputs for rule all
     all_inputs = []
 
-    for species in species_list:
+    for species in config["species"]:
         species_folder = species
 
         #all_inputs += get_input_multiqc_raw(species)

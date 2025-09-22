@@ -3,6 +3,7 @@ rule coverage_violin_plot:
         "{species}/results/{ref_genome}/coverage/{ref_genome}_combined_coverage_analysis_detailed.csv"
     output:
         report("{species}/results/{ref_genome}/plots/coverage/{species}_{ref_genome}_breadth_coverage_violin.png")
+    message: "Plotting coverage breadth violin for species {wildcards.species} and reference genome {wildcards.ref_genome}"
     params:
         species="{species}"
     conda:
@@ -15,6 +16,7 @@ rule coverage_bins_plot:
         "{species}/results/{ref_genome}/coverage/{ref_genome}_combined_coverage_analysis_detailed.csv"
     output:
         report("{species}/results/{ref_genome}/plots/coverage/{species}_{ref_genome}_breadth_coverage_bins.png")
+    message: "Plotting coverage breadth bins for species {wildcards.species} and reference genome {wildcards.ref_genome}"
     conda:
         "../../../envs/r_plot.yaml"
     script:
@@ -27,6 +29,7 @@ rule coverage_breadth_violin:
         report("{species}/results/{ref_genome}/plots/coverage/{species}_{ref_genome}_individual_coverage_breadth_violin.png")
     params:
         species="{species}"
+    message: "Plotting coverage breadth violin for species {wildcards.species} and reference genome {wildcards.ref_genome}"
     conda:
         "../../../envs/r_plot.yaml"
     script:
@@ -37,6 +40,7 @@ rule coverage_breadth_bar:
         "{species}/results/{ref_genome}/coverage/{ref_genome}_combined_coverage_analysis_detailed.csv"
     output:
         report("{species}/results/{ref_genome}/plots/coverage/{species}_{ref_genome}_individual_coverage_breadth_bar.png")
+    message: "Plotting coverage breadth bar for species {wildcards.species} and reference genome {wildcards.ref_genome}"
     params:
         species="{species}"
     conda:
