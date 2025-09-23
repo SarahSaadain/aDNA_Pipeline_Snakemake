@@ -177,14 +177,24 @@ def get_all_inputs(wildcards):
                 all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_depth_violin.png"))                
                 all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_individual_coverage_breadth_bar.png"))
                 all_inputs.append(os.path.join(species_folder, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_individual_coverage_breadth_violin.png"))
-                # Add consensus sequence output for each individual and reference genome
-                all_inputs.append(os.path.join(species_folder, "processed" ,ref_genome_id, "consensus", f"{ind}_{ref_genome_id}", f"{ind}_{ref_genome_id}_consensus.fa.gz"))
         except Exception as e: 
             # Print error if reference genome files are missing or inaccessible
             print(e)
             pass
 
-        #for ind in individuals:
+        for ind in individuals:
+            try:
+                # Get all reference genomes for the species
+                ref_genome_list = get_reference_genome_file_list_for_species(species)
+                for ref_genome_tuple in ref_genome_list:
+
+                    ref_genome_id = ref_genome_tuple[0]
+                    # Add consensus sequence output for each individual and reference genome
+                    all_inputs.append(os.path.join(species_folder, "processed" ,ref_genome_id, "consensus", f"{ind}_{ref_genome_id}", f"{ind}_{ref_genome_id}_consensus.fa.gz"))
+            except Exception as e: 
+                # Print error if reference genome files are missing or inaccessible
+                print(e)
+                pass
             
     # Log all determined inputs for debugging and traceability
     logging.info("Determined input for rule 'all':")
