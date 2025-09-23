@@ -11,7 +11,7 @@ def get_quality_filtered_input_read(wildcards):
 # Rule: Quality filtering of reads using fastp
 rule quality_filter:
     input:
-        sample=get_quality_filtered_input_read,
+        sample=get_quality_filtered_input_read
     output:
         trimmed=temp("{species}/processed/quality_filtered/{sample}_quality_filtered.fastq.gz"),
         failed=temp("{species}/processed/quality_filtered/{sample}_quality_filtered.failed.fastq.gz"),

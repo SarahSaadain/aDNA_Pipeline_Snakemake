@@ -34,7 +34,7 @@ rule count_reads_raw:
 # Rule: Count reads in trimmed FASTQ files
 rule count_reads_trimmed:
     input:
-        fastq="{species}/processed/trimmed/{sample}_trimmed.fastq.gz"
+        fastq=get_quality_filtered_input_read
     output:
         counted=temp("{species}/processed/qualitycontrol/statistics/{sample}_trimmed_reads.count")
     message: "Counting reads in {input.fastq}"
