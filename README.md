@@ -21,8 +21,6 @@ The `config.yaml` file is used to configure the aDNA pipeline. It contains setti
 ### Global Settings
 
 * **project\_name**: Name of the aDNA project.
-* **project\_description**: Brief description of the project.
-* **path\_adna\_project**: Path to the main project directory.
 
 ### Pipeline Settings
 
@@ -39,22 +37,6 @@ Defines the overall pipeline behavior, including execution controls and process 
 
 * You **do not need to specify all stages or process steps** explicitly.
 * Any **stage or process step not provided in the config defaults to `execute: true`** and will be executed.
-* This applies both to the **global pipeline entry** and to any **species-specific pipeline overrides** (see below).
-
-### Species-specific Settings
-
-Defines species included in the project, each with:
-
-* A unique code (e.g., `Bger`)
-* Full species name
-* Folder name used for species-specific data
-
-### Species-specific Pipeline Overrides
-
-* Each species can optionally include a **pipeline** section to override the global pipeline settings.
-* These overrides allow you to **customize process steps within stages** for that species.
-* You **cannot enable or disable entire stages** here—only individual process steps.
-
 
 ### Example `config.yaml`
 
@@ -63,7 +45,6 @@ Defines species included in the project, each with:
 
 # Global settings
 project_name: "aDNA_Project"
-project_description: "Analysis of ancient DNA data"
 
 pipeline:
   raw_reads_processing:     # stage
@@ -100,13 +81,20 @@ pipeline:
         centrifuge:
           execute: true
           settings:
-            database: "/path/to/centrifuge_db"
+            conda_env: "../../../../envs/centrifuge.yaml"
+            executable: "centrifuge"
+            database: "/mnt/data5/sarah/aDNA/centrifuge_db"
         kraken: 
           execute: true
           settings:
-            database: "/path/to/kraken_db"
-        ecmsdb:
+            conda_env: "../../../../envs/kraken.yaml"
+            executable: "kraken"
+            database: "/mnt/data5/sarah/aDNA/kraken_db"
+        ecmsd:
           execute: true
+          settings:
+            conda_env: "../../../../envs/ecmsd.yaml"
+            executable: "/mnt/data2/sarah/app_ecmsd/shell/ECMSD.sh"
     generate_raw_reads_plots: 
       execute: true
 
@@ -127,24 +115,12 @@ pipeline:
     generate_reference_genome_plots: 
       execute: true
 
-  post_processing:
-    execute: true
-    mtdna_analysis:
-      execute: true
-    comparison_plots:
-      execute: true
-
-# Species-specific settings
+# Species details
 species:
   Bger:
     name: "Blatella germanica"
-    folder_name: "Bger"
   Dsim:
     name: "Drosophila simulans"
-    folder_name: "Dsim"
-  Phortica:
-    name: "Phortica"
-    folder_name: "Phortica"
 ```
 
 ## Running the Pipeline
@@ -198,21 +174,20 @@ When adding a new species, make sure to
 The pipeline expects input read files to follow a standardized naming convention:
 
 ```bash
-<Individual>_<Protocol>_<Original_Filename>.fastq.gz
+<Individual>_<Original_Filename>.fastq.gz
 ```
 
 Following this convention ensures proper organization and automated processing within the pipeline.  
 
 ##### Filename Components:
 - **`<Individual>`** – A unique identifier for the sample or individual.  
-- **`<Protocol>`** – The sequencing or library prep protocol (to enable easy comparison of different protocols or sequencing technologies) (optional).  
 - **`<Original_Filename>`** – The original filename assigned by the sequencing platform.  
 - **`.fastq.gz`** – The expected file extension, indicating compressed FASTQ format.  
 
 #### Example:
 
 ```
-Bger1_S_326862_S37_R1_001.fastq.gz
+Bger1_326862_S37_R1_001.fastq.gz
 ```
 
 
