@@ -1,6 +1,5 @@
 import pandas as pd
 import os
-# ^ adapt depending on where your helper functions live
 
 def combine_analysis_files(individual_analysis_files, combined_file_path, combined_detailed_file_path):
     """

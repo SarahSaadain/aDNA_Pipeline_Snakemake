@@ -1,3 +1,4 @@
+# Rule: Plot coverage depth violin plot
 rule plot_depth_violin:
     input:
         depth_file = "{species}/results/{ref_genome}/coverage/{ref_genome}_combined_coverage_analysis_detailed.csv"
@@ -11,6 +12,7 @@ rule plot_depth_violin:
     script:
         "../../../scripts/reads_to_reference_genome/plotting/plot_coverage_depth_violin.R"
 
+# Rule: Plot depth coverage violin by individual
 rule depth_coverage_violin:
     input:
         "{species}/results/{ref_genome}/coverage/{ref_genome}_combined_coverage_analysis_detailed.csv"
@@ -24,6 +26,7 @@ rule depth_coverage_violin:
     script:
         "../../../scripts/reads_to_reference_genome/plotting/plot_coverage_depth_by_individuals_violin.R"
 
+# Rule: Plot depth coverage bar by individual
 rule depth_coverage_bar:
     input:
         "{species}/results/{ref_genome}/coverage/{ref_genome}_combined_coverage_analysis_detailed.csv"

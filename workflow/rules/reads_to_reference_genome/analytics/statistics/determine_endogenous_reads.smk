@@ -1,3 +1,4 @@
+# Rule: Determine endogenous reads from BAM stats
 rule endogenous_reads:
     input:
         stats="{species}/results/{ref_genome}/statistics/{individual}/{individual}_{ref_genome}.bam.stats"
@@ -7,6 +8,7 @@ rule endogenous_reads:
     script:
         "../../../../scripts/reads_to_reference_genome/analytics/statistics/parse_endogenous_from_stats.py"
 
+# Rule: Combine endogenous reads for all individuals
 rule combine_endogenous_reads:
     input:
         lambda wildcards: expand(

@@ -1,7 +1,7 @@
 # =================================================================================================
-#     Dependencies
+#     Dependencies and Environment Setup
 # =================================================================================================
-
+# Import required Python modules for system, platform, logging, and workflow management
 import os, sys, pwd, re
 import socket, platform
 import subprocess
@@ -9,9 +9,11 @@ from datetime import datetime
 import logging
 from pathlib import Path
 
+# Import Snakemake plugin settings for executor modes
 from snakemake_interface_executor_plugins.settings import ExecMode
 
 # --- Logging Setup (EARLY) ---
+# Configure logging format and output for workflow debugging and status reporting
 LOG_FORMAT = '[%(asctime)s] [%(levelname)s] %(message)s'
 LOG_DATE_FORMAT = '%Y-%m-%d %H:%M:%S (%Z)'
 
@@ -22,18 +24,28 @@ logging.basicConfig(  # Basic config ASAP (for fallback)
     handlers=[logging.StreamHandler()]  # Only console for now
 )
 
-# Ensure min Snakemake version
+# =================================================================================================
+#     Snakemake Version Check
+# =================================================================================================
+# Ensure the minimum required Snakemake version is available for compatibility
 snakemake.utils.min_version("9.9.0")
 basedir = workflow.basedir
 
 aDNA_Pipeline_version = "0.0.1" 
 
+# =================================================================================================
+#     Configuration Files and Reporting
+# =================================================================================================
+# Specify the main configuration file for the workflow
 configfile: "config.yaml"
 
 # Add a description of the workflow to the final report
 report: os.path.join(workflow.basedir, "reports/workflow.rst")
 
-# Get the OS and version
+# =================================================================================================
+#     Platform and OS Information
+# =================================================================================================
+# Gather platform and OS version information for reproducibility and debugging
 pltfrm = platform.platform() + "; " + platform.version()
 try:
     # Not available in all versions, so we need to catch this
@@ -62,14 +74,18 @@ try:
 except:
     pass
 
-
-# Get the user and hostname
+# =================================================================================================
+#     User and Host Information
+# =================================================================================================
+# Get the current user and hostname for provenance tracking
 username = pwd.getpwuid(os.getuid())[0]
 hostname = socket.gethostname()
 hostname = hostname + ("; " + platform.node() if platform.node() != socket.gethostname() else "")
 
-
-# Get the git hash, if available. 
+# =================================================================================================
+#     Git Version Information
+# =================================================================================================
+# Get the git hash, if available, to track the exact code version used
 try:
     process = subprocess.Popen(
         ["git", "rev-parse", "--short", "HEAD"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
@@ -83,7 +99,10 @@ try:
 except:
     pass
 
-# Get the conda version, if available. 
+# =================================================================================================
+#     Conda Environment Information
+# =================================================================================================
+# Get the conda version, if available, for environment reproducibility
 try:
     process = subprocess.Popen(["conda", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = process.communicate()
@@ -101,7 +120,10 @@ conda_env = os.environ["CONDA_DEFAULT_ENV"] + " (" + os.environ["CONDA_PREFIX"] 
 if conda_env == " ()":
     conda_env = "n/a"
 
-# Get nicely wrapped command line
+# =================================================================================================
+#     Command Line and Config Files
+# =================================================================================================
+# Get nicely wrapped command line for reproducibility
 cmdline = sys.argv[0]
 for i in range(1, len(sys.argv)):
     cmdline += " " + sys.argv[i]
@@ -112,8 +134,10 @@ for cfg in workflow.configfiles:
     cfgfiles.append(os.path.abspath(cfg))
 cfgfiles = "\n                        ".join(cfgfiles)
 
+# =================================================================================================
+#     Workflow Header Logging
+# =================================================================================================
 # Main aDNA Pipeline header, helping with debugging etc for user issues
-
 logger.info("aDNA Pipeline " + aDNA_Pipeline_version + " run:")
 
 logger.info("\tDate:               " + datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
@@ -129,7 +153,11 @@ logger.info("\tBase directory:     " + workflow.basedir)
 logger.info("\tWorking directory:  " + os.getcwd())
 logger.info("\tConfig file(s):     " + cfgfiles)
 
+# Clean up variables that are no longer needed to avoid polluting the namespace
 # No need to have these output vars available in the rest of the snakefiles
 del pltfrm, hostname, username
 del conda_ver, conda_env
 del cmdline, cfgfiles
+# =================================================================================================
+# End of initialize.smk
+# =================================================================================================

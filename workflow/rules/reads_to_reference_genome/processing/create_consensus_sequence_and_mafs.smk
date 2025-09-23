@@ -1,4 +1,4 @@
-# 1 Map reads to reference (SAM output)
+# Rule: Create consensus sequence using ANGSD
 rule create_consensus_sequence:
     input:
         sorted_bam="{species}/processed/{ref_genome}/mapped/{individual}_{ref_genome}_sorted.rescaled.bam",
@@ -25,6 +25,7 @@ rule create_consensus_sequence:
         """
 
 
+# Rule: Create SNP and MAF files using ANGSD
 rule create_snp:
     input:
         sorted_bam="{species}/processed/{ref_genome}/mapped/{individual}_{ref_genome}_sorted.rescaled.bam",

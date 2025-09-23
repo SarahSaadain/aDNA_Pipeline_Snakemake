@@ -8,6 +8,7 @@ def get_fastqc_adapter_removed_input_reads(wildcards):
         # Single-end: use the trimmed reads from fastp_se
         return f"{wildcards.species}/processed/trimmed/{wildcards.sample}_trimmed.se.fastq.gz"
 
+# Rule: Run FastQC on raw reads
 rule fastqc_raw:
     input:
         "{species}/raw/reads/{sample}.fastq.gz"
@@ -26,6 +27,7 @@ rule fastqc_raw:
     wrapper:
         "v7.5.0/bio/fastqc"
 
+# Rule: Run FastQC on adapter-trimmed reads
 rule fastqc_adapter_removed:
     input:
         get_fastqc_adapter_removed_input_reads
@@ -44,6 +46,7 @@ rule fastqc_adapter_removed:
     wrapper:
         "v7.5.0/bio/fastqc"
 
+# Rule: Run FastQC on quality-filtered reads
 rule fastqc_quality_filtered:
     input:
         "{species}/processed/quality_filtered/{sample}_quality_filtered.fastq.gz"
@@ -62,6 +65,7 @@ rule fastqc_quality_filtered:
     wrapper:
         "v7.5.0/bio/fastqc"
 
+# Rule: Run FastQC on merged reads
 rule fastqc_merged:
     input:
         merged="{species}/processed/merged/{individual}.fastq.gz"

@@ -8,6 +8,7 @@ def get_quality_filtered_input_read(wildcards):
         # Single-end: use the trimmed reads from fastp_se
         return [f"{wildcards.species}/processed/trimmed/{wildcards.sample}_trimmed.se.fastq.gz"]
  
+# Rule: Quality filtering of reads using fastp
 rule quality_filter:
     input:
         sample=get_quality_filtered_input_read,

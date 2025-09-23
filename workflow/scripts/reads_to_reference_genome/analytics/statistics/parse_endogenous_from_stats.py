@@ -1,4 +1,3 @@
-import re
 import os
 
 def determine_endogenous_reads_from_stats(stats_file, output_file):

@@ -1,3 +1,4 @@
+# Rule: Generate samtools stats for BAM files
 rule samtools_stats:
     input:
         bam="{species}/processed/{ref_genome}/mapped/{individual}_{ref_genome}_sorted.rescaled.bam"

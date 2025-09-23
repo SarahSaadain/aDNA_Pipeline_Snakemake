@@ -1,7 +1,6 @@
 import os
 import collections
 import pandas as pd
-import sys
 
 def analyze_coverage_file(coverage_file, analysis_file_path):
     """

@@ -1,3 +1,4 @@
+# Rule: Plot read count comparison for species
 rule plot_read_counts:
     input:
         "{species}/results/qualitycontrol/statistics/{species}_reads_processing.csv"
@@ -9,6 +10,7 @@ rule plot_read_counts:
     script:
         "../../../scripts/raw_reads/plotting/plot_comparison_reads_before_after_processing.R"
 
+# Rule: Plot read count comparison by individual
 rule plot_read_counts_comparison_by_individual:
     input:
         "{species}/results/qualitycontrol/statistics/{species}_reads_processing.csv"

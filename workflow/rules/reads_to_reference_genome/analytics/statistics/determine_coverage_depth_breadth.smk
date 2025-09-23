@@ -1,3 +1,4 @@
+# Rule: Calculate coverage depth using samtools
 rule samtools_depth:
     input:
         bams=["{species}/processed/{ref_genome}/mapped/{individual}_{ref_genome}_sorted.bam"]
@@ -8,10 +9,11 @@ rule samtools_depth:
     message: "Calculating coverage depth for {input.bams}"
     params:
         # optional bed file passed to -b
-        extra="",  # optional additional parameters as string
+        extra="-aa",  # optional additional parameters as string
     wrapper:
         "v7.2.0/bio/samtools/depth"
 
+# Rule: Analyze coverage depth and breadth
 rule samtools_coverage_analysis:
     input:
         depth_txt="{species}/processed/{ref_genome}/coverage/{individual}/{individual}_{ref_genome}_depth.tsv"
@@ -21,6 +23,7 @@ rule samtools_coverage_analysis:
     script:
         "../../../../scripts/reads_to_reference_genome/analytics/statistics/analyze_samtools_depth_file.py"
 
+# Rule: Combine coverage analysis files
 rule combine_coverage:
     input:
         analysis = lambda wildcards: expand(

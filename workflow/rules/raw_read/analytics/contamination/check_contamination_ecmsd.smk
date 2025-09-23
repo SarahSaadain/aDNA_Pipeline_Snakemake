@@ -1,3 +1,4 @@
+# Rule: Run eCMSD for contamination analysis
 rule ecmsd_analysis:
     input:
         fastq = "{species}/processed/quality_filtered/{sample}_quality_filtered.fastq.gz",

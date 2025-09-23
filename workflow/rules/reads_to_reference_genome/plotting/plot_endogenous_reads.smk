@@ -1,3 +1,4 @@
+# Rule: Plot endogenous reads pie chart
 rule plot_endogenous_reads_pie:
     input:
         "{species}/results/{ref_genome}/endogenous/{ref_genome}_endogenous.csv"
@@ -9,6 +10,7 @@ rule plot_endogenous_reads_pie:
     script:
         "../../../scripts/reads_to_reference_genome/plotting/plot_endogenous_reads_pie.R"
 
+# Rule: Plot endogenous reads bar chart
 rule plot_endogenous_reads_bar:
     input:
         "{species}/results/{ref_genome}/endogenous/{ref_genome}_endogenous.csv"

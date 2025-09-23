@@ -10,6 +10,7 @@ rule centrifuge_analysis:
     threads: workflow.cores
     conda:
         config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["centrifuge"]["settings"]["conda_env"]
+    message: "Running Centrifuge contamination analysis for {input.fastq}"
     shell:
         """
         # Run centrifuge
@@ -27,6 +28,7 @@ rule taxon_counts:
         centrifuge_out = "{species}/processed/qualitycontrol/centrifuge/{sample}.centrifuge.txt"
     output:
         taxon_counts = "{species}/results/qualitycontrol/centrifuge/{sample}.taxon_counts.txt"
+    message: "Counting taxon occurrences in {input.centrifuge_out}"
     shell:
         r"""
         awk '$3 != 0 {{print $3}}' {input.centrifuge_out} \

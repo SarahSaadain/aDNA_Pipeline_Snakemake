@@ -22,6 +22,7 @@ def expected_quality_filtered_files(wildcards):
     return quality_filtered_files
 
 
+# Rule: Merge quality-filtered reads by individual
 rule merge_by_individual:
     input:
         expected_quality_filtered_files

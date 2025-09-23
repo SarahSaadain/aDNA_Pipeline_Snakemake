@@ -1,5 +1,6 @@
-# 1 Map reads to reference (SAM output)
+# Rule: Map reads to reference genome using BWA
 rule bwa_map_aDNA:
+    # 1 Map reads to reference (SAM output)
     input:
         reads="{species}/processed/merged/{individual}.fastq.gz",
         ref="{species}/raw/ref_genome/{ref_genome}.fa",
@@ -15,8 +16,10 @@ rule bwa_map_aDNA:
         bwa mem -t {threads} {input.ref} {input.reads} > {output.sam}
         """
 
-# 2 Convert SAM to BAM
+
+# Rule: Convert SAM to BAM
 rule sam_to_bam:
+    # 2 Convert SAM to BAM
     input:
         "{species}/processed/{ref_genome}/mapped/{individual}_{ref_genome}.sam"
     output:
@@ -26,8 +29,10 @@ rule sam_to_bam:
     wrapper:
         "v7.5.0/bio/samtools/view"
 
-# 3 Sort BAM
+
+# Rule: Sort BAM file
 rule sort_bam:
+    # 3 Sort BAM
     input:
         "{species}/processed/{ref_genome}/mapped/{individual}_{ref_genome}.bam"
     output:
@@ -39,8 +44,10 @@ rule sort_bam:
     wrapper:
         "v7.5.0/bio/samtools/sort"
 
-# 4 Index BAM
+
+# Rule: Index BAM file
 rule index_bam:
+    # 4 Index BAM
     input:
         "{species}/processed/{ref_genome}/mapped/{individual}_{ref_genome}_sorted.bam"
     output:

@@ -7,7 +7,7 @@ Note: This pipeline is still in development, but can already be used for analysi
 ## Setup Overview
 
 - Before running the pipeline, ensure you have the necessary dependencies installed. Please refer to the [Requirements](#Requirements) section for the necessary dependencies and installation instructions.
-- Raw reads and reference genome must be provided in the relevant folders. 
+- Raw reads and reference genomes must be provided in the relevant folders. 
     - Raw reads should be renamed according to the naming convention specified in the [RAW Reads filenames](#RAW-Reads-filenames) section. Also see the [Manually renaming the raw reads files](#Manually-renaming-the-raw-reads-files) section.
     - Reference genome must be provided in the `species/raw/ref_genome/` folder.
     - Species must be added to the config file.

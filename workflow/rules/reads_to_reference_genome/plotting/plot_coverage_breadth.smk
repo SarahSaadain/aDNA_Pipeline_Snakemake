@@ -1,3 +1,4 @@
+# Rule: Plot coverage breadth violin plot
 rule coverage_violin_plot:
     input:
         "{species}/results/{ref_genome}/coverage/{ref_genome}_combined_coverage_analysis_detailed.csv"
@@ -11,6 +12,7 @@ rule coverage_violin_plot:
     script:
         "../../../scripts/reads_to_reference_genome/plotting/plot_coverage_breadth_violin.R"
 
+# Rule: Plot coverage breadth bins
 rule coverage_bins_plot:
     input:
         "{species}/results/{ref_genome}/coverage/{ref_genome}_combined_coverage_analysis_detailed.csv"
@@ -22,6 +24,7 @@ rule coverage_bins_plot:
     script:
         "../../../scripts/reads_to_reference_genome/plotting/plot_coverage_breadth_bins.R"
 
+# Rule: Plot coverage breadth violin by individual
 rule coverage_breadth_violin:
     input:
         "{species}/results/{ref_genome}/coverage/{ref_genome}_combined_coverage_analysis_detailed.csv"
@@ -35,6 +38,7 @@ rule coverage_breadth_violin:
     script:
         "../../../scripts/reads_to_reference_genome/plotting/plot_coverage_breadth_by_individuals_violin.R"
 
+# Rule: Plot coverage breadth bar by individual
 rule coverage_breadth_bar:
     input:
         "{species}/results/{ref_genome}/coverage/{ref_genome}_combined_coverage_analysis_detailed.csv"

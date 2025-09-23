@@ -1,4 +1,4 @@
-
+# Rule: Analyze DNA damage and rescale BAM using mapDamage2
 rule analyze_damage_and_rescale_bam:
     """
     Estimates post-mortem DNA damage patterns and rescales base qualities.
@@ -28,6 +28,7 @@ rule analyze_damage_and_rescale_bam:
     wrapper:
         "v7.2.0/bio/mapdamage2"
 
+# Rule: Sort rescaled BAM file
 # 3 Sort BAM
 rule sort_rescaled_bam:
     input:
@@ -42,6 +43,7 @@ rule sort_rescaled_bam:
     wrapper:
         "v7.5.0/bio/samtools/sort"
 
+# Rule: Index rescaled BAM file
 # 4 Index BAM
 rule index_rescaled_bam:
     input:
@@ -56,6 +58,7 @@ rule index_rescaled_bam:
     wrapper:
         "v7.5.0/bio/samtools/index"
 
+# Rule: Move rescaled BAM and index to processed directory
 rule move_rescaled_bam:
     input:
         sorted_bam="{species}/results/{ref_genome}/damage/{individual}/{individual}_{ref_genome}_sorted.bam",

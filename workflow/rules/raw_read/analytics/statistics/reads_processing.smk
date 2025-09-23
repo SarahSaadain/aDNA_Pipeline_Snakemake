@@ -19,16 +19,19 @@ def get_fastq_read_count(fastq_file):
 #def get_samples_per_species(species):
 #    im.get_input_reads_processing_raw(species)
 
+# Rule: Count reads in raw FASTQ files
 rule count_reads_raw:
     input:
         fastq=lambda wildcards: get_files_in_folder_matching_pattern(os.path.join(wildcards.species, "raw", "reads"), f"{wildcards.sample}*R1*.fastq.gz")[0]
     output:
         counted=temp("{species}/processed/qualitycontrol/statistics/{sample}_raw_reads.count")
+    message: "Counting reads in raw FASTQ file {input.fastq}"
     run:
         count = get_fastq_read_count(input.fastq)
         with open(output.counted, "w") as f:
             f.write(str(count) + "\n")
 
+# Rule: Count reads in trimmed FASTQ files
 rule count_reads_trimmed:
     input:
         fastq="{species}/processed/trimmed/{sample}_trimmed.fastq.gz"
@@ -40,6 +43,7 @@ rule count_reads_trimmed:
         with open(output.counted, "w") as f:
             f.write(str(count) + "\n")
 
+# Rule: Count reads in quality-filtered FASTQ files
 rule count_reads_quality_filtered:
     input:
         fastq="{species}/processed/quality_filtered/{sample}_quality_filtered.fastq.gz"
@@ -51,6 +55,7 @@ rule count_reads_quality_filtered:
         with open(output.counted, "w") as f:
             f.write(str(count) + "\n")
 
+# Rule: Combine read counts per sample
 rule combine_counts_per_sample:
     input:
         raw_reads="{species}/processed/qualitycontrol/statistics/{sample}_raw_reads.count",
@@ -80,6 +85,7 @@ rule combine_counts_per_sample:
         with open(output.counts, "w") as f:
             f.write(wildcards.sample + "," + individual + "," + str(raw) + "," + str(trimmed) + "," + str(quality_filtered) + "\n")
 
+# Rule: Combine read counts per species
 rule combine_counts_per_species:
     input:
         lambda wildcards: expand("{species}/processed/qualitycontrol/statistics/{sample}_reads_processing.csv",

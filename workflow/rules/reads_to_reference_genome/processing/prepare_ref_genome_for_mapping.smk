@@ -16,6 +16,7 @@ def find_reference_input(wc):
         f"No reference file found for {base}.{{" + ",".join(REF_EXTS) + "}}"
     )
 
+# Rule: Standardize reference genome extension to .fa
 # 1) Normalize/standardize reference to .fa (symlink to avoid copying)
 rule standardize_reference_extension_to_fa:
     input:
@@ -27,6 +28,7 @@ rule standardize_reference_extension_to_fa:
     shell:
         "mv {input.fasta} {output.fa}"
 
+# Rule: Index reference genome with BWA
 # 2) BWA index on the standardized .fa
 rule bwa_index:
     input:

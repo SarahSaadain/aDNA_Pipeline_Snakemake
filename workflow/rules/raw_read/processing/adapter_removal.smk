@@ -26,6 +26,7 @@ def get_adapter_removal_input_reads(wc):
     else:
         return [r1]      # Single-end
  
+# Rule: Adapter removal for single-end reads using fastp
 rule fastp_se:
     input:
         sample=get_adapter_removal_input_reads,
@@ -50,6 +51,7 @@ rule fastp_se:
         "v7.5.0/bio/fastp"
  
  
+# Rule: Adapter removal for paired-end reads using fastp
 rule fastp_pe:
     input:
         sample=get_adapter_removal_input_reads,
