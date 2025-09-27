@@ -21,7 +21,7 @@ rule samtools_coverage_analysis:
         analysis="{species}/results/{ref_genome}/coverage/{individual}/{individual}_{ref_genome}_coverage_analysis.csv"
     message: "Analyzing coverage depth and breadth for {input.depth_txt}"
     script:
-        "../../../../scripts/reads_to_reference_genome/analytics/statistics/analyze_samtools_depth_file.py"
+        "../../../../scripts/reads_to_reference_genome/analytics/statistics/analyze_samtools_depth_individual_file.py"
 
 # Rule: Combine coverage analysis files
 rule combine_coverage:

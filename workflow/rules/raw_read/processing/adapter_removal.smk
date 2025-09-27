@@ -31,18 +31,18 @@ rule fastp_se:
     input:
         sample=get_adapter_removal_input_reads,
     output:
-        trimmed=temp("{species}/processed/trimmed/{sample}_trimmed.se.fastq.gz"),
-        failed=temp("{species}/processed/trimmed/{sample}_trimmed.se.failed.fastq.gz"),
+        trimmed=temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.se.fastq.gz"),
+        failed=temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.se.failed.fastq.gz"),
         html=report(
-            "{species}/processed/trimmed/{sample}_trimmed.se.html",
+            "{species}/results/reads/reads_trimmed/fastp_report/{sample}_trimmed.se.html",
             #caption="../report/fastp.rst",
             category="quality control",
             subcategory="fastp",
         ),
-        json="{species}/processed/trimmed/{sample}_trimmed.se.json",
+        json="{species}/processed/reads/reads_trimmed/fastp_report/{sample}_trimmed.se.json",
     message: "Trimming adapters from single-end reads in {input.sample}"
     log:
-        "{species}/processed/trimmed/{sample}_trimmed.se.log",
+        "{species}/processed/reads/reads_trimmed/{sample}_trimmed.se.log",
     params:
         adapters=f"--adapter_sequence {config['pipeline']['raw_reads_processing']['adapter_removal']['settings']['adapters_sequences']['r1']}",
         extra="--length_required 15 --trim_poly_x 5  --qualified_quality_phred 5 --unqualified_percent_limit 40 --n_base_limit 5"
@@ -57,24 +57,24 @@ rule fastp_pe:
         sample=get_adapter_removal_input_reads,
     output:
         trimmed=[
-            temp("{species}/processed/trimmed/{sample}_trimmed.pe.R1.fastq.gz"),
-            temp("{species}/processed/trimmed/{sample}_trimmed.pe.R2.fastq.gz"),
+            temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.R1.fastq.gz"),
+            temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.R2.fastq.gz"),
         ],
         # Unpaired reads separately
-        unpaired1=temp("{species}/processed/trimmed/{sample}_trimmed.pe.unpaired.R1.fastq.gz"),
-        unpaired2=temp("{species}/processed/trimmed/{sample}_trimmed.pe.unpaired.R2.fastq.gz"),
-        merged=temp("{species}/processed/trimmed/{sample}_trimmed.pe.fastq.gz"),
-        failed=temp("{species}/processed/trimmed/{sample}_trimmed.pe.failed.fastq.gz"),
+        unpaired1=temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.unpaired.R1.fastq.gz"),
+        unpaired2=temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.unpaired.R2.fastq.gz"),
+        merged=temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.fastq.gz"),
+        failed=temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.failed.fastq.gz"),
         html=report(
-            "{species}/processed/trimmed/{sample}_trimmed.pe.html",
+            "{species}/processed/reads/reads_trimmed/fastp_report/{sample}_trimmed.pe.html",
             #caption="../report/fastp.rst",
             category="quality control",
             subcategory="fastp",
         ),
-        json="{species}/processed/trimmed/{sample}_trimmed.pe.json",
+        json="{species}/processed/reads/reads_trimmed/fastp_report/{sample}_trimmed.pe.json",
     message: "Trimming adapters from paired-end reads and merging for {input.sample}"
     log:
-        "{species}/processed/trimmed/{sample}_trimmed.pe.log",
+        "{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.log",
     params:
         adapters=f"--adapter_sequence {config['pipeline']['raw_reads_processing']['adapter_removal']['settings']['adapters_sequences']['r1']} --adapter_sequence_r2 {config['pipeline']['raw_reads_processing']['adapter_removal']['settings']['adapters_sequences']['r2']}",
         extra="--length_required 15 --trim_poly_x 5 --qualified_quality_phred 5 --unqualified_percent_limit 40 --n_base_limit 5 --merge",

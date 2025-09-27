@@ -24,6 +24,9 @@ logging.basicConfig(  # Basic config ASAP (for fallback)
     handlers=[logging.StreamHandler()]  # Only console for now
 )
 
+# Add a description of the workflow to the final report
+report: os.path.join(workflow.basedir, "reports/workflow.rst")
+
 # =================================================================================================
 #     Snakemake Version Check
 # =================================================================================================
@@ -39,8 +42,13 @@ aDNA_Pipeline_version = "0.0.1"
 # Specify the main configuration file for the workflow
 configfile: "config.yaml"
 
-# Add a description of the workflow to the final report
-report: os.path.join(workflow.basedir, "reports/workflow.rst")
+# Get abs paths of all config files
+cfgfiles = []
+for cfg in workflow.configfiles:
+    cfgfiles.append(os.path.abspath(cfg))
+cfgfiles = "\n                        ".join(cfgfiles)
+
+
 
 # =================================================================================================
 #     Platform and OS Information
@@ -120,19 +128,10 @@ conda_env = os.environ["CONDA_DEFAULT_ENV"] + " (" + os.environ["CONDA_PREFIX"] 
 if conda_env == " ()":
     conda_env = "n/a"
 
-# =================================================================================================
-#     Command Line and Config Files
-# =================================================================================================
 # Get nicely wrapped command line for reproducibility
 cmdline = sys.argv[0]
 for i in range(1, len(sys.argv)):
     cmdline += " " + sys.argv[i]
-
-# Get abs paths of all config files
-cfgfiles = []
-for cfg in workflow.configfiles:
-    cfgfiles.append(os.path.abspath(cfg))
-cfgfiles = "\n                        ".join(cfgfiles)
 
 # =================================================================================================
 #     Workflow Header Logging

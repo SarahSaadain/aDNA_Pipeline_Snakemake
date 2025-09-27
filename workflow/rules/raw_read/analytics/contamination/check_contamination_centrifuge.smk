@@ -1,9 +1,9 @@
 rule centrifuge_analysis:
     input:
-        fastq = "{species}/processed/quality_filtered/{sample}_quality_filtered.fastq.gz",
+        fastq = "{species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered.fastq.gz",
     output:
-        centrifuge_out = "{species}/results/qualitycontrol/centrifuge/{sample}_centrifuge.txt",
-        report = "{species}/results/qualitycontrol/centrifuge/{sample}_report.tsv"
+        centrifuge_out = "{species}/results/contamination_analysis/centrifuge/{sample}_centrifuge.txt",
+        report = "{species}/results/contamination_analysis/centrifuge/{sample}_report.tsv"
     params:
         db = config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["centrifuge"]["settings"]["database"],
         executable = config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["centrifuge"]["settings"]["executable"]
@@ -25,9 +25,9 @@ rule centrifuge_analysis:
 
 rule taxon_counts:
     input:
-        centrifuge_out = "{species}/processed/qualitycontrol/centrifuge/{sample}.centrifuge.txt"
+        centrifuge_out = "{species}/results/contamination_analysis/centrifuge/{sample}.centrifuge.txt"
     output:
-        taxon_counts = "{species}/results/qualitycontrol/centrifuge/{sample}.taxon_counts.txt"
+        taxon_counts = "{species}/results/contamination_analysis/centrifuge/{sample}.taxon_counts.txt"
     message: "Counting taxon occurrences in {input.centrifuge_out}"
     shell:
         r"""

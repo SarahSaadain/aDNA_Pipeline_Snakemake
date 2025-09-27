@@ -1,4 +1,5 @@
 import glob
+import os
 
 def expected_quality_filtered_files(wildcards):
     # folder with raw reads
@@ -15,8 +16,8 @@ def expected_quality_filtered_files(wildcards):
     for raw_file in raw_files_r1:
         filename = os.path.basename(raw_file)
         # get the part between individual and _R1
-        rest = filename[len(wildcards.individual)+1:filename.index("_R1")]  
-        qf_file = f"{wildcards.species}/processed/quality_filtered/{wildcards.individual}_{rest}_quality_filtered.fastq.gz"
+        rest = filename[len(wildcards.individual)+1:filename.index("_R1")]
+        qf_file = f"{wildcards.species}/processed/reads/reads_quality_filtered/{wildcards.individual}_{rest}_quality_filtered.fastq.gz"
         quality_filtered_files.append(qf_file)
     
     return quality_filtered_files
@@ -27,7 +28,7 @@ rule merge_by_individual:
     input:
         expected_quality_filtered_files
     output:
-        "{species}/processed/merged/{individual}.fastq.gz"
+        "{species}/processed/reads/reads_merged/{individual}.fastq.gz"
     message: 
         "Merging individual {wildcards.individual} of species {wildcards.species}."
     shell:

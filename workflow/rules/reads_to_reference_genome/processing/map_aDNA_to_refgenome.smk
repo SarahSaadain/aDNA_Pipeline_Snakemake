@@ -2,7 +2,7 @@
 rule bwa_map_aDNA:
     # 1 Map reads to reference (SAM output)
     input:
-        reads="{species}/processed/merged/{individual}.fastq.gz",
+        reads="{species}/processed/reads/reads_merged/{individual}.fastq.gz",
         ref="{species}/raw/ref_genome/{ref_genome}.fa",
         index="{species}/raw/ref_genome/{ref_genome}.fa.bwt"
     output:

@@ -16,6 +16,24 @@ def get_fastq_read_count(fastq_file):
         with open(fastq_file, "r") as f:
             return sum(1 for _ in f) // 4
 
+
+# -----------------------------------------------------------------------------------------------
+# Get input file paths for trimmed reads statistics
+def get_input_reads_processing_trimmed(species):
+    all_inputs = []
+    for sample in get_sample_ids_for_species(species):
+        all_inputs.append(os.path.join(species, "processed", "reads", "statistics", f"{sample}_trimmed.count"))
+    return all_inputs
+
+
+# -----------------------------------------------------------------------------------------------
+# Get input file paths for quality filtered reads statistics
+def get_input_reads_processing_quality_filtered(species):
+    all_inputs = []
+    for sample in get_sample_ids_for_species(species):  
+        all_inputs.append(os.path.join(species, "processed", "reads", "statistics", f"{sample}_quality_filtered.count"))
+    return all_inputs
+
 #def get_samples_per_species(species):
 #    im.get_input_reads_processing_raw(species)
 
@@ -24,7 +42,7 @@ rule count_reads_raw:
     input:
         fastq=lambda wildcards: get_files_in_folder_matching_pattern(os.path.join(wildcards.species, "raw", "reads"), f"{wildcards.sample}*R1*.fastq.gz")[0]
     output:
-        counted=temp("{species}/processed/qualitycontrol/statistics/{sample}_raw_reads.count")
+        counted=temp("{species}/processed/reads/statistics/{sample}_raw.count")
     message: "Counting reads in raw FASTQ file {input.fastq}"
     run:
         count = get_fastq_read_count(input.fastq)
@@ -36,19 +54,19 @@ rule count_reads_trimmed:
     input:
         fastq=get_quality_filtered_input_read
     output:
-        counted=temp("{species}/processed/qualitycontrol/statistics/{sample}_trimmed_reads.count")
+        counted=temp("{species}/processed/reads/statistics/{sample}_trimmed.count")
     message: "Counting reads in {input.fastq}"
     run:
-        count = get_fastq_read_count(input.fastq)
+        count = get_fastq_read_count(input.fastq[0])
         with open(output.counted, "w") as f:
             f.write(str(count) + "\n")
 
 # Rule: Count reads in quality-filtered FASTQ files
 rule count_reads_quality_filtered:
     input:
-        fastq="{species}/processed/quality_filtered/{sample}_quality_filtered.fastq.gz"
+        fastq="{species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered.fastq.gz"
     output:
-        counted=temp("{species}/processed/qualitycontrol/statistics/{sample}_quality_filtered_reads.count")
+        counted=temp("{species}/processed/reads/statistics/{sample}_quality_filtered.count")
     message: "Counting reads in {input.fastq}"
     run:
         count = get_fastq_read_count(input.fastq)
@@ -58,11 +76,11 @@ rule count_reads_quality_filtered:
 # Rule: Combine read counts per sample
 rule combine_counts_per_sample:
     input:
-        raw_reads="{species}/processed/qualitycontrol/statistics/{sample}_raw_reads.count",
-        trimmed_reads="{species}/processed/qualitycontrol/statistics/{sample}_trimmed_reads.count",
-        quality_filtered_reads="{species}/processed/qualitycontrol/statistics/{sample}_quality_filtered_reads.count"
+        raw_reads="{species}/processed/reads/statistics/{sample}_raw.count",
+        trimmed_reads="{species}/processed/reads/statistics/{sample}_trimmed.count",
+        quality_filtered_reads="{species}/processed/reads/statistics/{sample}_quality_filtered.count"
     output:
-        counts=temp("{species}/processed/qualitycontrol/statistics/{sample}_reads_processing.csv")
+        counts=temp("{species}/processed/reads/statistics/{sample}_reads_counts.csv")
     message: "Combining read counts for sample {wildcards.sample}"
     run:
 
@@ -88,11 +106,11 @@ rule combine_counts_per_sample:
 # Rule: Combine read counts per species
 rule combine_counts_per_species:
     input:
-        lambda wildcards: expand("{species}/processed/qualitycontrol/statistics/{sample}_reads_processing.csv",
+        lambda wildcards: expand("{species}/processed/reads/statistics/{sample}_reads_counts.csv",
             sample=get_sample_ids_for_species(wildcards.species),
             species=wildcards.species)
     output:
-        counts="{species}/results/qualitycontrol/statistics/{species}_reads_processing.csv"
+        counts="{species}/results/reads/statistics/{species}_reads_counts.csv"
     run:
         data = []
         

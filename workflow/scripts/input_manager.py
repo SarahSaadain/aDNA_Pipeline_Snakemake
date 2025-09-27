@@ -62,9 +62,9 @@ def get_sample_ids_for_species(species):
     for raw_file in files:
         filename = os.path.basename(raw_file).replace('.fastq.gz','').split("_R1")[0]
         samples.append(filename)
-    if samples:
-        print(f"Found {len(samples)} samples for species {species}.")
-        print (f"Samples: {samples}")
+    #if samples:
+    #    print(f"Found {len(samples)} samples for species {species}.")
+    #    print (f"Samples: {samples}")
     return samples
 
 # -----------------------------------------------------------------------------------------------
@@ -74,67 +74,43 @@ def get_input_multiqc_raw(species):
     all_inputs = []
     for raw_file in files:
         filename = os.path.basename(raw_file).replace('.fastq.gz','')
-        all_inputs.append(os.path.join(species, "results", "qualitycontrol", "fastqc", "raw", f"{filename}_fastqc.html"))
+        all_inputs.append(os.path.join(species, "results", "reads", "reads_raw", "fastqc", f"{filename}_fastqc.html"))
         # Add R2 if exists
         if os.path.exists(raw_file.replace("_R1_", "_R2_")):
-            all_inputs.append(os.path.join(species, "results", "qualitycontrol", "fastqc", "raw", f"{filename.replace("_R1_", "_R2_")}_fastqc.html"))
+            all_inputs.append(os.path.join(species, "results", "reads", "reads_raw", "fastqc", f"{filename.replace("_R1_", "_R2_")}_fastqc.html"))
     return all_inputs
 
 # -----------------------------------------------------------------------------------------------
 # Get input file paths for reads processing statistics (raw)
-def get_input_reads_processing_raw(species):
-    all_inputs = []
-    for sample in get_sample_ids_for_species(species):
-        all_inputs.append(os.path.join(species, "processed", "qualitycontrol", "statistics", f"{sample}_all_steps_count.csv"))
-    return all_inputs
-
-# -----------------------------------------------------------------------------------------------
-# Get input file paths for trimmed reads statistics
-def get_input_reads_processing_trimmed(species):
-    files = get_files_in_folder_matching_pattern(os.path.join(species, "raw", "reads"), "*R1*.fastq.gz")
-    all_inputs = []
-    for raw_file in files:
-        filename = os.path.basename(raw_file).replace('.fastq.gz','').split("_R1")[0]
-        all_inputs.append(os.path.join(species, "processed", "qualitycontrol", "statistics", f"{filename}_trimmed_reads.count"))
-    return all_inputs
-
-# -----------------------------------------------------------------------------------------------
-# Get input file paths for quality filtered reads statistics
-def get_input_reads_processing_quality_filtered(species):
-    files = get_files_in_folder_matching_pattern(os.path.join(species, "raw", "reads"), "*R1*.fastq.gz")
-    all_inputs = []
-    for raw_file in files:
-        filename = os.path.basename(raw_file).replace('.fastq.gz','').split("_R1")[0]
-        all_inputs.append(os.path.join(species, "processed", "qualitycontrol", "statistics", f"{filename}_quality_filtered_reads.count"))
-    return all_inputs
+# used?
+# def get_input_reads_processing_raw(species):
+#     all_inputs = []
+#     for sample in get_sample_ids_for_species(species):
+#         all_inputs.append(os.path.join(species, "processed", "reads", "statistics", f"{sample}_all_steps_count.csv"))
+#     return all_inputs
 
 # -----------------------------------------------------------------------------------------------
 # Get input file paths for MultiQC (trimmed reads)
 def get_input_multiqc_trimmed(species):
-    files = get_files_in_folder_matching_pattern(os.path.join(species, "raw", "reads"), "*R1*.fastq.gz")
     all_inputs = []
-    for raw_file in files:
-        filename = os.path.basename(raw_file).replace('.fastq.gz','').split("_R1")[0]
-        all_inputs.append(os.path.join(species, "results", "qualitycontrol", "fastqc", "quality_filtered", f"{filename}_quality_filtered_fastqc.html"))
+    for sample in get_sample_ids_for_species(species):
+        all_inputs.append(os.path.join(species, "results", "reads", "reads_trimmed", "fastqc",  f"{sample}_trimmed_fastqc.html"))
     return all_inputs
 
 # -----------------------------------------------------------------------------------------------
 # Get input file paths for MultiQC (quality filtered reads)
 def get_input_multiqc_quality_filtered(species):
-    files = get_files_in_folder_matching_pattern(os.path.join(species, "raw", "reads"), "*R1*.fastq.gz")
     all_inputs = []
-    for raw_file in files:
-        filename = os.path.basename(raw_file).replace('.fastq.gz','').split("_R1")[0]
-        all_inputs.append(os.path.join(species, "results", "qualitycontrol", "fastqc", "quality_filtered", f"{filename}_quality_filtered_fastqc.html"))
+    for sample in get_sample_ids_for_species(species):
+        all_inputs.append(os.path.join(species, "results", "reads", "reads_quality_filtered", "fastqc", f"{sample}_quality_filtered_fastqc.html"))
     return all_inputs
 
 # -----------------------------------------------------------------------------------------------
 # Get input file paths for MultiQC (merged reads)
 def get_input_multiqc_merged(species):
-    individuals = get_individuals_for_species(species)
     all_inputs = []
-    for individual in individuals:
-        all_inputs.append(os.path.join(species, "results", "qualitycontrol", "fastqc", "merged", f"{individual}_fastqc.html"))
+    for individual in get_individuals_for_species(species):
+        all_inputs.append(os.path.join(species, "results", "reads", "reads_merged", "fastqc", f"{individual}_fastqc.html"))
     return all_inputs
 
 # -----------------------------------------------------------------------------------------------
@@ -149,14 +125,20 @@ def get_all_inputs(wildcards):
     for species in config["species"]:
         species_folder = species
         # Add the main quality check report for each species
-        all_inputs.append(os.path.join(species_folder, "results","qualitycontrol", f"quality_check_report_{species}.html"))
+        #all_inputs.append(os.path.join(species_folder, "results","qualitycontrol", f"quality_check_report_{species}.html"))
         # For each sample, add the ECMSD mitochondrial summary file
         for sample in get_sample_ids_for_species(species):
-            all_inputs.append(os.path.join(species_folder, "results", "qualitycontrol", "ecmsd", sample, "mapping", "Mito_summary.txt"))
-        
+            all_inputs.append(os.path.join(species_folder, "results", "contamination_analysis", "ecmsd", sample, "mapping", "Mito_summary.txt"))
+
+        # Add MultiQC reports for different read processing stages
+        all_inputs.append(os.path.join(species_folder, "results", "reads", f"{species}_multiqc_raw.html"))
+        all_inputs.append(os.path.join(species_folder, "results", "reads", f"{species}_multiqc_trimmed.html"))
+        all_inputs.append(os.path.join(species_folder, "results", "reads", f"{species}_multiqc_quality_filtered.html"))
+        all_inputs.append(os.path.join(species_folder, "results", "reads", f"{species}_multiqc_merged.html"))
+
         # Add summary plots for read count comparisons
-        all_inputs.append(os.path.join(species_folder, "results", "plots", f"{species}_read_count_comparison.png"))
-        all_inputs.append(os.path.join(species_folder, "results", "plots", f"{species}_read_count_comparison_by_individual.png"))
+        all_inputs.append(os.path.join(species_folder, "results", "reads", "plots", f"{species}_read_counts.png"))
+        all_inputs.append(os.path.join(species_folder, "results", "reads", "plots", f"{species}_read_counts_comparison_by_individual.png"))
         
         # Get all individuals for the species
         individuals = get_individuals_for_species(species)
@@ -190,7 +172,7 @@ def get_all_inputs(wildcards):
 
                     ref_genome_id = ref_genome_tuple[0]
                     # Add consensus sequence output for each individual and reference genome
-                    all_inputs.append(os.path.join(species_folder, "processed" ,ref_genome_id, "consensus", f"{ind}_{ref_genome_id}", f"{ind}_{ref_genome_id}_consensus.fa.gz"))
+                    #all_inputs.append(os.path.join(species_folder, "processed" ,ref_genome_id, "consensus", f"{ind}_{ref_genome_id}", f"{ind}_{ref_genome_id}_consensus.fa.gz"))
             except Exception as e: 
                 # Print error if reference genome files are missing or inaccessible
                 print(e)
