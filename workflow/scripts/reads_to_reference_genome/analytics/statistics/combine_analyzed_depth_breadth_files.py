@@ -9,8 +9,7 @@ def combine_analysis_files(individual_analysis_files, combined_file_path, combin
     print(f"Combining {len(individual_analysis_files)} analysis files")
 
     if not individual_analysis_files:
-        print("No individual analysis files provided.")
-        return
+        raise Exception("No individual analysis files provided")
 
     combined_data = []
     detailed_rows = []
@@ -57,7 +56,7 @@ def combine_analysis_files(individual_analysis_files, combined_file_path, combin
             detailed_rows.append(df_analysis)
 
         except Exception as e:
-            print(f"Error processing {analysis_file}: {e}")
+            raise Exception(f"Error processing {analysis_file}: {e}")
 
     # --- Save aggregated summary ---
     if combined_data:

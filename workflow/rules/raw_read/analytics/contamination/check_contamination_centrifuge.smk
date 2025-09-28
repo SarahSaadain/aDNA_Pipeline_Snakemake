@@ -7,7 +7,7 @@ rule centrifuge_analysis:
     params:
         db = config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["centrifuge"]["settings"]["database"],
         executable = config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["centrifuge"]["settings"]["executable"]
-    threads: workflow.cores
+    threads: 15
     conda:
         config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["centrifuge"]["settings"]["conda_env"]
     message: "Running Centrifuge contamination analysis for {input.fastq}"

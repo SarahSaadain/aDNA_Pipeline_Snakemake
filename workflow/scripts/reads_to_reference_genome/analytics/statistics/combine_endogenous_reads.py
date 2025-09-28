@@ -3,8 +3,7 @@ import os
 def combine_endogenous_files(individual_files, combined_file_path):
     """Combines individual endogenous read files into a single summary file."""
     if not individual_files:
-        print(f"[WARNING] No individual endogenous read files found to combine.")
-        return
+        raise Exception(f"No individual endogenous read files found to combine.")
 
     individual_files = sorted(individual_files)
 
@@ -18,11 +17,11 @@ def combine_endogenous_files(individual_files, combined_file_path):
                 if data_line:
                     combined_file.write(data_line + "\n")
 
-    print(f"[INFO] Successfully created combined endogenous reads file: {combined_file_path}")
+    print(f"Successfully created combined endogenous reads file: {combined_file_path}")
 
 
-# --- Snakemake I/O ---
-combine_endogenous_files(
-    snakemake.input,   # list of CSVs
-    snakemake.output[0]
-)
+if __name__ == "__main__":
+    combine_endogenous_files(
+        snakemake.input,   # list of CSVs
+        snakemake.output[0]
+    )

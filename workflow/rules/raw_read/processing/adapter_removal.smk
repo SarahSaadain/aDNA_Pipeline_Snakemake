@@ -42,7 +42,7 @@ rule fastp_se:
         json="{species}/processed/reads/reads_trimmed/fastp_report/{sample}_trimmed.se.json",
     message: "Trimming adapters from single-end reads in {input.sample}"
     log:
-        "{species}/processed/reads/reads_trimmed/{sample}_trimmed.se.log",
+        "{species}/logs/reads/reads_trimmed/{sample}_trimmed.se.log",
     params:
         adapters=f"--adapter_sequence {config['pipeline']['raw_reads_processing']['adapter_removal']['settings']['adapters_sequences']['r1']}",
         extra="--length_required 15 --trim_poly_x 5  --qualified_quality_phred 5 --unqualified_percent_limit 40 --n_base_limit 5"
@@ -74,7 +74,7 @@ rule fastp_pe:
         json="{species}/processed/reads/reads_trimmed/fastp_report/{sample}_trimmed.pe.json",
     message: "Trimming adapters from paired-end reads and merging for {input.sample}"
     log:
-        "{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.log",
+        "{species}/logs/reads/reads_trimmed/{sample}_trimmed.pe.log",
     params:
         adapters=f"--adapter_sequence {config['pipeline']['raw_reads_processing']['adapter_removal']['settings']['adapters_sequences']['r1']} --adapter_sequence_r2 {config['pipeline']['raw_reads_processing']['adapter_removal']['settings']['adapters_sequences']['r2']}",
         extra="--length_required 15 --trim_poly_x 5 --qualified_quality_phred 5 --unqualified_percent_limit 40 --n_base_limit 5 --merge",

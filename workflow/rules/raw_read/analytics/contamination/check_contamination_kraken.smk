@@ -7,7 +7,7 @@ rule kraken_analysis:
     params:
         db = config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["kraken"]["settings"]["database"],
         executable = config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["kraken"]["settings"]["executable"]
-    threads: workflow.cores
+    threads: 15
     conda:
         config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["kraken"]["settings"]["conda_env"]
     message: "Running Kraken2 contamination analysis for {input.fastq}"

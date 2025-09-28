@@ -55,15 +55,16 @@ def generate_qc_report(species: str, fastqc_raw, fastqc_trimmed, fastqc_quality_
 
 
 # --- Snakemake entrypoint ---
-species = snakemake.params.species
+if __name__ == "__main__":
+    species = snakemake.params.species
 
-generate_qc_report(
-    species,
-    fastqc_raw = list(snakemake.input.fastqc_raw),
-    fastqc_trimmed = list(snakemake.input.fastqc_trimmed),
-    fastqc_quality_filtered = list(snakemake.input.fastqc_quality_filtered),
-    multiqc_raw = snakemake.input.multiqc_raw,
-    multiqc_trimmed = snakemake.input.multiqc_trimmed,
-    multiqc_quality_filtered = snakemake.input.multiqc_quality_filtered,
-    output_file = str(snakemake.output[0])
-)
+    generate_qc_report(
+        species,
+        fastqc_raw = list(snakemake.input.fastqc_raw),
+        fastqc_trimmed = list(snakemake.input.fastqc_trimmed),
+        fastqc_quality_filtered = list(snakemake.input.fastqc_quality_filtered),
+        multiqc_raw = snakemake.input.multiqc_raw,
+        multiqc_trimmed = snakemake.input.multiqc_trimmed,
+        multiqc_quality_filtered = snakemake.input.multiqc_quality_filtered,
+        output_file = str(snakemake.output[0])
+    )

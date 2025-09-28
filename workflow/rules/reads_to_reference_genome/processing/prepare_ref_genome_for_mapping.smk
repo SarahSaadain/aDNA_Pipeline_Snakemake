@@ -40,7 +40,9 @@ rule bwa_index:
         pac="{species}/raw/ref_genome/{ref_genome_name}.fa.pac",
         sa="{species}/raw/ref_genome/{ref_genome_name}.fa.sa"
     message: "Indexing reference genome {input.fasta} with BWA"
+    log:
+        "{species}/logs/ref_genome_name/index/{ref_genome_name}_bwa_index.log"
     conda:
         "../../../envs/bwa.yaml"
     shell:
-        "bwa index {input.fasta}"
+        "bwa index {input.fasta} > {log} 2>&1"

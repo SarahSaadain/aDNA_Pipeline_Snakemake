@@ -3,9 +3,9 @@ rule samtools_depth:
     input:
         bams=["{species}/processed/{ref_genome}/mapped/{individual}_{ref_genome}_sorted.bam"]
     output:
-        "{species}/processed/{ref_genome}/coverage/{individual}/{individual}_{ref_genome}_depth.tsv"
+        temp("{species}/processed/{ref_genome}/coverage/{individual}/{individual}_{ref_genome}_depth.tsv")
     log:
-        "{species}/processed/{ref_genome}/coverage/{individual}/{individual}_{ref_genome}_depth.log"
+        "{species}/logs/{ref_genome}/coverage/{individual}/{individual}_{ref_genome}_depth.log"
     message: "Calculating coverage depth for {input.bams}"
     params:
         # optional bed file passed to -b

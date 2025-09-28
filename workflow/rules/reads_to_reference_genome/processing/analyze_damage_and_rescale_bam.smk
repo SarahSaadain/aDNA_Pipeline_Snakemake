@@ -24,7 +24,7 @@ rule analyze_damage_and_rescale_bam:
     benchmark:
         "benchmark/{species}_{individual}_{ref_genome}_mapdamage2.benchmark.json",
     log:
-        "{species}/results/{ref_genome}/damage/{individual}/mapdamage2.log",
+        "{species}/logs/{ref_genome}/damage/{individual}/mapdamage2.log",
     wrapper:
         "v7.2.0/bio/mapdamage2"
 
@@ -36,10 +36,10 @@ rule sort_rescaled_bam:
     output:
         "{species}/results/{ref_genome}/damage/{individual}/{individual}_{ref_genome}_sorted.bam"
     log:
-        "{species}/results/{ref_genome}/damage/{individual}/{individual}_{ref_genome}_sorted.bam.log"
+        "{species}/logs/{ref_genome}/damage/{individual}/{individual}_{ref_genome}_sorted.bam.log"
     message:
         "Sort rescaled BAM for {input}",
-    threads: workflow.cores 
+    threads: 15
     wrapper:
         "v7.5.0/bio/samtools/sort"
 
@@ -51,10 +51,10 @@ rule index_rescaled_bam:
     output:
         "{species}/results/{ref_genome}/damage/{individual}/{individual}_{ref_genome}_sorted.bam.bai"
     log:
-        "{species}/results/{ref_genome}/damage/{individual}/{individual}_{ref_genome}_sorted.bam.bai.log"
+        "{species}/logs/{ref_genome}/damage/{individual}/{individual}_{ref_genome}_sorted.bam.bai.log"
     message:
         "Index rescaled BAM for {input}",
-    threads: workflow.cores 
+    threads: 15
     wrapper:
         "v7.5.0/bio/samtools/index"
 

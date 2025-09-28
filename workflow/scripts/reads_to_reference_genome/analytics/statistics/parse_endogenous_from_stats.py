@@ -21,8 +21,8 @@ def determine_endogenous_reads_from_stats(stats_file, output_file):
         out.write(f"{os.path.basename(stats_file)},{mapped_reads},{total_reads},{proportion:.4f}\n")
 
 
-# --- Snakemake I/O ---
-determine_endogenous_reads_from_stats(
-    snakemake.input.stats,   # input stats file
-    snakemake.output.csv      # output CSV
-)
+if __name__ == "__main__":
+    determine_endogenous_reads_from_stats(
+        snakemake.input.stats,   # input stats file
+        snakemake.output.csv      # output CSV
+    )

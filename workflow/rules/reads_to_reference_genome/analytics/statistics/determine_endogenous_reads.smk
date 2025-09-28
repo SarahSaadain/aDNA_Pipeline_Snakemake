@@ -5,6 +5,8 @@ rule endogenous_reads:
     output:
         csv= "{species}/results/{ref_genome}/endogenous/{individual}/{individual}_{ref_genome}.endogenous.csv"
     message: "Determining endogenous reads for {input.stats}"
+    log:
+        "{species}/logs/{ref_genome}/endogenous/{individual}/{individual}_{ref_genome}_endogenous.log"
     script:
         "../../../../scripts/reads_to_reference_genome/analytics/statistics/parse_endogenous_from_stats.py"
 
@@ -20,5 +22,7 @@ rule combine_endogenous_reads:
     output:
         "{species}/results/{ref_genome}/endogenous/{ref_genome}_endogenous.csv"
     message: "Combining endogenous reads for species {wildcards.species}"
+    log:
+        "{species}/logs/{ref_genome}/endogenous/{ref_genome}_endogenous.log"
     script:
         "../../../../scripts/reads_to_reference_genome/analytics/statistics/combine_endogenous_reads.py"

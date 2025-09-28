@@ -5,6 +5,8 @@ rule plot_read_counts:
     output:
         report("{species}/results/reads/plots/{species}_read_counts.png")
     message: "Plotting read counts comparison for species {wildcards.species}"
+    log:
+        "{species}/logs/reads/plots/{species}_read_counts.log"
     conda:
         "../../../envs/r_plot.yaml"
     script:
@@ -17,6 +19,8 @@ rule plot_read_counts_comparison_by_individual:
     output:
          report("{species}/results/reads/plots/{species}_read_counts_comparison_by_individual.png")
     message: "Plotting read counts comparison per individual for species {wildcards.species}"
+    log:
+        "{species}/logs/reads/plots/{species}_read_counts_comparison_by_individual.log"
     conda:
         "../../../envs/r_plot.yaml"
     script:

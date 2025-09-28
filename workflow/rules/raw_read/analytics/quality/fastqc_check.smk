@@ -20,7 +20,7 @@ rule fastqc_raw:
         extra="--quiet",
         mem_overhead_factor=0.1,
     log:
-        "{species}/results/reads/reads_raw/fastqc/{sample}_fastqc.log"
+        "{species}/logs/reads/reads_raw/fastqc/{sample}_fastqc.log"
     threads: 1
     resources:
         mem_mb = 1024,
@@ -39,7 +39,7 @@ rule fastqc_adapter_removed:
         extra="--quiet",
         mem_overhead_factor=0.1,
     log:
-        "{species}/results/reads/reads_trimmed/fastqc/{sample}_trimmed_fastqc.log"
+        "{species}/logs/reads/reads_trimmed/fastqc/{sample}_trimmed_fastqc.log"
     threads: 1
     resources:
         mem_mb = 1024,
@@ -58,7 +58,7 @@ rule fastqc_quality_filtered:
         extra="--quiet",
         mem_overhead_factor=0.1,
     log:
-        "{species}/results/reads/reads_quality_filtered/fastqc/{sample}_quality_filtered_fastqc.log"
+        "{species}/logs/reads/reads_quality_filtered/fastqc/{sample}_quality_filtered_fastqc.log"
     threads: 1
     resources:
         mem_mb = 1024,
@@ -77,7 +77,7 @@ rule fastqc_merged:
         extra="--quiet",
         mem_overhead_factor=0.1,
     log:
-        "{species}/results/reads/reads_merged/fastqc/{individual}_fastqc.log"
+        "{species}/logs/reads/reads_merged/fastqc/{individual}_fastqc.log"
     threads: 1
     resources:
         mem_mb = 1024,

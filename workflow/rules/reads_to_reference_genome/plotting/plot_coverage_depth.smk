@@ -7,6 +7,8 @@ rule plot_depth_violin:
     message: "Plotting depth violin for species {wildcards.species} and reference genome {wildcards.ref_genome}"
     params:
         species="{species}"
+    log:
+        "{species}/logs/{ref_genome}/plots/coverage/{species}_{ref_genome}_depth_violin.log"
     conda:
         "../../../envs/r_plot.yaml"
     script:
@@ -21,6 +23,8 @@ rule depth_coverage_violin:
     message: "Plotting depth coverage violin for species {wildcards.species} and reference genome {wildcards.ref_genome}"
     params:
         species="{species}"
+    log:
+        "{species}/logs/{ref_genome}/plots/coverage/{species}_{ref_genome}_individual_depth_coverage_violin.log"
     conda:
         "../../../envs/r_plot.yaml"
     script:

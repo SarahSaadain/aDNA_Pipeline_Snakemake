@@ -42,11 +42,19 @@ def get_individuals_for_species(species):
         raise Exception(f"No raw reads found for species {species}.")
     individuals = set()
     for f in files:
-        basename = os.path.basename(f)
-        # Extract individual ID (before first underscore)
-        individual = basename.split("_")[0]
-        individuals.add(individual)
+        individuals.add(get_individual_from_filepath(f))
     return sorted(list(individuals))
+
+# -----------------------------------------------------------------------------------------------
+# Extract individual ID from a given file path or sample name
+def get_individual_from_filepath(filepath):
+    basename = os.path.basename(filepath)
+    return get_individual_from_sample(basename)
+
+# -----------------------------------------------------------------------------------------------
+# Extract individual ID from a sample name
+def get_individual_from_sample(sample):
+    return sample.split("_")[0]
 
 # -----------------------------------------------------------------------------------------------
 # Get only reference genome file paths for a species
@@ -68,8 +76,8 @@ def get_sample_ids_for_species(species):
     return samples
 
 # -----------------------------------------------------------------------------------------------
-# Get input file paths for MultiQC (raw reads)
-def get_input_multiqc_raw(species):
+# Get expected output file paths for FastQC (raw reads)
+def get_expected_output_fastqc_raw(species):
     files = get_files_in_folder_matching_pattern(os.path.join(species, "raw", "reads"), "*R1*.fastq.gz")
     all_inputs = []
     for raw_file in files:
@@ -81,37 +89,72 @@ def get_input_multiqc_raw(species):
     return all_inputs
 
 # -----------------------------------------------------------------------------------------------
-# Get input file paths for reads processing statistics (raw)
-# used?
-# def get_input_reads_processing_raw(species):
-#     all_inputs = []
-#     for sample in get_sample_ids_for_species(species):
-#         all_inputs.append(os.path.join(species, "processed", "reads", "statistics", f"{sample}_all_steps_count.csv"))
-#     return all_inputs
-
-# -----------------------------------------------------------------------------------------------
-# Get input file paths for MultiQC (trimmed reads)
-def get_input_multiqc_trimmed(species):
+# Get expected output file paths for FastQC (adapter trimmed reads)
+def get_expected_output_fastqc_trimmed(species):
     all_inputs = []
     for sample in get_sample_ids_for_species(species):
         all_inputs.append(os.path.join(species, "results", "reads", "reads_trimmed", "fastqc",  f"{sample}_trimmed_fastqc.html"))
     return all_inputs
 
 # -----------------------------------------------------------------------------------------------
-# Get input file paths for MultiQC (quality filtered reads)
-def get_input_multiqc_quality_filtered(species):
+# Get expected output file paths for FastQC (adapter removed reads)
+def get_expected_output_fastqc_quality_filtered(species):
     all_inputs = []
     for sample in get_sample_ids_for_species(species):
         all_inputs.append(os.path.join(species, "results", "reads", "reads_quality_filtered", "fastqc", f"{sample}_quality_filtered_fastqc.html"))
     return all_inputs
 
 # -----------------------------------------------------------------------------------------------
-# Get input file paths for MultiQC (merged reads)
-def get_input_multiqc_merged(species):
+# Get expected output file paths for FastQC (merged reads)
+def get_expected_output_fastqc_merged(species):
     all_inputs = []
     for individual in get_individuals_for_species(species):
         all_inputs.append(os.path.join(species, "results", "reads", "reads_merged", "fastqc", f"{individual}_fastqc.html"))
     return all_inputs
+
+# -----------------------------------------------------------------------------------------------
+# Get expected output file paths for ECMSD contamination analysis
+def get_expected_output_contamination_ecmsd(species):  
+    expected_outputs = []
+    for sample in get_sample_ids_for_species(species):
+        expected_outputs.append(os.path.join(species, "results", "contamination_analysis", "ecmsd", sample, "mapping", f"{sample}_Mito_summary.txt"))
+    
+    return expected_outputs
+
+# -----------------------------------------------------------------------------------------------
+# Get expected output file paths for MultiQC reports
+def get_expected_output_multiqc(species):
+    expected_outputs = []
+    # Add MultiQC reports for different read processing stages
+    expected_outputs.append(os.path.join(species, "results", "reads", f"{species}_multiqc_raw.html"))
+    expected_outputs.append(os.path.join(species, "results", "reads", f"{species}_multiqc_trimmed.html"))
+    expected_outputs.append(os.path.join(species, "results", "reads", f"{species}_multiqc_quality_filtered.html"))
+    expected_outputs.append(os.path.join(species, "results", "reads", f"{species}_multiqc_merged.html"))
+
+    return expected_outputs
+
+def get_expected_output_reads_plots(species):
+    expected_outputs = []
+
+    expected_outputs.append(os.path.join(species, "results", "reads", "plots", f"{species}_read_counts.png"))
+    expected_outputs.append(os.path.join(species, "results", "reads", "plots", f"{species}_read_counts_comparison_by_individual.png"))
+
+    return expected_outputs
+
+def get_expected_output_reads(species):
+
+    expected_outputs = []
+
+    # Add MultiQC reports for different read processing stages
+    expected_outputs += get_expected_output_multiqc(species)
+
+    # Add ECMSD contamination analysis outputs
+    expected_outputs += get_expected_output_contamination_ecmsd(species)
+
+    # Add summary plots for read count comparisons
+    expected_outputs += get_expected_output_reads_plots(species)
+
+    return expected_outputs
 
 # -----------------------------------------------------------------------------------------------
 # Generate all input file paths required for the 'all' rule in Snakemake
@@ -124,21 +167,8 @@ def get_all_inputs(wildcards):
     # Loop over each species defined in the config (must be available in the global scope)
     for species in config["species"]:
         species_folder = species
-        # Add the main quality check report for each species
-        #all_inputs.append(os.path.join(species_folder, "results","qualitycontrol", f"quality_check_report_{species}.html"))
-        # For each sample, add the ECMSD mitochondrial summary file
-        for sample in get_sample_ids_for_species(species):
-            all_inputs.append(os.path.join(species_folder, "results", "contamination_analysis", "ecmsd", sample, "mapping", "Mito_summary.txt"))
-
-        # Add MultiQC reports for different read processing stages
-        all_inputs.append(os.path.join(species_folder, "results", "reads", f"{species}_multiqc_raw.html"))
-        all_inputs.append(os.path.join(species_folder, "results", "reads", f"{species}_multiqc_trimmed.html"))
-        all_inputs.append(os.path.join(species_folder, "results", "reads", f"{species}_multiqc_quality_filtered.html"))
-        all_inputs.append(os.path.join(species_folder, "results", "reads", f"{species}_multiqc_merged.html"))
-
-        # Add summary plots for read count comparisons
-        all_inputs.append(os.path.join(species_folder, "results", "reads", "plots", f"{species}_read_counts.png"))
-        all_inputs.append(os.path.join(species_folder, "results", "reads", "plots", f"{species}_read_counts_comparison_by_individual.png"))
+        
+        all_inputs += get_expected_output_reads(species)
         
         # Get all individuals for the species
         individuals = get_individuals_for_species(species)

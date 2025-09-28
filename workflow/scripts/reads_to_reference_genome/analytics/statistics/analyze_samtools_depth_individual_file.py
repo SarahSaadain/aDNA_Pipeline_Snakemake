@@ -16,8 +16,7 @@ def analyze_coverage_file(coverage_file, analysis_file_path):
         with open(coverage_file, 'r') as f:
             total_lines = sum(1 for _ in f)
     except Exception as e:
-        print(f"Error counting lines in {coverage_file_base_name}: {e}")
-        return
+        raise Exception(f"Error counting lines in {coverage_file_base_name}: {e}")
     
     print(f"Total lines in {coverage_file_base_name} to analyze: {total_lines:,}")
 
@@ -55,11 +54,10 @@ def analyze_coverage_file(coverage_file, analysis_file_path):
                     print(f"Progress for {coverage_file_base_name}: {milestone}% completed")
                     milestones[milestone] = True
 
-            print(f"Progress for {coverage_file_base_name}: {lines_processed:,}/{total_lines:,} lines ({percent_done:.1f}%) processed")
+            #print(f"Progress for {coverage_file_base_name}: {lines_processed:,}/{total_lines:,} lines ({percent_done:.1f}%) processed")
 
     except Exception as e:
-        print(f"Failed during processing of {coverage_file}: {e}")
-        return
+        raise Exception(f"Failed during processing of {coverage_file}: {e}")
 
     summary = pd.DataFrame.from_dict(summary_data, orient="index")
     summary.index.name = "scaffold"
@@ -70,4 +68,5 @@ def analyze_coverage_file(coverage_file, analysis_file_path):
     print(f"Saving summary to {analysis_file_path} ...")
     summary.to_csv(analysis_file_path)
 
-analyze_coverage_file(snakemake.input.depth_txt, snakemake.output.analysis)
+if __name__ == "__main__":
+    analyze_coverage_file(snakemake.input.depth_txt, snakemake.output.analysis)

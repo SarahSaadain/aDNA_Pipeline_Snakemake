@@ -8,7 +8,7 @@ rule bwa_map_aDNA:
     output:
         sam=temp("{species}/processed/{ref_genome}/mapped/{individual}_{ref_genome}.sam")
     message: "Mapping {input.reads} to reference genome {input.ref} for individual {wildcards.individual} in species {wildcards.species}"
-    threads: workflow.cores 
+    threads: 15
     conda:
         "../../../envs/bwa.yaml"
     shell:
@@ -25,7 +25,7 @@ rule sam_to_bam:
     output:
         bam=temp("{species}/processed/{ref_genome}/mapped/{individual}_{ref_genome}.bam")
     message: "Converting SAM to BAM for {input}"
-    threads: workflow.cores 
+    threads: 15
     wrapper:
         "v7.5.0/bio/samtools/view"
 
@@ -39,8 +39,8 @@ rule sort_bam:
         "{species}/processed/{ref_genome}/mapped/{individual}_{ref_genome}_sorted.bam"
     message: "Sorting BAM file for {input}"
     log:
-        "{species}/logs/{individual}_{ref_genome}_sort_bam.log",
-    threads: workflow.cores 
+        "{species}/logs/{ref_genome}/mapped/{individual}_{ref_genome}_sorted_bam.log",
+    threads: 15
     wrapper:
         "v7.5.0/bio/samtools/sort"
 
@@ -55,6 +55,6 @@ rule index_bam:
     message: "Indexing BAM file for {input}"
     params:
         extra="",  # optional params string
-    threads: workflow.cores
+    threads: 15
     wrapper:
         "v7.5.0/bio/samtools/index"
