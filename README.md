@@ -133,16 +133,21 @@ To run the pipeline, navigate to the root directory containing the `Snakefile` a
 
 ```bash
 snakemake --cores <number_of_threads> --use-conda
+# snakemake --cores <number_of_threads> --use-conda --keep-going
 ```
 
 Replace `<number_of_threads>` with the number of CPU threads you want to allocate for the pipeline.
+
+**Note:** 
+* The `--use-conda` flag enables the use of conda environments specified in the `Snakefile`.
+* The `--keep-going` flag allows the pipeline to continue even if a rule fails. This is useful for debugging purposes. Somtimes the analysis of ECMSD fails due to issues with the input data. In this case, the rest of the pipeline can still be executed.
 
 ### Running the Pipeline in the Background
 
 Depending on the size of the data, it may take some time to complete the pipeline. Thus it is recommended to run the pipeline in the background. You can do this by running the following command:
 
 ```bash
-nohup snakemake --cores <number_of_threads> --use-conda > pipeline.log 2>&1 &
+nohup snakemake --cores <number_of_threads> --use-conda --keep-going > pipeline.log 2>&1 &
 ```
 
 ### Restarting the Pipeline
