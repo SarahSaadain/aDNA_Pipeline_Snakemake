@@ -14,7 +14,7 @@ def determine_endogenous_reads_from_stats(stats_file, output_file):
                 elif parts[1].startswith("reads mapped:"):
                     mapped_reads = int(parts[2])
 
-    proportion = mapped_reads / total_reads if total_reads > 0 else 0.0
+    proportion = mapped_reads / total_reads * 100 if total_reads > 0 else 0.0
 
     with open(output_file, "w") as out:
         out.write("Filename,MappedReads,TotalReads,Proportion\n")

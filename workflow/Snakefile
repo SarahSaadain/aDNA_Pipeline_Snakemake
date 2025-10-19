@@ -3,6 +3,7 @@ import os
 import sys
 
 include: "rules/initialize.smk"
+include: "scripts/file_manager.py"
 include: "scripts/input_manager.py"
 
 include: "rules/raw_reads_processing.smk"

@@ -3,21 +3,26 @@ def get_adapter_removal_input_reads(wc):
     Returns a list of read files for R1/R2 if available.
     If only R1 exists, returns a single-element list [R1].
     """
+
+    read_files = get_read_files_for_species(wc.species) 
     
+    # turn read paths into file names only
+    read_files = [os.path.basename(f) for f in read_files]
+
     reads_dir = f"{wc.species}/raw/reads"
  
     # R1
     base_r1 = f"{wc.sample}_R1"
-    candidates_r1 = [f for f in os.listdir(reads_dir)
+    candidates_r1 = [f for f in read_files
                      if re.match(base_r1 + r"(\S*)?\.fastq\.gz", f)]
     if not candidates_r1:
-        raise FileNotFoundError(f"No R1 found for {wc.sample}")
+        raise FileNotFoundError(f"No R1 found for {wc.sample}. Expected pattern: {base_r1}*.fastq.gz in {reads_dir}. Found files: {read_files}")
 
     r1 = os.path.join(reads_dir, sorted(candidates_r1)[0])
  
     # R2
     base_r2 = f"{wc.sample}_R2"
-    candidates_r2 = [f for f in os.listdir(reads_dir)
+    candidates_r2 = [f for f in read_files
                      if re.match(base_r2 + r"(\S*)?\.fastq\.gz", f)]
  
     if candidates_r2:

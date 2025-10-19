@@ -1,19 +1,3 @@
-# Rule: Plot coverage depth violin plot
-rule plot_depth_violin:
-    input:
-        depth_file = "{species}/results/{ref_genome}/coverage/{ref_genome}_combined_coverage_analysis_detailed.csv"
-    output:
-        plot = report("{species}/results/{ref_genome}/plots/coverage/{species}_{ref_genome}_depth_violin.png")
-    message: "Plotting depth violin for species {wildcards.species} and reference genome {wildcards.ref_genome}"
-    params:
-        species="{species}"
-    log:
-        "{species}/logs/{ref_genome}/plots/coverage/{species}_{ref_genome}_depth_violin.log"
-    conda:
-        "../../../envs/r_plot.yaml"
-    script:
-        "../../../scripts/reads_to_reference_genome/plotting/plot_coverage_depth_violin.R"
-
 # Rule: Plot depth coverage violin by individual
 rule depth_coverage_violin:
     input:

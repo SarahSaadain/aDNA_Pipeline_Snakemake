@@ -1,20 +1,14 @@
 def find_reference_input(wc):
-    """
-    Return the first existing reference file for {species}/{ref_genome_name}
-    among the allowed extensions.
-    """
 
-    # extensions we will accept for the original reference
-    REF_EXTS = ["fa", "fasta", "fna", "fas", "fsa"]
+    # get ref genome paths for the given species
+    ref_genomes_tuple = get_reference_genome_file_list_for_species(wc.species)  # validate species and ref genome name
 
-    base = f"{wc.species}/raw/ref_genome/{wc.ref_genome_name}"
-    for ext in REF_EXTS:
-        p = f"{base}.{ext}"
-        if os.path.exists(p):
-            return p
-    raise ValueError(
-        f"No reference file found for {base}.{{" + ",".join(REF_EXTS) + "}}"
-    )
+    ref_genome_path = next((path for name, path in ref_genomes_tuple if name == wc.ref_genome_name), None)
+
+    if ref_genome_path is None:
+        raise ValueError(f"Reference genome {wc.ref_genome_name} not found for species {wc.species}")
+
+    return ref_genome_path
 
 # Rule: Standardize reference genome extension to .fa
 # 1) Normalize/standardize reference to .fa (symlink to avoid copying)

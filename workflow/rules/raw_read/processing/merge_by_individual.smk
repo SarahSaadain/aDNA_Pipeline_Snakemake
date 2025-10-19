@@ -2,22 +2,19 @@ import glob
 import os
 
 def expected_quality_filtered_files(wildcards):
-    # folder with raw reads
-    raw_folder = f"{wildcards.species}/raw/reads"
+
+    samples = get_sample_ids_for_species(wildcards.species)
+
+    # find all samples that match the individual
+    samples_of_individual = [f for f in samples if f.startswith(f"{wildcards.individual}")]
     
-    # find all raw R1 files for this individual
-    raw_files_r1 = glob.glob(os.path.join(raw_folder, f"{wildcards.individual}_*R1*.fastq.gz"))
-    
-    if len(raw_files_r1) == 0:
-        raise Exception(f"No raw R1 files found for individual {wildcards.individual}")
+    if len(samples_of_individual) == 0:
+        raise Exception(f"No raw read files found for individual {wildcards.individual}. Check that the individual ID is correct and that raw read files are present. Available samples: {samples}")
     
     # for each raw R1 file, generate the corresponding quality-filtered filename
     quality_filtered_files = []
-    for raw_file in raw_files_r1:
-        filename = os.path.basename(raw_file)
-        # get the part between individual and _R1
-        rest = filename[len(wildcards.individual)+1:filename.index("_R1")]
-        qf_file = f"{wildcards.species}/processed/reads/reads_quality_filtered/{wildcards.individual}_{rest}_quality_filtered.fastq.gz"
+    for sample in samples_of_individual:
+        qf_file = f"{wildcards.species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered.fastq.gz"
         quality_filtered_files.append(qf_file)
     
     return quality_filtered_files

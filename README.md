@@ -132,8 +132,8 @@ The aDNA pipeline is implemented using Snakemake, a workflow management system. 
 To run the pipeline, navigate to the root directory containing the `Snakefile` and execute:
 
 ```bash
-snakemake --cores <number_of_threads> --use-conda
-# snakemake --cores <number_of_threads> --use-conda --keep-going
+#snakemake --cores <number_of_threads> --use-conda
+snakemake --cores <number_of_threads> --use-conda --keep-going
 ```
 
 Replace `<number_of_threads>` with the number of CPU threads you want to allocate for the pipeline.

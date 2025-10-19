@@ -25,10 +25,22 @@ def get_fastq_read_count(fastq_file):
     print(f"Found {count} reads in {fastq_file}")
     return count
 
+def get_expected_output_raw_reads(wildcards):
+    #lambda wildcards: get_files_in_folder_matching_pattern(os.path.join(wildcards.species, "raw", "reads"), f"{wildcards.sample}*R1*.fastq.gz")[0]
+    
+    files = get_r1_read_files_for_species(wildcards.species)
+    matched_files = [f for f in files if wildcards.sample in os.path.basename(f)]
+    if len(matched_files) == 0:
+        raise Exception(f"No raw read files found for sample {wildcards.sample} in species {wildcards.species}.")
+    if len(matched_files) > 1:
+        raise Exception(f"Multiple raw read files found for sample {wildcards.sample} in species {wildcards.species}: {matched_files}.")
+    return matched_files[0] 
+
+
 # Rule: Count reads in raw FASTQ files
 rule count_reads_raw:
     input:
-        fastq=lambda wildcards: get_files_in_folder_matching_pattern(os.path.join(wildcards.species, "raw", "reads"), f"{wildcards.sample}*R1*.fastq.gz")[0]
+        fastq=get_expected_output_raw_reads
     output:
         counted=temp("{species}/processed/reads/statistics/{sample}_raw.count")
     message: "Counting reads in raw FASTQ file {input.fastq}"

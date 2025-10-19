@@ -40,7 +40,7 @@ aDNA_Pipeline_version = "0.0.1"
 #     Configuration Files and Reporting
 # =================================================================================================
 # Specify the main configuration file for the workflow
-configfile: "config.yaml"
+configfile: "config/config.yaml"
 
 # Get abs paths of all config files
 cfgfiles = []
