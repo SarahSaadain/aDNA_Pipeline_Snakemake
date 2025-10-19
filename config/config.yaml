@@ -1,0 +1,61 @@
+# config.yaml - Configuration file for aDNA pipeline
+# Global settings
+project_name: "aDNA_Project"
+
+pipeline:
+  raw_reads_processing:
+    execute: false
+    quality_checking_raw:
+      execute: true
+    adapter_removal:
+      execute: true
+      settings: 
+        adapters_sequences:
+          r1: "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"
+          r2: "AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT" 
+    quality_checking_trimmed:
+      execute: true
+    quality_filtering:
+      execute: true
+    quality_checking_quality_filtered:
+      execute: true
+    contamination_analysis:
+      execute: true
+      tools:
+        centrifuge:
+          execute: true
+          settings:
+            conda_env: "../../../../envs/centrifuge.yaml"
+            executable: "centrifuge"
+            database: "/mnt/data5/sarah/aDNA/centrifuge_db"
+        kraken: 
+          execute: true
+          settings:
+            conda_env: "../../../../envs/kraken.yaml"
+            executable: "kraken"
+            database: "/mnt/data5/sarah/aDNA/kraken_db"
+        ecmsd:
+          execute: true
+          settings:
+            conda_env: "../../../../envs/ecmsd.yaml"
+            executable: "/mnt/data2/sarah/app_ecmsd/shell/ECMSD.sh"
+    statistical_analysis:
+      execute: true
+
+  reference_genome_processing:
+    execute: true
+    map_reads_to_reference_genome:
+      execute: true
+    damage_analysis:
+      execute: true
+    create_consensus_sequence:
+      execute: true
+    endogenous_reads_analysis: 
+      execute: true
+    coverage_analysis: 
+      execute: true
+
+# Species-specific settings
+species:
+  sample:
+    name: "Sample Species"

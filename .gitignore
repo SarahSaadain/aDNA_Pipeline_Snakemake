@@ -9,7 +9,6 @@ aDNA.code-workspace
 */results/
 results/
 __pycache__
-config.yaml
 .snakemake/
 Bger
 trial_Phortica
