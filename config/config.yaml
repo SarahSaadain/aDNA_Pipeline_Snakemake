@@ -3,6 +3,9 @@
 project_name: "aDNA_Project"
 
 pipeline:
+  global:
+    skip_existing_files: true
+
   raw_reads_processing:
     execute: false
     quality_checking_raw:
@@ -44,6 +47,7 @@ pipeline:
 
   reference_genome_processing:
     execute: true
+    
     map_reads_to_reference_genome:
       execute: true
     damage_analysis:
