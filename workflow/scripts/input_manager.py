@@ -153,7 +153,7 @@ def get_expected_output_reference_genome_processing(species):
 
     except Exception as e: 
         # Print error if reference genome files are missing or inaccessible
-        print(e)
+        logging.error(e)
         return []
     
      # Get all individuals for the species

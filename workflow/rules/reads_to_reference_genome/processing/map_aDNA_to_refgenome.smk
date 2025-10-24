@@ -16,7 +16,6 @@ rule bwa_map_aDNA:
         bwa mem -t {threads} {input.ref} {input.reads} > {output.sam}
         """
 
-
 # Rule: Convert SAM to BAM
 rule sam_to_bam:
     # 2 Convert SAM to BAM
@@ -28,7 +27,6 @@ rule sam_to_bam:
     threads: 15
     wrapper:
         "v7.5.0/bio/samtools/view"
-
 
 # Rule: Sort BAM file
 rule sort_bam:
@@ -43,7 +41,6 @@ rule sort_bam:
     threads: 15
     wrapper:
         "v7.5.0/bio/samtools/sort"
-
 
 # Rule: Index BAM file
 rule index_bam:
