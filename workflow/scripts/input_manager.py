@@ -12,7 +12,7 @@ import logging
 def get_expected_output_fastqc_raw(species):
 
     if config["pipeline"]["raw_reads_processing"]["quality_checking_raw"]["execute"] == False:
-        logging.info("Skipping FastQC for raw reads. Disabled in config.")
+        logging.info(f"Skipping FastQC for raw reads for {species}. Disabled in config.")
         return []
 
     files = get_r1_read_files_for_species(species)
@@ -30,7 +30,7 @@ def get_expected_output_fastqc_raw(species):
 # Get expected output file paths for FastQC (adapter trimmed reads)
 def get_expected_output_fastqc_trimmed(species):
     if config["pipeline"]["raw_reads_processing"]["quality_checking_trimmed"]["execute"] == False:
-        logging.info("Skipping FastQC for trimmed reads. Disabled in config.")
+        logging.info(f"Skipping FastQC for trimmed reads for {species}. Disabled in config.")
         return []
 
     all_inputs = []
@@ -42,7 +42,7 @@ def get_expected_output_fastqc_trimmed(species):
 # Get expected output file paths for FastQC (adapter removed reads)
 def get_expected_output_fastqc_quality_filtered(species):
     if config["pipeline"]["raw_reads_processing"]["quality_checking_quality_filtered"]["execute"] == False:
-        logging.info("Skipping FastQC for quality filtered reads. Disabled in config.")
+        logging.info(f"Skipping FastQC for quality filtered reads for {species}. Disabled in config.")
         return []
 
     all_inputs = []
@@ -61,7 +61,7 @@ def get_expected_output_fastqc_merged(species):
 def get_expected_output_contamination(species):  
 
     if config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["execute"] == False:
-        logging.info("Skipping contamination analysis. Disabled in config.")
+        logging.info(f"Skipping contamination analysis for {species}. Disabled in config.")
         return []
 
     expected_outputs = []
@@ -75,7 +75,7 @@ def get_expected_output_contamination(species):
 def get_expected_output_contamination_ecmsd(species):  
 
     if config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["ecmsd"]["execute"] == False:
-        logging.info("Skipping ECMSD contamination analysis. Disabled in config.")
+        logging.info(f"Skipping ECMSD contamination analysis for {species}. Disabled in config.")
         return []
 
     expected_outputs = []
@@ -92,12 +92,23 @@ def get_expected_output_multiqc(species):
     # Add MultiQC reports for different read processing stages
     if config["pipeline"]["raw_reads_processing"]["quality_checking_raw"]["execute"] == True:
         expected_outputs.append(os.path.join(species, "results", "reads", f"{species}_multiqc_raw.html"))
+    else:
+        logging.info(f"Skipping MultiQC report for raw reads for {species}. Disabled in config.")
+
     if config["pipeline"]["raw_reads_processing"]["quality_checking_trimmed"]["execute"] == True:
         expected_outputs.append(os.path.join(species, "results", "reads", f"{species}_multiqc_trimmed.html"))
+    else:
+        logging.info(f"Skipping MultiQC report for trimmed reads for {species}. Disabled in config.")
+
     if config["pipeline"]["raw_reads_processing"]["quality_checking_quality_filtered"]["execute"] == True:
         expected_outputs.append(os.path.join(species, "results", "reads", f"{species}_multiqc_quality_filtered.html"))
+    else:
+        logging.info(f"Skipping MultiQC report for quality filtered reads for {species}. Disabled in config.")
     
-    expected_outputs.append(os.path.join(species, "results", "reads", f"{species}_multiqc_merged.html"))
+    if config["pipeline"]["raw_reads_processing"]["quality_checking_merged"]["execute"] == True:
+        expected_outputs.append(os.path.join(species, "results", "reads", f"{species}_multiqc_merged.html"))
+    else:
+        logging.info(f"Skipping MultiQC report for merged reads for {species}. Disabled in config.")
 
     return expected_outputs
 
@@ -105,7 +116,7 @@ def get_expected_output_multiqc(species):
 # Get expected output file paths for read count plots
 def get_expected_output_reads_plots(species):
     if config["pipeline"]["raw_reads_processing"]["statistical_analysis"]["execute"] == False:
-        logging.info("Skipping read plots generation. Disabled in config.")
+        logging.info(f"Skipping read plots generation for {species}. Disabled in config.")
         return []
     
     expected_outputs = []
@@ -120,7 +131,7 @@ def get_expected_output_reads_plots(species):
 def get_expexted_output_raw_read_processing(species):
 
     if config["pipeline"]["raw_reads_processing"]["execute"] == False:
-        logging.info("Skipping raw read processing. Disabled in config.")
+        logging.info(f"Skipping raw read processing for {species}. Disabled in config.")
         return []
     
     # Add FastQC outputs for raw reads
@@ -142,7 +153,7 @@ def get_expexted_output_raw_read_processing(species):
 def get_expected_output_reference_genome_processing(species):
 
     if config["pipeline"]["reference_genome_processing"]["execute"] == False:
-        logging.info("Skipping reference genome processing. Disabled in config.")
+        logging.info(f"Skipping reference genome processing for {species}. Disabled in config.")
         return []
 
     expected_outputs = []
@@ -167,7 +178,7 @@ def get_expected_output_reference_genome_processing(species):
             # Add endogenous and coverage plots for each reference genome and individual
             expected_outputs.append(os.path.join(species, "results" ,ref_genome_id, "plots", "endogenous_reads", f"{species}_{ref_genome_id}_endogenous_reads_bar_chart.png"))
         else:
-            logging.info(f"Skipping endogenous reads analysis for reference genome {ref_genome_id}. Disabled in config.")
+            logging.info(f"Skipping endogenous reads analysis for species {species} and reference genome {ref_genome_id}. Disabled in config.")
         
         if config["pipeline"]["reference_genome_processing"]["coverage_analysis"]["execute"] == True:
             expected_outputs.append(os.path.join(species, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_individual_depth_coverage_violin.png"))
@@ -175,7 +186,7 @@ def get_expected_output_reference_genome_processing(species):
             expected_outputs.append(os.path.join(species, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_individual_coverage_breadth_bar.png"))
             expected_outputs.append(os.path.join(species, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_individual_coverage_breadth_violin.png"))
         else:
-            logging.info(f"Skipping coverage analysis for reference genome {ref_genome_id}. Disabled in config.")
+            logging.info(f"Skipping coverage analysis for species {species} and reference genome {ref_genome_id}. Disabled in config.")
 
         for ind in individuals:
 
@@ -183,19 +194,19 @@ def get_expected_output_reference_genome_processing(species):
                 expected_outputs.append(os.path.join(species, "processed" ,ref_genome_id, "mapped", f"{ind}_{ref_genome_id}_sorted.bam"))
                 expected_outputs.append(os.path.join(species, "processed" ,ref_genome_id, "mapped", f"{ind}_{ref_genome_id}_sorted.bam.bai"))
             else:
-                logging.info(f"Skipping read mapping for individual {ind} to reference genome {ref_genome_id}. Disabled in config.")
+                logging.info(f"Skipping read mapping for species {species} and individual {ind} to reference genome {ref_genome_id}. Disabled in config.")
 
             if config["pipeline"]["reference_genome_processing"]["damage_analysis"]["execute"] == True:
                 expected_outputs.append(os.path.join(species, "processed" ,ref_genome_id, "mapped", f"{ind}_{ref_genome_id}_sorted.rescaled.bam"))
                 expected_outputs.append(os.path.join(species, "processed" ,ref_genome_id, "mapped", f"{ind}_{ref_genome_id}_sorted.rescaled.bam.bai"))
             else:
-                logging.info(f"Skipping damage analysis for individual {ind} to reference genome {ref_genome_id}. Disabled in config.")
+                logging.info(f"Skipping damage analysis for species {species} and individual {ind} to reference genome {ref_genome_id}. Disabled in config.")
 
             # Add consensus sequence output for each individual and reference genome
             if config["pipeline"]["reference_genome_processing"]["create_consensus_sequence"]["execute"] == True:
                 expected_outputs.append(os.path.join(species, "processed" ,ref_genome_id, "consensus", f"{ind}_{ref_genome_id}", f"{ind}_{ref_genome_id}_consensus.fa.gz"))
             else:
-                logging.info(f"Skipping consensus sequence creation for individual {ind} to reference genome {ref_genome_id}. Disabled in config.")
+                logging.info(f"Skipping consensus sequence creation for species {species} and individual {ind} to reference genome {ref_genome_id}. Disabled in config.")
             
     return expected_outputs
 
@@ -209,13 +220,23 @@ def skip_existing_files(expected_outputs):
     
     logging.info("Checking for existing files to skip...")
 
+    expected_outputs_existing = []
+    expected_outputs_not_existing = []
+
     # Check for existing files and filter them out
     for output in expected_outputs:
         if os.path.exists(output):
-            expected_outputs.remove(output)
-            logging.info(f"Skipping already existing file: {output}")   
+            expected_outputs_existing.append(output)
+        else:
+            expected_outputs_not_existing.append(output)
+
+    # Log existing files that will be skipped
+    if len(expected_outputs_existing) > 0:
+        logging.info("The following files already exist and will be skipped:")
+        for existing_file in expected_outputs_existing:
+            logging.info("\t" + "- Skipping: " + existing_file)
        
-    return expected_outputs
+    return expected_outputs_not_existing
 
 # -----------------------------------------------------------------------------------------------
 # Generate all input file paths required for the 'all' rule in Snakemake
@@ -237,7 +258,7 @@ def get_all_inputs(wildcards):
     # Log all determined inputs for debugging and traceability
     logging.info("Determined input for rule 'all':")
     for input in expected_output:
-        logging.info("\t" + "- " + input)
+        logging.info("\t" + "- Requesting: " + input)
 
     # Return the complete list of input file paths
     return expected_output

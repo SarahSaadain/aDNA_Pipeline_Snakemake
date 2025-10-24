@@ -22,6 +22,8 @@ pipeline:
       execute: true
     quality_checking_quality_filtered:
       execute: true
+    quality_checking_merged:
+      execute: true
     contamination_analysis:
       execute: true
       tools:
