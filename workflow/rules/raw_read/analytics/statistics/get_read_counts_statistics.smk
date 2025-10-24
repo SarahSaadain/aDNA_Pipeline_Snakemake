@@ -32,8 +32,6 @@ def get_expected_output_raw_reads(wildcards):
     matched_files = [f for f in files if wildcards.sample in os.path.basename(f)]
     if len(matched_files) == 0:
         raise Exception(f"No raw read files found for sample {wildcards.sample} in species {wildcards.species}.")
-    if len(matched_files) > 1:
-        raise Exception(f"Multiple raw read files found for sample {wildcards.sample} in species {wildcards.species}: {matched_files}.")
     return matched_files[0] 
 
 
