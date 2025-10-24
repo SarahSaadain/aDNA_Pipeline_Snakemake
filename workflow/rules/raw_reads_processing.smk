@@ -25,9 +25,6 @@ include: "raw_read/analytics/quality/fastqc_check.smk"
 # Aggregate FastQC results using MultiQC
 include: "raw_read/analytics/quality/multiqc_check.smk"
 
-# Generate a comprehensive quality check report
-include: "raw_read/analytics/quality/generate_quality_check_report.smk"
-
 # Plot comparison of reads before and after processing
 include: "raw_read/plotting/plot_read_counts.smk"
 
