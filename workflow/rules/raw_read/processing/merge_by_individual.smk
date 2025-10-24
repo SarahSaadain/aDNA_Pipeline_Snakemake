@@ -25,7 +25,7 @@ rule merge_by_individual:
     input:
         expected_quality_filtered_files
     output:
-        temp("{species}/processed/reads/reads_merged/{individual}.fastq.gz")
+        "{species}/processed/reads/reads_merged/{individual}.fastq.gz"
     message: 
         "Merging individual {wildcards.individual} of species {wildcards.species}."
     shell:
