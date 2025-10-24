@@ -44,7 +44,7 @@ rule fastp_se:
             category="quality control",
             subcategory="fastp",
         ),
-        json="{species}/processed/reads/reads_trimmed/fastp_report/{sample}_trimmed.se.json",
+        json="{species}/results/reads/reads_trimmed/fastp_report/{sample}_trimmed.se.json",
     message: "Trimming adapters from single-end reads in {input.sample}"
     log:
         "{species}/logs/reads/reads_trimmed/{sample}_trimmed.se.log",
@@ -71,12 +71,12 @@ rule fastp_pe:
         merged=temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.fastq.gz"),
         failed=temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.failed.fastq.gz"),
         html=report(
-            "{species}/processed/reads/reads_trimmed/fastp_report/{sample}_trimmed.pe.html",
+            "{species}/results/reads/reads_trimmed/fastp_report/{sample}_trimmed.pe.html",
             #caption="../report/fastp.rst",
             category="quality control",
             subcategory="fastp",
         ),
-        json="{species}/processed/reads/reads_trimmed/fastp_report/{sample}_trimmed.pe.json",
+        json="{species}/results/reads/reads_trimmed/fastp_report/{sample}_trimmed.pe.json",
     message: "Trimming adapters from paired-end reads and merging for {input.sample}"
     log:
         "{species}/logs/reads/reads_trimmed/{sample}_trimmed.pe.log",
