@@ -8,6 +8,7 @@ import subprocess
 from datetime import datetime
 import logging
 from pathlib import Path
+import yaml
 
 # Import Snakemake plugin settings for executor modes
 from snakemake_interface_executor_plugins.settings import ExecMode
@@ -151,6 +152,22 @@ logger.info("\tCommand:            " + cmdline)
 logger.info("\tBase directory:     " + workflow.basedir)
 logger.info("\tWorking directory:  " + os.getcwd())
 logger.info("\tConfig file(s):     " + cfgfiles)
+
+# Print config values of pipline 
+# Convert config dict to a YAML-style string for clean formatting
+config_str = yaml.dump(config["pipeline"], sort_keys=False, default_flow_style=False)
+
+# Log it
+logging.info("Loaded configuration:\n%s", config_str)
+
+# Extract and log species with names and keys
+species_section = config.get("species", {})
+species_list = [
+    f"{sdata.get('name', sname)} [{sname}]" for sname, sdata in species_section.items()
+]
+
+logging.info("Detected species:\n- %s", "\n- ".join(species_list))
+
 
 # Clean up variables that are no longer needed to avoid polluting the namespace
 # No need to have these output vars available in the rest of the snakefiles
