@@ -50,7 +50,7 @@ rule fastp_se:
         "{species}/logs/reads/reads_trimmed/{sample}_trimmed.se.log",
     params:
         adapters=f"--adapter_sequence {config['pipeline']['raw_reads_processing']['adapter_removal']['settings']['adapters_sequences']['r1']}",
-        extra="--length_required 15 --trim_poly_x 5  --qualified_quality_phred 5 --unqualified_percent_limit 40 --n_base_limit 5"
+        extra=f"--length_required {config['pipeline']['raw_reads_processing']['adapter_removal']['settings'].get('min_length','15')} --trim_poly_x 5  --qualified_quality_phred {config['pipeline']['raw_reads_processing']['adapter_removal']['settings'].get('min_quality','5')} --unqualified_percent_limit 40 --n_base_limit 5"
     threads: workflow.cores
     wrapper:
         "v7.5.0/bio/fastp"
@@ -82,7 +82,7 @@ rule fastp_pe:
         "{species}/logs/reads/reads_trimmed/{sample}_trimmed.pe.log",
     params:
         adapters=f"--adapter_sequence {config['pipeline']['raw_reads_processing']['adapter_removal']['settings']['adapters_sequences']['r1']} --adapter_sequence_r2 {config['pipeline']['raw_reads_processing']['adapter_removal']['settings']['adapters_sequences']['r2']}",
-        extra="--length_required 15 --trim_poly_x 5 --qualified_quality_phred 5 --unqualified_percent_limit 40 --n_base_limit 5 --merge",
+        extra=f"--length_required {config['pipeline']['raw_reads_processing']['adapter_removal']['settings'].get('min_length','15')} --trim_poly_x 5 --qualified_quality_phred {config['pipeline']['raw_reads_processing']['adapter_removal']['settings'].get('min_quality','5')} --unqualified_percent_limit 40 --n_base_limit 5 --merge",
     threads: workflow.cores
     wrapper:
         "v7.5.0/bio/fastp"

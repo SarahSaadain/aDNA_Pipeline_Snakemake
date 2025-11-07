@@ -13,6 +13,8 @@ pipeline:
     adapter_removal:
       execute: true
       settings: 
+        min_quality: 5
+        min_length: 15
         adapters_sequences:
           r1: "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"
           r2: "AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT" 
@@ -20,6 +22,9 @@ pipeline:
       execute: true
     quality_filtering:
       execute: true
+      settings:
+        min_quality: 15
+        min_length: 30
     quality_checking_quality_filtered:
       execute: true
     quality_checking_merged:

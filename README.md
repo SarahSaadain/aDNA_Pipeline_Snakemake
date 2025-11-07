@@ -51,16 +51,21 @@ pipeline:
     execute: true           # disable or enable this stage
     quality_checking_raw:   # process step
       execute: true         # disable or enable this process step
-    adapter_removal:
+        adapter_removal:
       execute: true
-      settings:             
+      settings: 
+        min_quality: 5    # default 5
+        min_length: 15    # default 15
         adapters_sequences:
           r1: "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"
           r2: "AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT" 
-    quality_checking_adapter_removed:
+    quality_checking_trimmed:
       execute: true
     quality_filtering:
       execute: true
+      settings:
+        min_quality: 15   # default 15
+        min_length: 15    # default 15
     quality_checking_quality_filtered:
       execute: true
     deduplication:
