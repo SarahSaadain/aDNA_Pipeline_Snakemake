@@ -49,8 +49,18 @@ rule fastp_se:
     log:
         "{species}/logs/reads/reads_trimmed/{sample}_trimmed.se.log",
     params:
-        adapters=f"--adapter_sequence {config['pipeline']['raw_reads_processing']['adapter_removal']['settings']['adapters_sequences']['r1']}",
-        extra=f"--length_required {config['pipeline']['raw_reads_processing']['adapter_removal']['settings'].get('min_length','15')} --trim_poly_x 5  --qualified_quality_phred {config['pipeline']['raw_reads_processing']['adapter_removal']['settings'].get('min_quality','5')} --unqualified_percent_limit 40 --n_base_limit 5"
+        adapters=lambda wc: (
+            f"--adapter_sequence {config['pipeline']['raw_reads_processing']['adapter_removal']['settings']['adapters_sequences']['r1']}"
+            if config['pipeline']['raw_reads_processing']['adapter_removal'].get('settings', {}).get('adapters_sequences', {}).get('r1')
+            else ""
+        ),  
+        extra=lambda wc: (
+            f"--length_required {config['pipeline']['raw_reads_processing']['adapter_removal'].get('settings', {}).get('min_length',15)} "
+            f"--trim_poly_x 5 "
+            f"--qualified_quality_phred {config['pipeline']['raw_reads_processing']['adapter_removal'].get('settings', {}).get('min_quality',5)} "
+            f"--unqualified_percent_limit 40 "
+            f"--n_base_limit 5"
+        ),
     threads: workflow.cores
     wrapper:
         "v7.5.0/bio/fastp"
@@ -81,8 +91,20 @@ rule fastp_pe:
     log:
         "{species}/logs/reads/reads_trimmed/{sample}_trimmed.pe.log",
     params:
-        adapters=f"--adapter_sequence {config['pipeline']['raw_reads_processing']['adapter_removal']['settings']['adapters_sequences']['r1']} --adapter_sequence_r2 {config['pipeline']['raw_reads_processing']['adapter_removal']['settings']['adapters_sequences']['r2']}",
-        extra=f"--length_required {config['pipeline']['raw_reads_processing']['adapter_removal']['settings'].get('min_length','15')} --trim_poly_x 5 --qualified_quality_phred {config['pipeline']['raw_reads_processing']['adapter_removal']['settings'].get('min_quality','5')} --unqualified_percent_limit 40 --n_base_limit 5 --merge",
+        adapters=lambda wc: (
+            f"--adapter_sequence {config['pipeline']['raw_reads_processing']['adapter_removal']['settings']['adapters_sequences'].get('r1','')} "
+            f"--adapter_sequence_r2 {config['pipeline']['raw_reads_processing']['adapter_removal']['settings']['adapters_sequences'].get('r2','')}"
+            if config['pipeline']['raw_reads_processing']['adapter_removal'][.get('settings', {}).get('adapters_sequences')
+            else "--detect_adapter_for_pe"
+        ),
+        extra=lambda wc: (
+            f"--length_required {config['pipeline']['raw_reads_processing']['adapter_removal'].get('settings', {}).get('min_length',15)} "
+            f"--trim_poly_x 5 "
+            f"--qualified_quality_phred {config['pipeline']['raw_reads_processing']['adapter_removal'].get('settings', {}).get('min_quality',5)} "
+            f"--unqualified_percent_limit 40 "
+            f"--n_base_limit 5 "
+            f"--merge"
+        ),   
     threads: workflow.cores
     wrapper:
         "v7.5.0/bio/fastp"

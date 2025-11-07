@@ -141,7 +141,7 @@ def get_expexted_output_raw_read_processing(species):
     expected_outputs += get_expected_output_multiqc(species)
 
     # Add ECMSD contamination analysis outputs
-    expected_outputs += get_expected_output_contamination_ecmsd(species)
+    expected_outputs += get_expected_output_contamination(species)
 
     # Add summary plots for read count comparisons
     expected_outputs += get_expected_output_reads_plots(species)

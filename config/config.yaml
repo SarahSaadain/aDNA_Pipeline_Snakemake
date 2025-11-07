@@ -7,7 +7,7 @@ pipeline:
     skip_existing_files: true
 
   raw_reads_processing:
-    execute: false
+    execute: true
     quality_checking_raw:
       execute: true
     adapter_removal:

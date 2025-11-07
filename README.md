@@ -56,7 +56,7 @@ pipeline:
       settings: 
         min_quality: 5    # default 5
         min_length: 15    # default 15
-        adapters_sequences:
+        adapters_sequences: # if not provided, fastp will try to identify adapters
           r1: "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"
           r2: "AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT" 
     quality_checking_trimmed:
