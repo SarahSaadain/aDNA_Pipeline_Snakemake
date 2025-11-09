@@ -6,17 +6,26 @@ Note: This pipeline is still in development, but can already be used for analysi
 
 ## Setup Overview
 
-- Before running the pipeline, ensure you have the necessary dependencies installed. Please refer to the [Requirements](#Requirements) section for the necessary dependencies and installation instructions.
-- Raw reads and reference genomes must be provided in the relevant folders. 
-    - Raw reads should be renamed according to the naming convention specified in the [RAW Reads filenames](#RAW-Reads-filenames) section. Also see the [Manually renaming the raw reads files](#Manually-renaming-the-raw-reads-files) section.
-    - Reference genome must be provided in the `species/raw/ref_genome/` folder.
-    - Species must be added to the config file.
-    - Please refer to the [Species Folders](#Species-Folders) section for the expected folder structure.
+- Before running the pipeline, ensure you have an environment with Snakemake and the required dependencies installed.
+- Required dependencies for pipeline processing will be installed automatically, except for the contamination analysis tools. Those have to be installed separately and their details need to be added to the config file.
 - You need to add the project path to the config file.
+- you need to add species details to the pipeline.
+
+When adding a new species, make sure to 
+- the species folder should be placed in the root folder of your pipeline
+- add the folder name to the `config.yaml` below `species:` 
+- your reads should be renamed according to the naming convention specified in the [RAW Reads filenames](#RAW-Reads-filenames) section
+- the pipeline supports automatically moving the raw reads to the `<species>/raw/reads/` folder as well as the reference genome to the `<species>/raw/ref_genome/` folder. Simply provide the files in the `<species>` folder. Alternatively, you can manually move the files to the respective folders.
+  - provide the raw reads in `<species>/raw/reads/` folder
+  - provide the reference genome in `<species>/raw/ref_genome/` folder
+- all other folders will be created and populated automatically
+  - folder `<species>/processed/` contains the intermediary files during processing. Most of these files are marked as temporary and will be deleted at the end of the pipeline. Some files are kept to allow reprocessing the pipeline from different points in case something fails.
+  - folder `<species>/results/` contains the final results and reports. 
+  - general reads processing data will be in either `processed`or `results`. Everything related to a reference genome will have a `<reference_genome>` folder under `processed`or `results`. Typically, only the `results` folder will contain information required for further analyis. In case more information is required, the original files can often be found in the `processed` folder. Some exemptions include `*.sam` and unsorted `*.bam` files. These are deleted to save storrage space. Most other files are kept in order to allow reprocessing the pipeline from different points in case something fails. If a step should be repeated, the relevant files need to be deleted manually. 
 
 ## Configuration File Structure for aDNA Pipeline (`config.yaml`)
 
-The `config.yaml` file is used to configure the aDNA pipeline. It contains settings such as project name, project description, default number of threads, adapter sequences for adapter removal, species-specific settings, and paths to external tools.
+The `config.yaml` file is used to configure the aDNA pipeline. It contains settings such as project name, the species list and the pipeline stages and process steps.
 
 ### Global Settings
 
@@ -29,9 +38,9 @@ Defines the overall pipeline behavior, including execution controls and process 
 #### Pipeline Stages and Process Steps
 
 * The pipeline is broken into **stages** (e.g., `raw_reads_processing`, `reference_genome_processing`, `post_processing`).
-* Each stage contains multiple **process steps** (e.g., `adapter_removal`, `deduplication`).
+* Each stage contains multiple **process steps** (e.g., `adapter_removal`, `deduplication`, ...).
 * Both stages and process steps can be controlled with `execute: true/false` flags to enable or disable them.
-* Some process steps include additional configurable settings (e.g., adapter sequences, database paths).
+* Some process steps include additional configurable settings (e.g., adapter sequences, database paths, ...).
 
 #### Important Defaults
 
@@ -134,7 +143,7 @@ The aDNA pipeline is implemented using Snakemake, a workflow management system. 
 
 ### Running the Pipeline
 
-To run the pipeline, navigate to the root directory containing the `Snakefile` and execute:
+To run the pipeline, navigate to the root directory containing the `workflow/Snakefile` and execute:
 
 ```bash
 #snakemake --cores <number_of_threads> --use-conda
@@ -146,6 +155,7 @@ Replace `<number_of_threads>` with the number of CPU threads you want to allocat
 **Note:** 
 * The `--use-conda` flag enables the use of conda environments specified in the `Snakefile`.
 * The `--keep-going` flag allows the pipeline to continue even if a rule fails. This is useful for debugging purposes. Somtimes the analysis of ECMSD fails due to issues with the input data. In this case, the rest of the pipeline can still be executed.
+* The number of threads can be adjusted using the `--cores` option when running Snakemake.
 
 ### Running the Pipeline in the Background
 
@@ -159,25 +169,11 @@ nohup snakemake --cores <number_of_threads> --use-conda --keep-going > pipeline.
 
 Snakemake automatically tracks the state of the pipeline and will only re-run steps that are incomplete or outdated. If you want to restart the pipeline from the beginning, you can delete the relevant output files and re-run the pipeline.
 
-### Parallelization
-
-The number of threads can be adjusted using the `--cores` option when running Snakemake. Additionally, the `threads` parameter in the `config.yaml` file can be used to set default thread usage for specific rules.
-
 ## Folder Structure
 
 ### Species Folders
 
 The project contains folders for different species, which contain the raw data, processed data, and results for each species.
-
-When adding a new species, make sure to 
-- add the folder name to the `config.yaml`
-- provide the raw reads in `<species>/raw/reads/` folder
-- provide the reference genome in `<species>/raw/ref_genome/` folder
-- provide mtDNA reads in `<species>/raw/mtdna/` folder
-- all other folders will be created and populated automatically
-  - folder `<species>/processed/` contains the intermediary files during processing
-  - folder `<species>/results/` contains the final results and reports
-  - general reads processing data will be in either `processed`or `results`. Everything related to a reference genome will have a `<reference_genome>` folder under `processed`or `results`. Typically, only the `results` folder will contain information required for further analyis. In case more information is required, the original files can often be found in the `processed` folder. Some exemptions include `*.sam` and unsorted `*.bam` files. These are deleted to save storrage space. Most other files are kept in order to allow reprocessing the pipeline from different points in case something fails. If a step should be repeated, the relevant files need to be deleted manually. 
 
 #### RAW Reads Filenames
 
@@ -194,28 +190,81 @@ Following this convention ensures proper organization and automated processing w
 - **`<Original_Filename>`** – The original filename assigned by the sequencing platform.  
 - **`.fastq.gz`** – The expected file extension, indicating compressed FASTQ format.  
 
-#### Example:
+Notes:
+ - This name must contain `_R1_` and, if paired-end, `_R2_`.
+ - For paired-end data, the name of the reads must be identical except for `_R1_` and `_R2_`.
+ - Individual names/IDs will be used to name the output files as well as in the reports and plots.
 
+#### Example:
 ```
 Bger1_326862_S37_R1_001.fastq.gz
 ```
 
+### Output Folder Structure
 
-### Scripts Folder
-
-The `scripts/` folder contains all necessary scripts for the aDNA pipeline, organized into subfolders corresponding to different stages of the analysis.
-
-#### Usage of Snakemake Workflow
-
-The `Snakefile` is the main entry point for the aDNA pipeline. It orchestrates the execution of various rules and tasks, guiding the pipeline through its different stages.
-
-##### Pipeline Stages
-
-The pipeline is divided into several stages, executed sequentially:
-
-1. **Raw reads processing** - for more details see [Raw Read Processing](raw_reads_processing.md)
-2. **Reference genome processing** - for more details see [Reference Genome Processing](ref_genome_processing.md)
-3. **Additional analysis**
-
-Snakemake automatically manages dependencies and workflow execution.
-
+```
+<species>/
+├── raw/
+│   ├── ref_genome/
+│   └── reads/
+├── results/
+│   ├── <ref_genome>/
+│   │   ├── endogenous/
+│   │   │   ├── <Individual>/
+│   │   ├── damage/
+│   │   │   └── <Individual>/
+│   │   ├── statistics/
+│   │   │   └── <Individual>/
+│   │   ├── coverage/
+│   │   │   └── <Individual>/
+│   │   └── plots/
+│   │       ├── endogenous_reads/
+│   │       └── coverage/
+│   ├── contamination_analysis/
+│   │   └── ecmsd/
+│   │       └── <read_name>/
+│   └── reads/
+│       ├── reads_merged/
+│       │   └── fastqc/
+│       ├── reads_raw/
+│       │   └── fastqc/
+│       ├── reads_quality_filtered/
+│       │   ├── fastqc/
+│       │   └── fastp_report/
+│       ├── reads_trimmed/
+│       │   └── fastqc/
+│       └── statistics/
+├── logs/
+│   ├── <ref_genome>/
+│   │   ├── endogenous/
+│   │   │   └── <Individual>/
+│   │   ├── consensus/
+│   │   │   └── <Individual>/
+│   │   ├── damage/
+│   │   │   └── <Individual>/
+│   │   ├── statistics/
+│   │   │   └── <Individual>/
+│   │   ├── coverage/
+│   │   │   └── <Individual>/
+│   │   └── plots/
+│   │       ├── endogenous_reads/
+│   │       └── coverage/
+│   ├── contamination_analysis/
+│   │   └── ecmsd/
+│   └── reads/
+│       ├── reads_merged/
+│       │   └── fastqc/
+│       ├── reads_raw/
+│       │   └── fastqc/
+│       ├── reads_quality_filtered/
+│       │   └── fastqc/
+│       └── reads_trimmed/
+│           └── fastqc/
+├── processed/
+│   ├── <ref_genome>/
+│   │   ├── consensus/
+│   │   │   └── <Individual>/
+│   │   └── mapped/
+│   └── reads/
+│       └── reads_merged/
+```
