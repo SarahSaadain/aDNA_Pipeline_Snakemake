@@ -2,7 +2,10 @@
 #     Dependencies and Environment Setup
 # =================================================================================================
 # Import required Python modules for system, platform, logging, and workflow management
-import os, sys, pwd, re
+import os
+import sys  
+import pwd
+import re
 import socket, platform
 import subprocess
 from datetime import datetime
@@ -48,8 +51,6 @@ cfgfiles = []
 for cfg in workflow.configfiles:
     cfgfiles.append(os.path.abspath(cfg))
 cfgfiles = "\n                        ".join(cfgfiles)
-
-
 
 # =================================================================================================
 #     Platform and OS Information
