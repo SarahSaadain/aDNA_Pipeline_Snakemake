@@ -243,7 +243,7 @@ def skip_existing_files(expected_outputs):
 # This function collects all expected output files for each species and sample, ensuring that
 # downstream rules have the correct input targets for completion. It is typically used to define
 # the 'all' rule in the Snakefile, which triggers the entire workflow.
-def get_all_inputs(wildcards):
+def get_expected_outputs_from_pipeline(wildcards):
     # Initialize the list to hold all required input file paths
     expected_output = []
 
