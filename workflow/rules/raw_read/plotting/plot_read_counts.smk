@@ -1,3 +1,7 @@
+####################################################
+# Snakemake rules
+####################################################
+
 # Rule: Plot read count comparison for species
 rule plot_read_counts:
     input:

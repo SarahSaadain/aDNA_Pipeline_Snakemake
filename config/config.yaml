@@ -32,18 +32,6 @@ pipeline:
     contamination_analysis:
       execute: true
       tools:
-        centrifuge:
-          execute: true
-          settings:
-            conda_env: "../../../../envs/centrifuge.yaml"
-            executable: "centrifuge"
-            database: "/mnt/data5/sarah/aDNA/centrifuge_db"
-        kraken: 
-          execute: true
-          settings:
-            conda_env: "../../../../envs/kraken.yaml"
-            executable: "kraken"
-            database: "/mnt/data5/sarah/aDNA/kraken_db"
         ecmsd:
           execute: true
           settings:
@@ -52,14 +40,12 @@ pipeline:
     statistical_analysis:
       execute: true
 
-  reference_genome_processing:
+  reference_processing:
     execute: true
-    
-    map_reads_to_reference_genome:
+  
+    map_reads_to_reference:
       execute: true
     damage_analysis:
-      execute: true
-    create_consensus_sequence:
       execute: true
     endogenous_reads_analysis: 
       execute: true
@@ -68,5 +54,5 @@ pipeline:
 
 # Species-specific settings
 species:
-  sample:
-    name: "Sample Species"
+  demo:
+    name: "Dmel Demo"

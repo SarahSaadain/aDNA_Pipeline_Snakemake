@@ -1,4 +1,9 @@
-def get_adapter_removal_input_reads(wc):
+####################################################
+# Python helper functions for rules
+# Naming of functions: <rule_name>_<rule_parameter>[_<rule_subparameter>]>
+####################################################
+
+def remove_adapters_type_with_fastp_input_sample(wc):
     """
     Returns a list of read files for R1/R2 if available.
     If only R1 exists, returns a single-element list [R1].
@@ -31,10 +36,14 @@ def get_adapter_removal_input_reads(wc):
     else:
         return [r1]      # Single-end
  
+####################################################
+# Snakemake rules
+####################################################
+
 # Rule: Adapter removal for single-end reads using fastp
-rule fastp_se:
+rule remove_adapters_single_with_fastp:
     input:
-        sample=get_adapter_removal_input_reads,
+        sample=remove_adapters_type_with_fastp_input_sample,
     output:
         trimmed=temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.se.fastq.gz"),
         failed=temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.se.failed.fastq.gz"),
@@ -67,9 +76,9 @@ rule fastp_se:
  
  
 # Rule: Adapter removal for paired-end reads using fastp
-rule fastp_pe:
+rule remove_adapters_paired_with_fastp:
     input:
-        sample=get_adapter_removal_input_reads,
+        sample=remove_adapters_type_with_fastp_input_sample,
     output:
         trimmed=[
             temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.R1.fastq.gz"),
@@ -94,7 +103,7 @@ rule fastp_pe:
         adapters=lambda wc: (
             f"--adapter_sequence {config['pipeline']['raw_reads_processing']['adapter_removal']['settings']['adapters_sequences'].get('r1','')} "
             f"--adapter_sequence_r2 {config['pipeline']['raw_reads_processing']['adapter_removal']['settings']['adapters_sequences'].get('r2','')}"
-            if config['pipeline']['raw_reads_processing']['adapter_removal'][.get('settings', {}).get('adapters_sequences')
+            if config['pipeline']['raw_reads_processing']['adapter_removal'].get('settings', {}).get('adapters_sequences')
             else "--detect_adapter_for_pe"
         ),
         extra=lambda wc: (

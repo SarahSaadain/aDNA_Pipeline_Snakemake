@@ -1,4 +1,8 @@
-rule centrifuge_analysis:
+####################################################
+# Snakemake rules
+####################################################
+
+rule analyze_contamination_with_centrifuge:
     input:
         fastq = "{species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered.fastq.gz",
     output:

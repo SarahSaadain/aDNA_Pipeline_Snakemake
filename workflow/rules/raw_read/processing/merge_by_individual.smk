@@ -1,9 +1,13 @@
-import glob
-import os
+####################################################
+# Python helper functions for rules
+# Naming of functions: <rule_name>_<rule_parameter>[_<rule_subparameter>]>
+####################################################
 
-def expected_quality_filtered_files(wildcards):
+def merge_reads_by_individual_input(wildcards):
 
     samples = get_sample_ids_for_species(wildcards.species)
+
+    print (samples)
 
     # find all samples that match the individual
     samples_of_individual = [f for f in samples if f.startswith(f"{wildcards.individual}")]
@@ -19,11 +23,14 @@ def expected_quality_filtered_files(wildcards):
     
     return quality_filtered_files
 
+####################################################
+# Snakemake rules
+####################################################
 
 # Rule: Merge quality-filtered reads by individual
-rule merge_by_individual:
+rule merge_reads_by_individual:
     input:
-        expected_quality_filtered_files
+        merge_reads_by_individual_input
     output:
         "{species}/processed/reads/reads_merged/{individual}.fastq.gz"
     message: 

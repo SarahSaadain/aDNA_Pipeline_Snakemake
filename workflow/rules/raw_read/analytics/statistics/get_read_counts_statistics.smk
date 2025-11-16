@@ -1,3 +1,32 @@
+####################################################
+# Python helper functions for rules
+# Naming of functions: <rule_name>_<rule_parameter>[_<rule_subparameter>]>
+####################################################
+
+def count_reads_raw_input_fastq(wildcards):
+    #lambda wildcards: get_files_in_folder_matching_pattern(os.path.join(wildcards.species, "raw", "reads"), f"{wildcards.sample}*R1*.fastq.gz")[0]
+    
+    files = get_r1_read_files_for_species(wildcards.species)
+    matched_files = [f for f in files if wildcards.sample in os.path.basename(f)]
+    if len(matched_files) == 0:
+        raise Exception(f"No raw read files found for sample {wildcards.sample} in species {wildcards.species}.")
+    return matched_files[0] 
+
+def count_reads_trimmed_input_fastq(wildcards):
+    # Determine if the sample is paired-end or single-end
+    reads = remove_adapters_type_with_fastp_input_sample(wildcards)
+    if len(reads) == 2:
+        # Paired-end: use the merged reads from fastp_pe
+        return [f"{wildcards.species}/processed/reads/reads_trimmed/{wildcards.sample}_trimmed.pe.fastq.gz"]
+    else:
+        # Single-end: use the trimmed reads from fastp_se
+        return [f"{wildcards.species}/processed/reads/reads_trimmed/{wildcards.sample}_trimmed.se.fastq.gz"]
+ 
+
+####################################################
+# Python helper functions genereal
+####################################################
+
 import pandas as pd
 import gzip
 #import input_manager as im
@@ -25,20 +54,14 @@ def get_fastq_read_count(fastq_file):
     print(f"Found {count} reads in {fastq_file}")
     return count
 
-def get_expected_output_raw_reads(wildcards):
-    #lambda wildcards: get_files_in_folder_matching_pattern(os.path.join(wildcards.species, "raw", "reads"), f"{wildcards.sample}*R1*.fastq.gz")[0]
-    
-    files = get_r1_read_files_for_species(wildcards.species)
-    matched_files = [f for f in files if wildcards.sample in os.path.basename(f)]
-    if len(matched_files) == 0:
-        raise Exception(f"No raw read files found for sample {wildcards.sample} in species {wildcards.species}.")
-    return matched_files[0] 
-
+####################################################
+# Snakemake rules
+####################################################
 
 # Rule: Count reads in raw FASTQ files
 rule count_reads_raw:
     input:
-        fastq=get_expected_output_raw_reads
+        fastq=count_reads_raw_input_fastq
     output:
         counted=temp("{species}/processed/reads/statistics/{sample}_raw.count")
     message: "Counting reads in raw FASTQ file {input.fastq}"
@@ -51,7 +74,7 @@ rule count_reads_raw:
 # Rule: Count reads in trimmed FASTQ files
 rule count_reads_trimmed:
     input:
-        fastq=get_expected_output_trimmed_read
+        fastq=count_reads_trimmed_input_fastq
     output:
         counted=temp("{species}/processed/reads/statistics/{sample}_trimmed.count")
     message: "Counting reads in {input.fastq}"

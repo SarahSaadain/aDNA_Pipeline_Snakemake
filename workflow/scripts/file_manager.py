@@ -62,28 +62,28 @@ def get_individuals_for_species(species):
     return sorted(list(individuals))
 
 # -----------------------------------------------------------------------------------------------
-# Get reference genome files for a given species (supports .fna, .fasta, .fa)
-def get_reference_genome_file_list_for_species(species: str) -> list[tuple[str, str]]:
-    # Construct reference genome folder path
+# Get reference files for a given species (supports .fna, .fasta, .fa)
+def get_reference_file_list_for_species(species: str) -> list[tuple[str, str]]:
+    # Construct reference folder path
     species_folder = species
-    ref_genome_folder = os.path.join(species, "raw", "ref_genome")
+    reference_folder = os.path.join(species, "raw", "ref")
     try:
-    # Collect all supported reference genome files
-        reference_genome_files = get_files_in_folder_matching_pattern(ref_genome_folder, f"*.fna")
-        reference_genome_files += get_files_in_folder_matching_pattern(ref_genome_folder, f"*.fasta")
-        reference_genome_files += get_files_in_folder_matching_pattern(ref_genome_folder, f"*.fa")
+    # Collect all supported reference files
+        reference_files = get_files_in_folder_matching_pattern(reference_folder, f"*.fna")
+        reference_files += get_files_in_folder_matching_pattern(reference_folder, f"*.fasta")
+        reference_files += get_files_in_folder_matching_pattern(reference_folder, f"*.fa")
     except Exception as e:
         # Try looking in species folder directly as fallback.
-        reference_genome_files = get_files_in_folder_matching_pattern(species_folder, f"*.fna")
-        reference_genome_files += get_files_in_folder_matching_pattern(species_folder, f"*.fasta")
-        reference_genome_files += get_files_in_folder_matching_pattern(species_folder, f"*.fa")
+        reference_files = get_files_in_folder_matching_pattern(species_folder, f"*.fna")
+        reference_files += get_files_in_folder_matching_pattern(species_folder, f"*.fasta")
+        reference_files += get_files_in_folder_matching_pattern(species_folder, f"*.fa")
 
-    if len(reference_genome_files) == 0:
-        raise Exception(f"No reference genome found for species {species}.")
+    if len(reference_files) == 0:
+        raise Exception(f"No reference found for species {species}.")
         
     # Return as list of tuples: (filename without extension, full path)
-    reference_genome_files_with_filename = [(os.path.splitext(os.path.basename(f))[0], f) for f in reference_genome_files]
-    return reference_genome_files_with_filename
+    reference_files_with_filename = [(os.path.splitext(os.path.basename(f))[0], f) for f in reference_files]
+    return reference_files_with_filename
 
 # -----------------------------------------------------------------------------------------------
 # Extract individual ID from a given file path or sample name
@@ -97,7 +97,7 @@ def get_individual_from_sample(sample):
     return sample.split("_")[0]
 
 # -----------------------------------------------------------------------------------------------
-# Get only reference genome file paths for a species
-def get_ref_genomes_for_species(species):
-    refs = get_reference_genome_file_list_for_species(species)
+# Get only reference file paths for a species
+def get_references_for_species(species):
+    refs = get_reference_file_list_for_species(species)
     return [ref[1] for ref in refs]

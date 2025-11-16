@@ -1,12 +1,28 @@
-#import input_manager as sm
+####################################################
+# Python helper functions for rules
+# Naming of functions: <rule_name>_<rule_parameter>[_<rule_subparameter>]>
+####################################################
 
-def get_input_multiqc_raw(wildcards):
+def run_multiqc_raw_input(wildcards):
     return get_expected_output_fastqc_raw(wildcards.species)
 
+def run_multiqc_trimmed_input(wildcards):
+    return get_expected_output_fastqc_trimmed(wildcards.species)
+
+def run_multiqc_quality_filtered_input(wildcards):
+    return get_expected_output_fastqc_quality_filtered(wildcards.species)
+
+def run_multiqc_merged_input(wildcards):
+    return get_expected_output_fastqc_merged(wildcards.species)
+
+####################################################
+# Snakemake rules
+####################################################
+
 # Rule: Run MultiQC on raw FastQC outputs
-rule multiqc_raw:
+rule run_multiqc_raw:
     input:
-        get_input_multiqc_raw
+        run_multiqc_raw_input
     output:
         report("{species}/results/reads/{species}_multiqc_raw.html",
             category="quality control",
@@ -20,13 +36,10 @@ rule multiqc_raw:
     wrapper:
         "v7.2.0/bio/multiqc"
 
-def get_input_multiqc_trimmed(wildcards):
-    return get_expected_output_fastqc_trimmed(wildcards.species)
-
 # Rule: Run MultiQC on trimmed FastQC outputs
-rule multiqc_trimmed:
+rule run_multiqc_trimmed:
     input:
-        get_input_multiqc_trimmed
+        run_multiqc_trimmed_input
     output:
         report("{species}/results/reads/{species}_multiqc_trimmed.html",
             category="quality control",
@@ -40,13 +53,10 @@ rule multiqc_trimmed:
     wrapper:
         "v7.2.0/bio/multiqc"
 
-def get_input_multiqc_quality_filtered(wildcards):
-    return get_expected_output_fastqc_quality_filtered(wildcards.species)
-
 # Rule: Run MultiQC on quality-filtered FastQC outputs
-rule multiqc_quality_filtered:
+rule run_multiqc_quality_filtered:
     input:
-        get_input_multiqc_quality_filtered
+        run_multiqc_quality_filtered_input
     output:
         report("{species}/results/reads/{species}_multiqc_quality_filtered.html",
             category="quality control",
@@ -60,13 +70,11 @@ rule multiqc_quality_filtered:
     wrapper:
         "v7.2.0/bio/multiqc"
 
-def get_input_multiqc_merged(wildcards):
-    return get_expected_output_fastqc_merged(wildcards.species)
 
 # Rule: Run MultiQC on merged FastQC outputs
-rule multiqc_merged:
+rule run_multiqc_merged:
     input:
-        get_input_multiqc_merged
+        run_multiqc_merged_input
     output:
         report("{species}/results/reads/{species}_multiqc_merged.html",
             category="quality control",

@@ -1,0 +1,9 @@
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python  # choose your preferred version
+  - biopython
+  - pysam
+  - pandas

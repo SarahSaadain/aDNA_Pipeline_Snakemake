@@ -25,7 +25,7 @@ This document walks through how the `aDNA_Pipeline_Snakemake` workflow works and
 - Workflow engine: Snakemake (minimum version: 9.9.0 as enforced by the pipeline).
 - Main entrypoint: `workflow/Snakefile` (a thin wrapper that includes rule files).
 - Config file: `config/config.yaml` controls pipeline behavior, stages, species, and tool-specific settings.
-- Major stages: raw reads processing, reads → reference genome processing (mapping, damage, consensus), and additional analyses (contamination checks: ECMSD, Kraken, Centrifuge).
+- Major stages: raw reads processing, reads → reference processing (mapping, damage), and additional analyses (contamination checks: ECMSD, Kraken, Centrifuge).
 
 ## Prerequisites
 
@@ -58,7 +58,7 @@ Both approaches are valid. Examples below assume you're in the project root (`aD
 - `workflow/scripts/` - helper Python/Snakemake scripts used by rules.
 - `reports/` - generated reports and workflow provenance (`reports/workflow.rst` is referenced by the pipeline).
 - `<species>/raw/reads/` - place raw FASTQ.gz reads here (see filenames below).
-- `<species>/raw/ref_genome/` - reference genome files for mapping.
+- `<species>/raw/ref/` - reference files for mapping.
 - `<species>/processed/` and `<species>/results/` - created by the pipeline for intermediate and final outputs.
 
 ## Input file naming & species folders
@@ -69,7 +69,7 @@ The pipeline expects inputs to be placed under a species folder with the followi
 <species>/
   raw/
     reads/            # raw fastq.gz files
-    ref_genome/       # reference FASTA, indexes are created in processing
+    ref/              # reference FASTA, indexes are created in processing
     mtdna/            # optional mitochondrial reads
 ```
 
@@ -96,11 +96,10 @@ The pipeline is split into two main grouped workflows which are included by `wor
    - contamination checks (ECMSD, Centrifuge, Kraken)
    - various read-level analytics & plotting
 
-2. `reads_to_reference_genome_processing.smk` (rules under `workflow/rules/reads_to_reference_genome/...`)
-   - prepare reference genome for mapping (indexing)
+2. `reads_to_reference_processing.smk` (rules under `workflow/rules/reads_to_reference/...`)
+   - prepare reference for mapping (indexing)
    - map reads to reference
    - analyze damage and rescale BAMs
-   - create consensus sequences & calculate MAFs
    - coverage statistics & plotting
    - determine endogenous read counts
 
@@ -111,7 +110,7 @@ Control flags: each pipeline stage and many individual process steps have an `ex
 Open `config/config.yaml`. Key sections:
 
 - `project_name`: human-friendly name for reports.
-- `pipeline:`: top-level stages (`raw_reads_processing`, `reference_genome_processing`, etc.). Each stage has `execute:` and nested process steps with their own `execute` flags and `settings`.
+- `pipeline:`: top-level stages (`raw_reads_processing`, `reference_processing`, etc.). Each stage has `execute:` and nested process steps with their own `execute` flags and `settings`.
 - `species:`: one entry per species (folder name), with `name:` used for human-readable labels.
 - Tool-specific settings for contamination tools include `conda_env`, `executable`, and `database` paths.
 
@@ -123,7 +122,7 @@ Example: to only run mapping and downstream analyses but skip raw-read processin
 pipeline:
   raw_reads_processing:
     execute: false
-  reference_genome_processing:
+  reference_processing:
     execute: true
 ```
 
@@ -251,8 +250,8 @@ snakemake --cores 1 --use-conda --keep-going -s workflow/Snakefile --printshellc
 
 ## Small maintenance & developer notes
 
-- To add a new species, add an entry under `species:` in `config/config.yaml` and create the folder structure under the repository root (or in your project workspace) with `raw/reads/` and `raw/ref_genome/`.
-- When adding new rules keep them organized in `workflow/rules/` and include them in the appropriate group file (`raw_reads_processing.smk` or `reads_to_reference_genome_processing.smk`).
+- To add a new species, add an entry under `species:` in `config/config.yaml` and create the folder structure under the repository root (or in your project workspace) with `raw/reads/` and `raw/ref/`.
+- When adding new rules keep them organized in `workflow/rules/` and include them in the appropriate group file (`raw_reads_processing.smk` or `reads_to_reference_processing.smk`).
 - For reproducibility, commit `config/config.yaml` changes to a branch, but keep machine-specific absolute database paths out of shared config or document them clearly.
 
 
@@ -270,15 +269,9 @@ snakemake --cores 4 --use-conda -n -s workflow/Snakefile
 snakemake --cores 8 --use-conda --keep-going -s workflow/Snakefile
 ```
 
-3) Run only mapping outputs (assuming reference and processed reads exist):
-
-```bash
-snakemake --cores 6 --use-conda -s workflow/Snakefile path/to/species/results/refgenome/some_expected_output
-```
-
 ## Development & adding rules
 
-- The pipeline is modular. Rule files live under `workflow/rules/` and are included by grouped files like `raw_reads_processing.smk` and `reads_to_reference_genome_processing.smk`.
+- The pipeline is modular. Rule files live under `workflow/rules/` and are included by grouped files like `raw_reads_processing.smk` and `reads_to_reference_processing.smk`.
 - New rules should follow the repository's pattern: place them in a logical subfolder and include them from the appropriate group file.
 - Use `config/config.yaml` to add or toggle settings instead of hardcoding values in rules.
 

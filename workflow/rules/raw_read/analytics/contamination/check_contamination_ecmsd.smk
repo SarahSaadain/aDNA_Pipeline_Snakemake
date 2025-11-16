@@ -1,5 +1,9 @@
+####################################################
+# Snakemake rules
+####################################################
+
 # Rule: Run eCMSD for contamination analysis
-rule ecmsd_analysis:
+rule analyze_contamination_with_ecmsd:
     input:
         fastq = "{species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered.fastq.gz",
     output:

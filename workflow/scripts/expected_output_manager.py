@@ -2,7 +2,7 @@
 #     Input Manager Utility Functions for aDNA Pipeline
 # =================================================================================================
 # This script provides helper functions for managing input files and sample metadata in the pipeline.
-# Functions include file discovery, reference genome handling, and sample identification.
+# Functions include file discovery, reference handling, and sample identification.
 
 import os
 import logging
@@ -149,65 +149,68 @@ def get_expexted_output_raw_read_processing(species):
     return expected_outputs
 
 # -----------------------------------------------------------------------------------------------
-# Get all expected output file paths for reference genome processing
-def get_expected_output_reference_genome_processing(species):
+# Get all expected output file paths for reference processing
+def get_expected_output_reference_processing(species):
 
-    if config["pipeline"]["reference_genome_processing"]["execute"] == False:
-        logging.info(f"Skipping reference genome processing for {species}. Disabled in config.")
+    if config["pipeline"]["reference_processing"]["execute"] == False:
+        logging.info(f"Skipping reference processing for {species}. Disabled in config.")
         return []
 
     expected_outputs = []
 
     try:
-    # Get all reference genomes for the species
-        ref_genome_list = get_reference_genome_file_list_for_species(species)
+    # Get all reference for the species
+        references_list = get_reference_file_list_for_species(species)
 
     except Exception as e: 
-        # Print error if reference genome files are missing or inaccessible
+        # Print error if reference files are missing or inaccessible
         logging.error(e)
         return []
     
      # Get all individuals for the species
     individuals = get_individuals_for_species(species)
 
-    for ref_genome_tuple in ref_genome_list:
+    for reference_tuple in references_list:
 
-        ref_genome_id = ref_genome_tuple[0]
+        reference_id = reference_tuple[0]
 
-        if config["pipeline"]["reference_genome_processing"]["endogenous_reads_analysis"]["execute"] == True:
-            # Add endogenous and coverage plots for each reference genome and individual
-            expected_outputs.append(os.path.join(species, "results" ,ref_genome_id, "plots", "endogenous_reads", f"{species}_{ref_genome_id}_endogenous_reads_bar_chart.png"))
+        if config["pipeline"]["reference_processing"]["endogenous_reads_analysis"]["execute"] == True:
+            # Add endogenous and coverage plots for each reference and individual
+            expected_outputs.append(os.path.join(species, "results" ,reference_id, "plots", "endogenous_reads", f"{species}_{reference_id}_endogenous_reads_bar_chart.png"))
         else:
-            logging.info(f"Skipping endogenous reads analysis for species {species} and reference genome {ref_genome_id}. Disabled in config.")
+            logging.info(f"Skipping endogenous reads analysis for species {species} and reference {reference_id}. Disabled in config.")
         
-        if config["pipeline"]["reference_genome_processing"]["coverage_analysis"]["execute"] == True:
-            expected_outputs.append(os.path.join(species, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_individual_depth_coverage_violin.png"))
-            expected_outputs.append(os.path.join(species, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_individual_depth_coverage_bar.png"))
-            expected_outputs.append(os.path.join(species, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_individual_coverage_breadth_bar.png"))
-            expected_outputs.append(os.path.join(species, "results" ,ref_genome_id, "plots", "coverage", f"{species}_{ref_genome_id}_individual_coverage_breadth_violin.png"))
+        if config["pipeline"]["reference_processing"]["coverage_analysis"]["execute"] == True:
+            expected_outputs.append(os.path.join(species, "results" ,reference_id, "plots", "coverage", f"{species}_{reference_id}_individual_depth_coverage_violin.png"))
+            expected_outputs.append(os.path.join(species, "results" ,reference_id, "plots", "coverage", f"{species}_{reference_id}_individual_depth_coverage_bar.png"))
+            expected_outputs.append(os.path.join(species, "results" ,reference_id, "plots", "coverage", f"{species}_{reference_id}_individual_coverage_breadth_bar.png"))
+            expected_outputs.append(os.path.join(species, "results" ,reference_id, "plots", "coverage", f"{species}_{reference_id}_individual_coverage_breadth_violin.png"))
         else:
-            logging.info(f"Skipping coverage analysis for species {species} and reference genome {ref_genome_id}. Disabled in config.")
+            logging.info(f"Skipping coverage analysis for species {species} and reference {reference_id}. Disabled in config.")
 
         for ind in individuals:
 
-            if config["pipeline"]["reference_genome_processing"]["map_reads_to_reference_genome"]["execute"] == True:
-                expected_outputs.append(os.path.join(species, "processed" ,ref_genome_id, "mapped", f"{ind}_{ref_genome_id}_sorted.bam"))
-                expected_outputs.append(os.path.join(species, "processed" ,ref_genome_id, "mapped", f"{ind}_{ref_genome_id}_sorted.bam.bai"))
-            else:
-                logging.info(f"Skipping read mapping for species {species} and individual {ind} to reference genome {ref_genome_id}. Disabled in config.")
+            if config["pipeline"]["reference_processing"]["map_reads_to_reference"]["execute"] == True:
+                expected_outputs.append(os.path.join(species, "processed" ,reference_id, "mapped", f"{ind}_{reference_id}_sorted.bam"))
+                expected_outputs.append(os.path.join(species, "processed" ,reference_id, "mapped", f"{ind}_{reference_id}_sorted.bam.bai"))
 
-            if config["pipeline"]["reference_genome_processing"]["damage_analysis"]["execute"] == True:
-                expected_outputs.append(os.path.join(species, "processed" ,ref_genome_id, "mapped", f"{ind}_{ref_genome_id}_sorted.rescaled.bam"))
-                expected_outputs.append(os.path.join(species, "processed" ,ref_genome_id, "mapped", f"{ind}_{ref_genome_id}_sorted.rescaled.bam.bai"))
-            else:
-                logging.info(f"Skipping damage analysis for species {species} and individual {ind} to reference genome {ref_genome_id}. Disabled in config.")
+                #todo
+                #{species}/processed/{reference}/mapped/deduplication/{individual}_{reference}_sorted_rmdup.bam
+                expected_outputs.append(os.path.join(species, "processed" ,reference_id, "mapped", f"deduplication_{ind}"))
 
-            # Add consensus sequence output for each individual and reference genome
-            if config["pipeline"]["reference_genome_processing"]["create_consensus_sequence"]["execute"] == True:
-                expected_outputs.append(os.path.join(species, "processed" ,ref_genome_id, "consensus", f"{ind}_{ref_genome_id}", f"{ind}_{ref_genome_id}_consensus.fa.gz"))
             else:
-                logging.info(f"Skipping consensus sequence creation for species {species} and individual {ind} to reference genome {ref_genome_id}. Disabled in config.")
-            
+                logging.info(f"Skipping read mapping for species {species} and individual {ind} to reference {reference_id}. Disabled in config.")
+
+            if config["pipeline"]["reference_processing"]["damage_analysis"]["execute"] == True:
+                expected_outputs.append(os.path.join(species, "processed" ,reference_id, "mapped", f"{ind}_{reference_id}_sorted.rescaled.bam"))
+                expected_outputs.append(os.path.join(species, "processed" ,reference_id, "mapped", f"{ind}_{reference_id}_sorted.rescaled.bam.bai"))
+
+                #todo
+                #"{species}/results/{reference}/damage_profile/{individual}"
+                expected_outputs.append(directory(os.path.join(species, "results" ,reference_id, "damage", "damageprofile", ind)))
+            else:
+                logging.info(f"Skipping damage analysis for species {species} and individual {ind} to reference {reference_id}. Disabled in config.")
+
     return expected_outputs
 
 # -----------------------------------------------------------------------------------------------
@@ -250,7 +253,7 @@ def get_expected_outputs_from_pipeline(wildcards):
     # Loop over each species defined in the config (must be available in the global scope)
     for species in config["species"]:
         expected_output += get_expexted_output_raw_read_processing(species)
-        expected_output += get_expected_output_reference_genome_processing(species)
+        expected_output += get_expected_output_reference_processing(species)
 
     # Optionally skip files that already exist to avoid redundant processing
     expected_output = skip_existing_files(expected_output)

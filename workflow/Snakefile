@@ -2,7 +2,7 @@
 # Snakefile for aDNA Pipeline
 ################################################
 # This Snakefile orchestrates the workflow for aDNA reads analysis.
-# It includes rules for different processing steps, such as raw read processing, mapping to reference genome, and quality control.
+# It includes rules for different processing steps, such as raw read processing, mapping to reference, and quality control.
 
 # initialize_pipeline.smk: Sets up initial configurations and outputs 
 # information for the pipeline.
@@ -18,8 +18,8 @@ include: "scripts/expected_output_manager.py"
 # rules/raw_reads_processing.smk: Contains rules for processing raw aDNA reads.
 include: "rules/raw_reads_processing.smk"
 
-# rules/reads_to_reference_genome_processing.smk: Contains rules for mapping reads to reference genome.
-include: "rules/reads_to_reference_genome_processing.smk"
+# rules/reads_to_reference_processing.smk: Contains rules for mapping reads to reference.
+include: "rules/reads_to_reference_processing.smk"
 
 # Define the all rule to specify the final targets of the workflow
 # This rule ensures that all necessary processing is completed for each species

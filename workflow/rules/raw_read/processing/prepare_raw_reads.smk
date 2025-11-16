@@ -1,3 +1,7 @@
+####################################################
+# Snakemake rules
+####################################################
+
 # Rule: Run eCMSD for contamination analysis
 rule prepare_raw_reads:
     input:

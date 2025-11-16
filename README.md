@@ -15,13 +15,13 @@ When adding a new species, make sure to
 - the species folder should be placed in the root folder of your pipeline
 - add the folder name to the `config.yaml` below `species:` 
 - your reads should be renamed according to the naming convention specified in the [RAW Reads filenames](#RAW-Reads-filenames) section
-- the pipeline supports automatically moving the raw reads to the `<species>/raw/reads/` folder as well as the reference genome to the `<species>/raw/ref_genome/` folder. Simply provide the files in the `<species>` folder. Alternatively, you can manually move the files to the respective folders.
+- the pipeline supports automatically moving the raw reads to the `<species>/raw/reads/` folder as well as the reference to the `<species>/raw/ref/` folder. Simply provide the files in the `<species>` folder. Alternatively, you can manually move the files to the respective folders.
   - provide the raw reads in `<species>/raw/reads/` folder
-  - provide the reference genome in `<species>/raw/ref_genome/` folder
+  - provide the reference in `<species>/raw/ref/` folder
 - all other folders will be created and populated automatically
   - folder `<species>/processed/` contains the intermediary files during processing. Most of these files are marked as temporary and will be deleted at the end of the pipeline. Some files are kept to allow reprocessing the pipeline from different points in case something fails.
   - folder `<species>/results/` contains the final results and reports. 
-  - general reads processing data will be in either `processed`or `results`. Everything related to a reference genome will have a `<reference_genome>` folder under `processed`or `results`. Typically, only the `results` folder will contain information required for further analyis. In case more information is required, the original files can often be found in the `processed` folder. Some exemptions include `*.sam` and unsorted `*.bam` files. These are deleted to save storrage space. Most other files are kept in order to allow reprocessing the pipeline from different points in case something fails. If a step should be repeated, the relevant files need to be deleted manually. 
+  - general reads processing data will be in either `processed`or `results`. Everything related to a reference will have a `<reference>` folder under `processed`or `results`. Typically, only the `results` folder will contain information required for further analyis. In case more information is required, the original files can often be found in the `processed` folder. Some exemptions include `*.sam` and unsorted `*.bam` files. These are deleted to save storrage space. Most other files are kept in order to allow reprocessing the pipeline from different points in case something fails. If a step should be repeated, the relevant files need to be deleted manually. 
 
 ## Configuration File Structure for aDNA Pipeline (`config.yaml`)
 
@@ -37,7 +37,7 @@ Defines the overall pipeline behavior, including execution controls and process 
 
 #### Pipeline Stages and Process Steps
 
-* The pipeline is broken into **stages** (e.g., `raw_reads_processing`, `reference_genome_processing`, `post_processing`).
+* The pipeline is broken into **stages** (e.g., `raw_reads_processing`, `reference_processing`, `post_processing`).
 * Each stage contains multiple **process steps** (e.g., `adapter_removal`, `deduplication`, ...).
 * Both stages and process steps can be controlled with `execute: true/false` flags to enable or disable them.
 * Some process steps include additional configurable settings (e.g., adapter sequences, database paths, ...).
@@ -112,13 +112,11 @@ pipeline:
     generate_raw_reads_plots: 
       execute: true
 
-  reference_genome_processing:
+  reference_processing:
     execute: true
-    prepare_reference_genome:
+    prepare_reference:
       execute: true
-    map_reads_to_reference_genome:
-      execute: true
-    create_consensus_sequence:
+    map_reads_to_reference:
       execute: true
     damage_analysis:
       execute: true
@@ -126,7 +124,7 @@ pipeline:
       execute: true
     coverage_analysis: 
       execute: true
-    generate_reference_genome_plots: 
+    generate_reference_plots: 
       execute: true
 
 # Species details
@@ -205,10 +203,10 @@ Bger1_326862_S37_R1_001.fastq.gz
 ```
 <species>/
 ├── raw/
-│   ├── ref_genome/
+│   ├── ref/
 │   └── reads/
 ├── results/
-│   ├── <ref_genome>/
+│   ├── <reference>/
 │   │   ├── endogenous/
 │   │   │   ├── <Individual>/
 │   │   ├── damage/
@@ -235,10 +233,8 @@ Bger1_326862_S37_R1_001.fastq.gz
 │       │   └── fastqc/
 │       └── statistics/
 ├── logs/
-│   ├── <ref_genome>/
+│   ├── <reference>/
 │   │   ├── endogenous/
-│   │   │   └── <Individual>/
-│   │   ├── consensus/
 │   │   │   └── <Individual>/
 │   │   ├── damage/
 │   │   │   └── <Individual>/
@@ -261,9 +257,7 @@ Bger1_326862_S37_R1_001.fastq.gz
 │       └── reads_trimmed/
 │           └── fastqc/
 ├── processed/
-│   ├── <ref_genome>/
-│   │   ├── consensus/
-│   │   │   └── <Individual>/
+│   ├── <reference>/
 │   │   └── mapped/
 │   └── reads/
 │       └── reads_merged/

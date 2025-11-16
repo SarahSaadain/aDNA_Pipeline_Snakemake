@@ -1,5 +1,9 @@
+####################################################
+# Snakemake rules
+####################################################
+
 # Rule: Run Kraken2 for contamination analysis
-rule kraken_analysis:
+rule analyze_contamination_with_kraken:
     input:
         fastq = "{species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered.fastq.gz",
     output:
