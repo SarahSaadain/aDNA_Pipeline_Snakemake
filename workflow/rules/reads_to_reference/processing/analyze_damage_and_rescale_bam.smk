@@ -1,10 +1,41 @@
 ####################################################
+# Python helper functions for rules
+# Naming of functions: <rule_name>_<rule_parameter>[_<rule_subparameter>]>
+####################################################
+
+def helper_get_bam_for_damage_analysis(wildcards):
+
+    species = wildcards["species"]
+    reference_id = wildcards["reference"]
+    ind = wildcards["individual"]
+
+    # if deduplication is enabled, return the dedupped bam
+    # if map_reads_to_reference is enabled, return the sorted bam
+
+    if config.get("pipeline", {}).get("reference_processing", {}).get("deduplication", {}).get("execute", True) == True:
+        return os.path.join(species, "processed" ,reference_id, "mapped", f"{ind}_{reference_id}_sorted_dedupped.bam")
+
+    return os.path.join(species, "processed" ,reference_id, "mapped", f"{ind}_{reference_id}_sorted.bam")
+
+
+def analyze_damageprofile_input_bam(wildcards):
+    return helper_get_bam_for_damage_analysis(wildcards)
+    
+def analyze_mapdamage_and_rescale_bam_input_bam(wildcards):
+    return helper_get_bam_for_damage_analysis(wildcards)
+
+def analyze_mapdamage_and_rescale_bam_input_bam_index(wildcards):
+    return f"{analyze_damageprofile_input_bam(wildcards)}.bai"
+
+#"{species}/processed/{reference}/mapped/{individual}_{reference}_sorted_dedupped.bam",
+
+####################################################
 # Snakemake rules
 ####################################################
 
 rule analyze_damageprofile:
     input:
-        bam = "{species}/processed/{reference}/mapped/{individual}_{reference}_sorted.bam",
+        bam = analyze_damageprofile_input_bam,
         ref = "{species}/raw/ref/{reference}.fa",
         ref_index = "{species}/raw/ref/{reference}.fa.fai"
     output:
@@ -22,8 +53,8 @@ rule analyze_damageprofile:
 # Rule: Analyze DNA damage and rescale BAM using mapDamage2
 rule analyze_mapdamage_and_rescale_bam:
     input:
-        bam = "{species}/processed/{reference}/mapped/{individual}_{reference}_sorted.bam",
-        bam_index = "{species}/processed/{reference}/mapped/{individual}_{reference}_sorted.bam.bai",
+        bam = analyze_mapdamage_and_rescale_bam_input_bam,
+        bam_index = analyze_mapdamage_and_rescale_bam_input_bam_index,
         ref = "{species}/raw/ref/{reference}.fa"
     output:
         log = "{species}/results/{reference}/damage/mapdamage/{individual}/Runtime_log.txt",
@@ -80,10 +111,10 @@ rule index_rescaled_bam:
 rule move_rescaled_bam:
     input:
         sorted_bam="{species}/results/{reference}/damage/mapdamage/{individual}/{individual}_{reference}_sorted.bam",
-        bam_index="{species}/results/{reference}/damage/mapdamage/{individual}/{individual}_{reference}_sorted.bam.bai"
+        bam_index ="{species}/results/{reference}/damage/mapdamage/{individual}/{individual}_{reference}_sorted.bam.bai"
     output:
-        sorted_bam="{species}/processed/{reference}/mapped/{individual}_{reference}_sorted.rescaled.bam",
-        bam_index="{species}/processed/{reference}/mapped/{individual}_{reference}_sorted.rescaled.bam.bai"
+        sorted_bam="{species}/processed/{reference}/mapped/{individual}_{reference}_sorted_dedupped_rescaled.bam",
+        bam_index ="{species}/processed/{reference}/mapped/{individual}_{reference}_sorted_dedupped_rescaled.bam.bai"
     message:
         "Move rescaled BAM and index to processed directory for {input.sorted_bam}",
     shell:

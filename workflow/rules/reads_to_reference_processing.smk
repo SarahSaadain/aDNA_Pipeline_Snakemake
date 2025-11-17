@@ -10,11 +10,14 @@ include: "reads_to_reference/processing/prepare_reference_for_mapping.smk"
 # Map ancient DNA reads to the reference
 include: "reads_to_reference/processing/map_reads_to_reference.smk"
 
-# Filter mapped BAM files
-include: "reads_to_reference/processing/filter_mapped_bam.smk"
+# Deduplicate mapped reads
+include: "reads_to_reference/processing/deduplication.smk"
 
 # Analyze DNA damage patterns and rescale BAM files
 include: "reads_to_reference/processing/analyze_damage_and_rescale_bam.smk"
+
+# Get the final BAM file
+include: "reads_to_reference/processing/get_final_bam.smk"
 
 # Determine coverage depth and breadth statistics
 include: "reads_to_reference/analytics/statistics/determine_coverage_depth_breadth.smk"

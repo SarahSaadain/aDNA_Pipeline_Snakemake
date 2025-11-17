@@ -10,7 +10,7 @@ plot_endogenous_reads_bar <- function(source_file, output_file) {
     mutate(
       Non_Endogenous = TotalReads - MappedReads,
       Proportion = MappedReads / TotalReads,
-      percent_endogenous = Proportion
+      percent_endogenous = Proportion * 100
     )
   
   df$Individual <- sub("\\..*", "", df$Filename)

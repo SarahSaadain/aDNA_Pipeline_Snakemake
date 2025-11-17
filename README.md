@@ -57,75 +57,50 @@ project_name: "aDNA_Project"
 
 pipeline:
   raw_reads_processing:     # stage
-    execute: true           # disable or enable this stage
+    execute: true           # disable or enable this stage. Default true
     quality_checking_raw:   # process step
-      execute: true         # disable or enable this process step
-        adapter_removal:
-      execute: true
+      execute: true         # disable or enable this stage. Default true
+    adapter_removal:
+      execute: true         # disable or enable this stage. Default true
       settings: 
-        min_quality: 5    # default 5
-        min_length: 15    # default 15
+        min_quality: 5      # default 5
+        min_length: 15      # default 15
         adapters_sequences: # if not provided, fastp will try to identify adapters
           r1: "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"
           r2: "AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT" 
     quality_checking_trimmed:
-      execute: true
+      execute: true         # disable or enable this stage. Default true
     quality_filtering:
-      execute: true
+      execute: true         # disable or enable this stage. Default true
       settings:
-        min_quality: 15   # default 15
-        min_length: 15    # default 15
+        min_quality: 15     # default 15
+        min_length: 15      # default 15
     quality_checking_quality_filtered:
-      execute: true
-    deduplication:
-      execute: true
-    quality_checking_deduplication:
-      execute: true
-    generate_quality_check_report:
-      execute: true
-    merge_reads_by_individual:
-      execute: true
-    reads_processing_analysis:
-      execute: true
-    read_length_distribution_analysis: 
-      execute: true
+      execute: true         # disable or enable this stage. Default true
+    quality_checking_merged:
+      execute: true         # disable or enable this stage. Default true
     contamination_analysis:
-      execute: true
-      tools:
-        centrifuge:
-          execute: true
-          settings:
-            conda_env: "../../../../envs/centrifuge.yaml"
-            executable: "centrifuge"
-            database: "/mnt/data5/sarah/aDNA/centrifuge_db"
-        kraken: 
-          execute: true
-          settings:
-            conda_env: "../../../../envs/kraken.yaml"
-            executable: "kraken"
-            database: "/mnt/data5/sarah/aDNA/kraken_db"
-        ecmsd:
-          execute: true
-          settings:
-            conda_env: "../../../../envs/ecmsd.yaml"
-            executable: "/mnt/data2/sarah/app_ecmsd/shell/ECMSD.sh"
-    generate_raw_reads_plots: 
+      execute: true         # disable or enable this stage. Default true
+        settings:
+          conda_env: "/your/path/to/ecmsd/conda/envs/"
+          executable: "/your/path/to/ecmsd/shell/ECMSD.sh"
+    statistical_analysis:
       execute: true
 
   reference_processing:
-    execute: true
-    prepare_reference:
-      execute: true
-    map_reads_to_reference:
-      execute: true
+    execute: true           # disable or enable this stage. Default true
+    deduplication:
+      execute: true         # disable or enable this stage. Default true
+    damage_rescaling:
+      execute: true         # disable or enable this stage. Default true
     damage_analysis:
-      execute: true
+      execute: true         # disable or enable this stage. Default true
     endogenous_reads_analysis: 
-      execute: true
+      execute: true         # disable or enable this stage. Default true
     coverage_analysis: 
-      execute: true
+      execute: true         # disable or enable this stage. Default true
     generate_reference_plots: 
-      execute: true
+      execute: true         # disable or enable this stage. Default true
 
 # Species details
 species:

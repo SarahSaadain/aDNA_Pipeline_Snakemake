@@ -42,8 +42,9 @@ pipeline:
 
   reference_processing:
     execute: true
-  
-    map_reads_to_reference:
+    deduplication:
+      execute: true
+    damage_rescaling:
       execute: true
     damage_analysis:
       execute: true

@@ -11,7 +11,7 @@ import logging
 # Get expected output file paths for FastQC (raw reads)
 def get_expected_output_fastqc_raw(species):
 
-    if config["pipeline"]["raw_reads_processing"]["quality_checking_raw"]["execute"] == False:
+    if config.get("pipeline", {}).get("raw_reads_processing", {}).get("quality_checking_raw", {}).get("execute", True) == False:
         logging.info(f"Skipping FastQC for raw reads for {species}. Disabled in config.")
         return []
 
@@ -29,7 +29,7 @@ def get_expected_output_fastqc_raw(species):
 # -----------------------------------------------------------------------------------------------
 # Get expected output file paths for FastQC (adapter trimmed reads)
 def get_expected_output_fastqc_trimmed(species):
-    if config["pipeline"]["raw_reads_processing"]["quality_checking_trimmed"]["execute"] == False:
+    if config.get("pipeline", {}).get("raw_reads_processing", {}).get("quality_checking_trimmed", {}).get("execute", True) == False:
         logging.info(f"Skipping FastQC for trimmed reads for {species}. Disabled in config.")
         return []
 
@@ -41,7 +41,7 @@ def get_expected_output_fastqc_trimmed(species):
 # -----------------------------------------------------------------------------------------------
 # Get expected output file paths for FastQC (adapter removed reads)
 def get_expected_output_fastqc_quality_filtered(species):
-    if config["pipeline"]["raw_reads_processing"]["quality_checking_quality_filtered"]["execute"] == False:
+    if config.get("pipeline", {}).get("raw_reads_processing", {}).get("quality_checking_quality_filtered", {}).get("execute", True) == False:
         logging.info(f"Skipping FastQC for quality filtered reads for {species}. Disabled in config.")
         return []
 
@@ -60,28 +60,16 @@ def get_expected_output_fastqc_merged(species):
 
 def get_expected_output_contamination(species):  
 
-    if config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["execute"] == False:
+    if config.get("pipeline", {}).get("raw_reads_processing", {}).get("contamination_analysis", {}).get("execute", True) == False:
         logging.info(f"Skipping contamination analysis for {species}. Disabled in config.")
         return []
 
     expected_outputs = []
     
-    expected_outputs += get_expected_output_contamination_ecmsd(species)
-
-    return expected_outputs
-
-# -----------------------------------------------------------------------------------------------
-# Get expected output file paths for ECMSD contamination analysis
-def get_expected_output_contamination_ecmsd(species):  
-
-    if config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["ecmsd"]["execute"] == False:
-        logging.info(f"Skipping ECMSD contamination analysis for {species}. Disabled in config.")
-        return []
-
-    expected_outputs = []
     for sample in get_sample_ids_for_species(species):
         expected_outputs.append(os.path.join(species, "results", "contamination_analysis", "ecmsd", sample, "mapping", f"{sample}_Mito_summary.txt"))
     
+
     return expected_outputs
 
 # -----------------------------------------------------------------------------------------------
@@ -90,22 +78,22 @@ def get_expected_output_multiqc(species):
     expected_outputs = []
 
     # Add MultiQC reports for different read processing stages
-    if config["pipeline"]["raw_reads_processing"]["quality_checking_raw"]["execute"] == True:
+    if config.get("pipeline", {}).get("raw_reads_processing", {}).get("quality_checking_raw", {}).get("execute", True) == True:
         expected_outputs.append(os.path.join(species, "results", "reads", f"{species}_multiqc_raw.html"))
     else:
         logging.info(f"Skipping MultiQC report for raw reads for {species}. Disabled in config.")
 
-    if config["pipeline"]["raw_reads_processing"]["quality_checking_trimmed"]["execute"] == True:
+    if config.get("pipeline", {}).get("raw_reads_processing", {}).get("quality_checking_trimmed", {}).get("execute", True) == True:
         expected_outputs.append(os.path.join(species, "results", "reads", f"{species}_multiqc_trimmed.html"))
     else:
         logging.info(f"Skipping MultiQC report for trimmed reads for {species}. Disabled in config.")
 
-    if config["pipeline"]["raw_reads_processing"]["quality_checking_quality_filtered"]["execute"] == True:
+    if config.get("pipeline", {}).get("raw_reads_processing", {}).get("quality_checking_quality_filtered", {}).get("execute", True) == True:
         expected_outputs.append(os.path.join(species, "results", "reads", f"{species}_multiqc_quality_filtered.html"))
     else:
         logging.info(f"Skipping MultiQC report for quality filtered reads for {species}. Disabled in config.")
     
-    if config["pipeline"]["raw_reads_processing"]["quality_checking_merged"]["execute"] == True:
+    if config.get("pipeline", {}).get("raw_reads_processing", {}).get("quality_checking_merged", {}).get("execute", True) == True:
         expected_outputs.append(os.path.join(species, "results", "reads", f"{species}_multiqc_merged.html"))
     else:
         logging.info(f"Skipping MultiQC report for merged reads for {species}. Disabled in config.")
@@ -115,7 +103,7 @@ def get_expected_output_multiqc(species):
 # -----------------------------------------------------------------------------------------------
 # Get expected output file paths for read count plots
 def get_expected_output_reads_plots(species):
-    if config["pipeline"]["raw_reads_processing"]["statistical_analysis"]["execute"] == False:
+    if config.get("pipeline", {}).get("raw_reads_processing", {}).get("statistical_analysis", {}).get("execute", True) == False:
         logging.info(f"Skipping read plots generation for {species}. Disabled in config.")
         return []
     
@@ -130,7 +118,7 @@ def get_expected_output_reads_plots(species):
 # Get all expected output file paths for raw read processing
 def get_expexted_output_raw_read_processing(species):
 
-    if config["pipeline"]["raw_reads_processing"]["execute"] == False:
+    if config.get("pipeline", {}).get("raw_reads_processing", {}).get("execute", True) == False:
         logging.info(f"Skipping raw read processing for {species}. Disabled in config.")
         return []
     
@@ -152,7 +140,7 @@ def get_expexted_output_raw_read_processing(species):
 # Get all expected output file paths for reference processing
 def get_expected_output_reference_processing(species):
 
-    if config["pipeline"]["reference_processing"]["execute"] == False:
+    if config.get("pipeline", {}).get("reference_processing", {}).get("execute", True) == False:
         logging.info(f"Skipping reference processing for {species}. Disabled in config.")
         return []
 
@@ -174,13 +162,13 @@ def get_expected_output_reference_processing(species):
 
         reference_id = reference_tuple[0]
 
-        if config["pipeline"]["reference_processing"]["endogenous_reads_analysis"]["execute"] == True:
+        if config.get("pipeline", {}).get("reference_processing", {}).get("endogenous_reads_analysis", {}).get("execute", True) == True:
             # Add endogenous and coverage plots for each reference and individual
             expected_outputs.append(os.path.join(species, "results" ,reference_id, "plots", "endogenous_reads", f"{species}_{reference_id}_endogenous_reads_bar_chart.png"))
         else:
             logging.info(f"Skipping endogenous reads analysis for species {species} and reference {reference_id}. Disabled in config.")
         
-        if config["pipeline"]["reference_processing"]["coverage_analysis"]["execute"] == True:
+        if config.get("pipeline", {}).get("reference_processing", {}).get("coverage_analysis", {}).get("execute", True) == True:
             expected_outputs.append(os.path.join(species, "results" ,reference_id, "plots", "coverage", f"{species}_{reference_id}_individual_depth_coverage_violin.png"))
             expected_outputs.append(os.path.join(species, "results" ,reference_id, "plots", "coverage", f"{species}_{reference_id}_individual_depth_coverage_bar.png"))
             expected_outputs.append(os.path.join(species, "results" ,reference_id, "plots", "coverage", f"{species}_{reference_id}_individual_coverage_breadth_bar.png"))
@@ -189,24 +177,12 @@ def get_expected_output_reference_processing(species):
             logging.info(f"Skipping coverage analysis for species {species} and reference {reference_id}. Disabled in config.")
 
         for ind in individuals:
-
-            if config["pipeline"]["reference_processing"]["map_reads_to_reference"]["execute"] == True:
-                expected_outputs.append(os.path.join(species, "processed" ,reference_id, "mapped", f"{ind}_{reference_id}_sorted.bam"))
-                expected_outputs.append(os.path.join(species, "processed" ,reference_id, "mapped", f"{ind}_{reference_id}_sorted.bam.bai"))
-
-                #todo
-                #{species}/processed/{reference}/mapped/deduplication/{individual}_{reference}_sorted_rmdup.bam
-                expected_outputs.append(os.path.join(species, "processed" ,reference_id, "mapped", f"deduplication_{ind}"))
-
-            else:
-                logging.info(f"Skipping read mapping for species {species} and individual {ind} to reference {reference_id}. Disabled in config.")
-
-            if config["pipeline"]["reference_processing"]["damage_analysis"]["execute"] == True:
-                expected_outputs.append(os.path.join(species, "processed" ,reference_id, "mapped", f"{ind}_{reference_id}_sorted.rescaled.bam"))
-                expected_outputs.append(os.path.join(species, "processed" ,reference_id, "mapped", f"{ind}_{reference_id}_sorted.rescaled.bam.bai"))
-
-                #todo
-                #"{species}/results/{reference}/damage_profile/{individual}"
+            
+            expected_outputs.append(os.path.join(species, "processed" ,reference_id, "mapped", f"{ind}_{reference_id}_final.bam"))
+            expected_outputs.append(os.path.join(species, "processed" ,reference_id, "mapped", f"{ind}_{reference_id}_final.bam.bai"))
+            
+            if config.get("pipeline", {}).get("reference_processing", {}).get("damage_analysis", {}).get("execute", True) == True:
+                expected_outputs.append(os.path.join(species, "results" ,reference_id, "damage", "mapdamage", ind, "misincorporation.txt"))
                 expected_outputs.append(directory(os.path.join(species, "results" ,reference_id, "damage", "damageprofile", ind)))
             else:
                 logging.info(f"Skipping damage analysis for species {species} and individual {ind} to reference {reference_id}. Disabled in config.")
@@ -218,7 +194,7 @@ def get_expected_output_reference_processing(species):
 def skip_existing_files(expected_outputs):
 
     # Filter out files that already exist if the skip_existing_files option is enabled
-    if config["pipeline"]["global"]["skip_existing_files"] == False:
+    if config.get("pipeline", {}).get("global", {}).get("skip_existing_files", True) == False:
         return expected_outputs
     
     logging.info("Checking for existing files to skip...")

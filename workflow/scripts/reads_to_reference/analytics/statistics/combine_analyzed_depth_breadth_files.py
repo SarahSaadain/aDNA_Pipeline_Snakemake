@@ -26,7 +26,7 @@ def combine_analysis_files(individual_analysis_files, combined_file_path, combin
             original_bam_base = os.path.basename(analysis_file).replace(
                 ".coverage_analysis.csv", ""
             )
-            original_bam_filename = original_bam_base + ".sorted.bam"
+            original_bam_filename = original_bam_base + "_final.bam"
 
             # --- Aggregated stats ---
             total_bases_sum = df_analysis['total_bases'].sum()

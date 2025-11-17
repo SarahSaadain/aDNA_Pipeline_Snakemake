@@ -5,7 +5,7 @@
 # Rule: Calculate coverage depth using samtools
 rule determine_mapped_reads_coverage:
     input:
-        bams=["{species}/processed/{reference}/mapped/{individual}_{reference}_sorted.bam"]
+        bams=["{species}/processed/{reference}/mapped/{individual}_{reference}_final.bam"]
     output:
         temp("{species}/processed/{reference}/coverage/{individual}/{individual}_{reference}_depth.tsv")
     log:
