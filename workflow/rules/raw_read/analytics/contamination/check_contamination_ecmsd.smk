@@ -20,12 +20,12 @@ rule analyze_contamination_with_ecmsd:
                                 category="contamination_analysis",
                                 subcategory="ECMSD"),
     params:
-        executable = config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["settings"]["executable"]
+        executable = config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["ecmsd"]["settings"]["executable"]
     threads: 15
     log:
         "{species}/logs/contamination_analysis/ecmsd/{sample}_ecmsd.log"
     conda:
-        config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["settings"]["conda_env"]
+        config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["ecmsd"]["settings"]["conda_env"]
     message: "Running eCMSD contamination analysis for {input.fastq}"
     shell:
         """

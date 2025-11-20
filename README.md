@@ -81,9 +81,11 @@ pipeline:
       execute: true         # disable or enable this stage. Default true
     contamination_analysis:
       execute: true         # disable or enable this stage. Default true
-        settings:
-          conda_env: "/your/path/to/ecmsd/conda/envs/"
-          executable: "/your/path/to/ecmsd/shell/ECMSD.sh"
+      tools:
+        ecmsd:
+          settings:
+            conda_env: "/your/path/to/ecmsd/conda/envs/"
+            executable: "/your/path/to/ecmsd/shell/ECMSD.sh"
     statistical_analysis:
       execute: true
 

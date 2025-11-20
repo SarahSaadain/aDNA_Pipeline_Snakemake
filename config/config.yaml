@@ -33,7 +33,6 @@ pipeline:
       execute: true
       tools:
         ecmsd:
-          execute: true
           settings:
             conda_env: "../../../../envs/ecmsd.yaml"
             executable: "/mnt/data2/sarah/app_ecmsd/shell/ECMSD.sh"
