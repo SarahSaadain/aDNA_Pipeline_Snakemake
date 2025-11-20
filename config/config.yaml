@@ -43,7 +43,7 @@ pipeline:
   reference_processing:
     execute: true
     deduplication:
-      execute: true
+      execute: false
     damage_rescaling:
       execute: true
     damage_analysis:
