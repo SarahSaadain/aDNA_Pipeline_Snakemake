@@ -25,7 +25,7 @@ rule analyze_mapped_reads_coverage:
         analysis="{species}/results/{reference}/coverage/{individual}/{individual}_{reference}_coverage_analysis.csv"
     message: "Analyzing coverage depth and breadth for {input.depth_txt}"
     script:
-        "../../../../scripts/reads_to_reference/analytics/statistics/analyze_samtools_depth_individual_file.py"
+        "../../../scripts/reads_to_reference/analytics/statistics/analyze_samtools_depth_individual_file.py"
 
 # Rule: Combine coverage analysis files
 rule combine_analyzed_mapped_reads_coverage:
@@ -43,4 +43,4 @@ rule combine_analyzed_mapped_reads_coverage:
     params:
         species="{species}"
     script:
-        "../../../../scripts/reads_to_reference/analytics/statistics/combine_analyzed_depth_breadth_files.py"
+        "../../../scripts/reads_to_reference/analytics/statistics/combine_analyzed_depth_breadth_files.py"

@@ -12,7 +12,7 @@ rule determine_mapped_reads_endogenous:
     log:
         "{species}/logs/{reference}/endogenous/{individual}/{individual}_{reference}_endogenous.log"
     script:
-        "../../../../scripts/reads_to_reference/analytics/statistics/parse_endogenous_from_stats.py"
+        "../../../scripts/reads_to_reference/analytics/statistics/parse_endogenous_from_stats.py"
 
 # Rule: Combine endogenous reads for all individuals
 rule combine_determine_mapped_reads_endogenous:
@@ -29,4 +29,4 @@ rule combine_determine_mapped_reads_endogenous:
     log:
         "{species}/logs/{reference}/endogenous/{reference}_endogenous.log"
     script:
-        "../../../../scripts/reads_to_reference/analytics/statistics/combine_endogenous_reads.py"
+        "../../../scripts/reads_to_reference/analytics/statistics/combine_endogenous_reads.py"
