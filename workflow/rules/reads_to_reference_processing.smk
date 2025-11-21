@@ -20,13 +20,31 @@ include: "reads_to_reference/processing/analyze_damage_and_rescale_bam.smk"
 include: "reads_to_reference/processing/get_final_bam.smk"
 
 # Determine coverage depth and breadth statistics
-include: "reads_to_reference/analytics/statistics/determine_coverage_depth_breadth.smk"
+include: "reads_to_reference/analytics/determine_coverage_depth_breadth.smk"
 
 # Calculate additional mapping statistics using samtools
-include: "reads_to_reference/analytics/statistics/determine_samtools_stats.smk"
+include: "reads_to_reference/analytics/analyze_bam_with_samtools_stats.smk"
+
+# Calculate additional mapping statistics using preseq
+include: "reads_to_reference/analytics/analyze_bam_with_qualimap.smk"
+
+# Calculate additional mapping statistics using preseq
+include: "reads_to_reference/analytics/analyze_bam_with_picard_duplicates.smk"
+
+# Calculate additional mapping statistics using preseq
+include: "reads_to_reference/analytics/analyze_bam_with_preseq_lc_extrap.smk"
+
+# Analyze bam with samtools flagstat
+include: "reads_to_reference/analytics/analyze_bam_with_samtools_flagstat.smk"
+
+#create_multiqc_bam.smk
+include: "reads_to_reference/analytics/create_multiqc_bam.smk"
+
+# Calculate endogenous reads
+include: "reads_to_reference/analytics/determine_endogenous_reads.smk"
 
 # Assess the number of endogenous reads
-include: "reads_to_reference/analytics/statistics/determine_endogenous_reads.smk"
+include: "reads_to_reference/analytics/determine_endogenous_reads.smk"
 
 # Plot endogenous reads statistics
 include: "reads_to_reference/plotting/plot_endogenous_reads.smk"

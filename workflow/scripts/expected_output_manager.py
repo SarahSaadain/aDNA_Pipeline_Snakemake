@@ -173,14 +173,31 @@ def get_expected_output_reference_processing(species):
             expected_outputs.append(os.path.join(species, "results" ,reference_id, "plots", "coverage", f"{species}_{reference_id}_individual_depth_coverage_bar.png"))
             expected_outputs.append(os.path.join(species, "results" ,reference_id, "plots", "coverage", f"{species}_{reference_id}_individual_coverage_breadth_bar.png"))
             expected_outputs.append(os.path.join(species, "results" ,reference_id, "plots", "coverage", f"{species}_{reference_id}_individual_coverage_breadth_violin.png"))
+
         else:
             logging.info(f"Skipping coverage analysis for species {species} and reference {reference_id}. Disabled in config.")
+
+
+            #species}/results/{reference}/analytics/multiqc.html
+            #expected_outputs.append(os.path.join(species, "results" ,reference_id, "analytics", "multiqc.html"))
 
         for ind in individuals:
             
             expected_outputs.append(os.path.join(species, "processed" ,reference_id, "mapped", f"{ind}_{reference_id}_final.bam"))
             expected_outputs.append(os.path.join(species, "processed" ,reference_id, "mapped", f"{ind}_{reference_id}_final.bam.bai"))
             
+            #directory("{species}/results/{reference}/analytics/{individual}/qualimap"),
+            #expected_outputs.append(directory(os.path.join(species, "results" ,reference_id, "analytics", ind, "qualimap")))
+
+            #"{species}/results/{reference}/analytics/{individual}/preseq/{individual}_{reference}.lc_extrap"
+            #expected_outputs.append(os.path.join(species, "results" ,reference_id, "analytics", ind, "preseq", f"{ind}_{reference_id}.lc_extrap"))
+            
+            #{species}/results/{reference}/analytics/{individual}/picard_duplicates/{individual}_{reference}_metrics.txt
+            #expected_outputs.append(os.path.join(species, "results" ,reference_id, "analytics", ind, "picard_duplicates", f"{ind}_{reference_id}_metrics.txt"))
+
+            #"{species}/results/{reference}/analytics/{individual}/samtools_flagstats/{individual}_{reference}_final.bam.flagstats"
+            #expected_outputs.append(os.path.join(species, "results" ,reference_id, "analytics", ind, "samtools_flagstats", f"{ind}_{reference_id}_final.bam.flagstats"))
+
             if config.get("pipeline", {}).get("reference_processing", {}).get("damage_analysis", {}).get("execute", True) == True:
                 expected_outputs.append(os.path.join(species, "results" ,reference_id, "damage", "mapdamage", ind, "misincorporation.txt"))
                 expected_outputs.append(directory(os.path.join(species, "results" ,reference_id, "damage", "damageprofile", ind)))

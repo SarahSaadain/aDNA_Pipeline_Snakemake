@@ -5,7 +5,7 @@
 # Rule: Determine endogenous reads from BAM stats
 rule determine_mapped_reads_endogenous:
     input:
-        stats="{species}/results/{reference}/statistics/{individual}/{individual}_{reference}_final.bam.stats"
+        stats="{species}/results/{reference}/analytics/{individual}/samtools_stats/{individual}_{reference}_final.bam.stats"
     output:
         csv= "{species}/results/{reference}/endogenous/{individual}/{individual}_{reference}.endogenous.csv"
     message: "Determining endogenous reads for {input.stats}"
