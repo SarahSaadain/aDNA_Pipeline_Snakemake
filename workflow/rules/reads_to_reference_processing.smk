@@ -43,9 +43,6 @@ include: "reads_to_reference/analytics/create_multiqc_bam.smk"
 # Calculate endogenous reads
 include: "reads_to_reference/analytics/determine_endogenous_reads.smk"
 
-# Assess the number of endogenous reads
-include: "reads_to_reference/analytics/determine_endogenous_reads.smk"
-
 # Plot endogenous reads statistics
 include: "reads_to_reference/plotting/plot_endogenous_reads.smk"
 
@@ -54,6 +51,9 @@ include: "reads_to_reference/plotting/plot_coverage_breadth.smk"
 
 # Plot coverage depth across the reference
 include: "reads_to_reference/plotting/plot_coverage_depth.smk"
+
+# Plot raw and endogenous reads
+include: "reads_to_reference/plotting/plot_raw_and_endogenous_reads.smk"
 # =================================================================================================
 # End of reads_to_reference_processing.smk
 # =================================================================================================

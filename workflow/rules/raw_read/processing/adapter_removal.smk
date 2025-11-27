@@ -35,6 +35,17 @@ def remove_adapters_type_with_fastp_input_sample(wc):
         return [r1, r2]  # Paired-end
     else:
         return [r1]      # Single-end
+
+def get_trimmed_reads_fastp_input(wildcards):
+    # Determine if the sample is paired-end or single-end
+    reads = remove_adapters_type_with_fastp_input_sample(wildcards)
+    if len(reads) == 2:
+        # Paired-end: use the merged reads from fastp_pe
+        return f"{wildcards.species}/processed/reads/reads_trimmed/{wildcards.sample}_trimmed.pe.merged.fastq.gz"
+    else:
+        # Single-end: use the trimmed reads from fastp_se
+        return f"{wildcards.species}/processed/reads/reads_trimmed/{wildcards.sample}_trimmed.se.fastq.gz"
+ 
  
 ####################################################
 # Snakemake rules
@@ -117,3 +128,23 @@ rule remove_adapters_paired_with_fastp:
     threads: workflow.cores
     wrapper:
         "v7.5.0/bio/fastp"
+
+rule determine_reads_trimmed_final:
+    input:
+        get_trimmed_reads_fastp_input,
+    output:
+        temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed_final.fastq.gz"),
+    message: "Getting trimmed reads in {wildcards.sample}"
+    shell:
+        "mv {input} {output}"
+
+rule merge_reads_trimmed_pe:
+    input:
+        merged="{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.fastq.gz",
+        unpaired1="{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.unpaired.R1.fastq.gz",
+        unpaired2="{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.unpaired.R2.fastq.gz",
+    output:
+        temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.merged.fastq.gz"),
+    message: "Merging trimmed reads for paired-end"
+    shell:
+        "cat {input.merged} {input.unpaired1} {input.unpaired2} > {output}"

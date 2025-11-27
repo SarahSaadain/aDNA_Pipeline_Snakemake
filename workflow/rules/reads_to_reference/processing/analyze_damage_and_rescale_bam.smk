@@ -42,12 +42,14 @@ rule analyze_damageprofile:
         damage_profile = directory("{species}/results/{reference}/damage/damageprofile/{individual}")
     message:
         "Generate damage profile for {wildcards.individual} mapped to {wildcards.reference}",
+    resources:
+        mem_mb = 20000   # request 10 GB from cluster / cgroups
     conda:
         "../../../envs/damage_profiler.yaml"
     shell:
         """
         mkdir -p {output.damage_profile}
-        damageprofiler -i {input.bam} -r {input.ref} -o {output.damage_profile}
+        damageprofiler -Xms5g -Xmx20g -i {input.bam} -r {input.ref} -o {output.damage_profile}
         """
 
 # Rule: Analyze DNA damage and rescale BAM using mapDamage2

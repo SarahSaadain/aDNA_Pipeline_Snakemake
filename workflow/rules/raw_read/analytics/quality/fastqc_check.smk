@@ -1,19 +1,4 @@
 ####################################################
-# Python helper functions for rules
-# Naming of functions: <rule_name>_<rule_parameter>[_<rule_subparameter>]>
-####################################################
-
-def run_fastqc_adapter_removed_input(wildcards):
-    # Determine if the sample is paired-end or single-end
-    reads = remove_adapters_type_with_fastp_input_sample(wildcards)
-    if len(reads) == 2:
-        # Paired-end: use the merged reads from fastp_pe
-        return f"{wildcards.species}/processed/reads/reads_trimmed/{wildcards.sample}_trimmed.pe.fastq.gz"
-    else:
-        # Single-end: use the trimmed reads from fastp_se
-        return f"{wildcards.species}/processed/reads/reads_trimmed/{wildcards.sample}_trimmed.se.fastq.gz"
-
-####################################################
 # Snakemake rules
 ####################################################
 
@@ -39,7 +24,7 @@ rule run_fastqc_raw:
 # Rule: Run FastQC on adapter-trimmed reads
 rule run_fastqc_adapter_removed:
     input:
-        run_fastqc_adapter_removed_input
+        "{species}/processed/reads/reads_trimmed/{sample}_trimmed_final.fastq.gz"
     output:
         html="{species}/results/reads/reads_trimmed/fastqc/{sample}_trimmed_fastqc.html",
         zip="{species}/results/reads/reads_trimmed/fastqc/{sample}_trimmed_fastqc.zip"

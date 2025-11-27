@@ -165,6 +165,7 @@ def get_expected_output_reference_processing(species):
         if config.get("pipeline", {}).get("reference_processing", {}).get("endogenous_reads_analysis", {}).get("execute", True) == True:
             # Add endogenous and coverage plots for each reference and individual
             expected_outputs.append(os.path.join(species, "results" ,reference_id, "plots", "endogenous_reads", f"{species}_{reference_id}_endogenous_reads_bar_chart.png"))
+            expected_outputs.append(os.path.join(species, "results" ,reference_id, "plots", "endogenous_reads", f"{species}_{reference_id}_raw_and_endogenous_reads_bar_chart.png"))
         else:
             logging.info(f"Skipping endogenous reads analysis for species {species} and reference {reference_id}. Disabled in config.")
         
@@ -177,30 +178,17 @@ def get_expected_output_reference_processing(species):
         else:
             logging.info(f"Skipping coverage analysis for species {species} and reference {reference_id}. Disabled in config.")
 
+        expected_outputs.append(os.path.join(species, "results" ,reference_id, "multiqc.html"))
 
-            #species}/results/{reference}/analytics/multiqc.html
-            #expected_outputs.append(os.path.join(species, "results" ,reference_id, "analytics", "multiqc.html"))
 
         for ind in individuals:
             
             expected_outputs.append(os.path.join(species, "processed" ,reference_id, "mapped", f"{ind}_{reference_id}_final.bam"))
             expected_outputs.append(os.path.join(species, "processed" ,reference_id, "mapped", f"{ind}_{reference_id}_final.bam.bai"))
             
-            #directory("{species}/results/{reference}/analytics/{individual}/qualimap"),
-            #expected_outputs.append(directory(os.path.join(species, "results" ,reference_id, "analytics", ind, "qualimap")))
-
-            #"{species}/results/{reference}/analytics/{individual}/preseq/{individual}_{reference}.lc_extrap"
-            #expected_outputs.append(os.path.join(species, "results" ,reference_id, "analytics", ind, "preseq", f"{ind}_{reference_id}.lc_extrap"))
-            
-            #{species}/results/{reference}/analytics/{individual}/picard_duplicates/{individual}_{reference}_metrics.txt
-            #expected_outputs.append(os.path.join(species, "results" ,reference_id, "analytics", ind, "picard_duplicates", f"{ind}_{reference_id}_metrics.txt"))
-
-            #"{species}/results/{reference}/analytics/{individual}/samtools_flagstats/{individual}_{reference}_final.bam.flagstats"
-            #expected_outputs.append(os.path.join(species, "results" ,reference_id, "analytics", ind, "samtools_flagstats", f"{ind}_{reference_id}_final.bam.flagstats"))
-
             if config.get("pipeline", {}).get("reference_processing", {}).get("damage_analysis", {}).get("execute", True) == True:
                 expected_outputs.append(os.path.join(species, "results" ,reference_id, "damage", "mapdamage", ind, "misincorporation.txt"))
-                expected_outputs.append(directory(os.path.join(species, "results" ,reference_id, "damage", "damageprofile", ind)))
+                #expected_outputs.append(directory(os.path.join(species, "results" ,reference_id, "damage", "damageprofile", ind)))
             else:
                 logging.info(f"Skipping damage analysis for species {species} and individual {ind} to reference {reference_id}. Disabled in config.")
 

@@ -12,17 +12,6 @@ def count_reads_raw_input_fastq(wildcards):
         raise Exception(f"No raw read files found for sample {wildcards.sample} in species {wildcards.species}.")
     return matched_files[0] 
 
-def count_reads_trimmed_input_fastq(wildcards):
-    # Determine if the sample is paired-end or single-end
-    reads = remove_adapters_type_with_fastp_input_sample(wildcards)
-    if len(reads) == 2:
-        # Paired-end: use the merged reads from fastp_pe
-        return [f"{wildcards.species}/processed/reads/reads_trimmed/{wildcards.sample}_trimmed.pe.fastq.gz"]
-    else:
-        # Single-end: use the trimmed reads from fastp_se
-        return [f"{wildcards.species}/processed/reads/reads_trimmed/{wildcards.sample}_trimmed.se.fastq.gz"]
- 
-
 ####################################################
 # Python helper functions genereal
 ####################################################
@@ -74,12 +63,12 @@ rule count_reads_raw:
 # Rule: Count reads in trimmed FASTQ files
 rule count_reads_trimmed:
     input:
-        fastq=count_reads_trimmed_input_fastq
+        fastq="{species}/processed/reads/reads_trimmed/{sample}_trimmed_final.fastq.gz"
     output:
         counted=temp("{species}/processed/reads/statistics/{sample}_trimmed.count")
     message: "Counting reads in {input.fastq}"
     run:
-        count = get_fastq_read_count(input.fastq[0])
+        count = get_fastq_read_count(input.fastq)
         with open(output.counted, "w") as f:
             f.write(str(count))
 

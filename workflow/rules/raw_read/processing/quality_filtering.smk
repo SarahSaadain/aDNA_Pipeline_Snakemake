@@ -1,26 +1,11 @@
 ####################################################
-# Python helper functions for rules
-# Naming of functions: <rule_name>_<rule_parameter>[_<rule_subparameter>]>
-####################################################
-
-def filter_reads_by_quality_input_sample(wildcards):
-    # Determine if the sample is paired-end or single-end
-    reads = remove_adapters_type_with_fastp_input_sample(wildcards)
-    if len(reads) == 2:
-        # Paired-end: use the merged reads from fastp_pe
-        return [f"{wildcards.species}/processed/reads/reads_trimmed/{wildcards.sample}_trimmed.pe.fastq.gz"]
-    else:
-        # Single-end: use the trimmed reads from fastp_se
-        return [f"{wildcards.species}/processed/reads/reads_trimmed/{wildcards.sample}_trimmed.se.fastq.gz"]
- 
-####################################################
 # Snakemake rules
 ####################################################
 
 # Rule: Quality filtering of reads using fastp
 rule filter_reads_by_quality:
     input:
-        sample=filter_reads_by_quality_input_sample
+        sample = ["{species}/processed/reads/reads_trimmed/{sample}_trimmed_final.fastq.gz"]
     output:
         trimmed=temp("{species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered.fastq.gz"),
         failed=temp("{species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered.failed.fastq.gz"),
