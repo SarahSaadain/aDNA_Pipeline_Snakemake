@@ -7,8 +7,8 @@ rule run_fastqc_raw:
     input:
         "{species}/raw/reads/{sample}.fastq.gz"
     output:
-        html="{species}/results/reads/reads_raw/fastqc/{sample}_fastqc.html",
-        zip="{species}/results/reads/reads_raw/fastqc/{sample}_fastqc.zip"
+        html="{species}/results/reads/reads_raw/fastqc/{sample}_raw_fastqc.html",
+        zip="{species}/results/reads/reads_raw/fastqc/{sample}_raw_fastqc.zip"
     message: "Running FastQC on raw reads for sample {wildcards.sample} in species {wildcards.species}"
     params:
         extra="--quiet",
@@ -64,8 +64,8 @@ rule run_fastqc_merged:
     input:
         merged="{species}/processed/reads/reads_merged/{individual}.fastq.gz"
     output:
-        html="{species}/results/reads/reads_merged/fastqc/{individual}_fastqc.html",
-        zip="{species}/results/reads/reads_merged/fastqc/{individual}_fastqc.zip"
+        html="{species}/results/reads/reads_merged/fastqc/{individual}_merged_fastqc.html",
+        zip="{species}/results/reads/reads_merged/fastqc/{individual}_merged_fastqc.zip"
     message: "Running FastQC on merged reads for individual {wildcards.individual} in species {wildcards.species}"
     params:
         extra="--quiet",

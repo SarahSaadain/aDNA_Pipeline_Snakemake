@@ -21,7 +21,7 @@ def create_multiqc_bam_individual_input(wildcards):
         file_list.append(f"{species}/results/{reference}/analytics/{individual}/mapdamage/misincorporation.txt")
     
     if config.get("pipeline", {}).get("reference_processing", {}).get("deduplication", {}).get("execute", True) == True:
-        file_list.append(f"{species}/processed/{reference}/analytics/{individual}/dedup/{individual}_{reference}_sorted.hist")
+        file_list.append(f"{species}/results/{reference}/analytics/{individual}/dedup/{individual}_{reference}_sorted.dedup.json")
 
     return file_list
 

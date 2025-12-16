@@ -10,7 +10,19 @@ def remove_adapters_type_with_fastp_input_sample(wc):
     """
 
     return get_raw_reads_for_sample(wc.species, wc.sample)
+
+def determine_reads_trimmed_final_input(wildcards):
+    # Determine if the sample is paired-end or single-end
+    reads = remove_adapters_type_with_fastp_input_sample(wildcards)
+    if len(reads) == 2:
+        # Paired-end: use the merged reads from fastp_pe
+        return f"{wildcards.species}/processed/reads/reads_trimmed/{wildcards.sample}_trimmed.pe.merged.fastq.gz"
+    else:
+        # Single-end: use the trimmed reads from fastp_se
+        return f"{wildcards.species}/processed/reads/reads_trimmed/{wildcards.sample}_trimmed.se.fastq.gz"
  
+ 
+
 ####################################################
 # Snakemake rules
 ####################################################
@@ -85,7 +97,7 @@ rule remove_adapters_paired_with_fastp:
 
 rule determine_reads_trimmed_final:
     input:
-        get_trimmed_reads_fastp_input,
+        determine_reads_trimmed_final_input,
     output:
         temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed_final.fastq.gz"),
     message: "Getting trimmed reads in {wildcards.sample}"

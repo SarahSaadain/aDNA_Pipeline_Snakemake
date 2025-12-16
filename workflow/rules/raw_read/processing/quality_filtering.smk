@@ -9,12 +9,7 @@ rule filter_reads_by_quality:
     output:
         trimmed=temp("{species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered.fastq.gz"),
         failed=temp("{species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered.failed.fastq.gz"),
-        html=report(
-            "{species}/results/reads/reads_quality_filtered/fastp_report/{sample}_quality_filtered.html",
-            #caption="../report/fastp.rst",
-            category="quality control",
-            subcategory="fastp",
-        ),
+        html="{species}/results/reads/reads_quality_filtered/fastp_report/{sample}_quality_filtered.html",
         json="{species}/results/reads/reads_quality_filtered/fastp_report/{sample}_quality_filtered.json",
     message: "Quality filtering reads in {input.sample}"
     log:

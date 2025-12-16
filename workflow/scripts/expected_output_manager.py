@@ -20,10 +20,10 @@ def get_expected_output_fastqc_raw(species):
     all_inputs = []
     for raw_file in files:
         filename = os.path.basename(raw_file).replace('.fastq.gz','')
-        all_inputs.append(os.path.join(species, "results", "reads", "reads_raw", "fastqc", f"{filename}_fastqc.html"))
+        all_inputs.append(os.path.join(species, "results", "reads", "reads_raw", "fastqc", f"{filename}_raw_fastqc.html"))
         # Add R2 if exists
         if os.path.exists(raw_file.replace("_R1_", "_R2_")):
-            all_inputs.append(os.path.join(species, "results", "reads", "reads_raw", "fastqc", f"{filename.replace("_R1_", "_R2_")}_fastqc.html"))
+            all_inputs.append(os.path.join(species, "results", "reads", "reads_raw", "fastqc", f"{filename.replace("_R1_", "_R2_")}_raw_fastqc.html"))
     return all_inputs
 
 # -----------------------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ def get_expected_output_fastqc_quality_filtered(species):
 def get_expected_output_fastqc_merged(species):
     all_inputs = []
     for individual in get_individuals_for_species(species):
-        all_inputs.append(os.path.join(species, "results", "reads", "reads_merged", "fastqc", f"{individual}_fastqc.html"))
+        all_inputs.append(os.path.join(species, "results", "reads", "reads_merged", "fastqc", f"{individual}_merged_fastqc.html"))
     return all_inputs
 
 def get_expected_output_contamination(species):  
@@ -178,7 +178,7 @@ def get_expected_output_reference_processing(species):
         else:
             logging.info(f"Skipping coverage analysis for species {species} and reference {reference_id}. Disabled in config.")
 
-        expected_outputs.append(os.path.join(species, "results" ,reference_id, "multiqc.html"))
+        #expected_outputs.append(os.path.join(species, "results" ,reference_id, "multiqc.html"))
 
 
         for ind in individuals:
@@ -202,7 +202,8 @@ def get_expected_output_reference_processing(species):
             #expected_outputs.append(os.path.join(species, "results" ,reference_id, "analytics", ind, "samtools_flagstats", f"{ind}_{reference_id}_final.bam.flagstats"))
 
             if config.get("pipeline", {}).get("reference_processing", {}).get("damage_analysis", {}).get("execute", True) == True:
-                expected_outputs.append(os.path.join(species, "results" ,reference_id, "damage", "mapdamage", ind, "misincorporation.txt"))
+                #{species}/results/{reference}/analytics/{individual}/mapdamage/misincorporation.txt
+                expected_outputs.append(os.path.join(species, "results" ,reference_id, "analytics", ind, "mapdamage", "misincorporation.txt"))
                 #expected_outputs.append(directory(os.path.join(species, "results" ,reference_id, "damage", "damageprofile", ind)))
             else:
                 logging.info(f"Skipping damage analysis for species {species} and individual {ind} to reference {reference_id}. Disabled in config.")
