@@ -1,6 +1,7 @@
 
 import os
 import glob
+import re
 
 # -----------------------------------------------------------------------------------------------
 # Get all files in a folder matching a specific pattern (e.g., *.fastq.gz)
@@ -48,6 +49,36 @@ def get_sample_ids_for_species(species):
         samples.append(filename)
     
     return samples
+
+def get_raw_reads_for_sample(species, sample):
+
+    read_files = get_read_files_for_species(species) 
+    
+    # turn read paths into file names only
+    read_files = [os.path.basename(f) for f in read_files]
+
+    reads_dir = f"{species}/raw/reads"
+ 
+    # R1
+    base_r1 = f"{sample}_R1"
+    candidates_r1 = [f for f in read_files
+                     if re.match(base_r1 + r"(\S*)?\.fastq\.gz", f)]
+    
+    if not candidates_r1:
+        raise FileNotFoundError(f"No R1 found for {sample}. Expected pattern: {base_r1}*.fastq.gz in {reads_dir}. Found files: {read_files}")
+
+    r1 = os.path.join(reads_dir, sorted(candidates_r1)[0])
+ 
+    # R2
+    base_r2 = f"{sample}_R2"
+    candidates_r2 = [f for f in read_files
+                     if re.match(base_r2 + r"(\S*)?\.fastq\.gz", f)]
+ 
+    if candidates_r2:
+        r2 = os.path.join(reads_dir, sorted(candidates_r2)[0])
+        return [r1, r2]  # Paired-end
+    else:
+        return [r1]      # Single-end
 
 # -----------------------------------------------------------------------------------------------
 # Get individual sample IDs for a given species based on raw read filenames
@@ -98,6 +129,20 @@ def get_individual_from_sample(sample):
 
 # -----------------------------------------------------------------------------------------------
 # Get only reference file paths for a species
-def get_references_for_species(species):
+def get_references_paths_for_species(species):
     refs = get_reference_file_list_for_species(species)
     return [ref[1] for ref in refs]
+
+# -----------------------------------------------------------------------------------------------
+# Get only reference IDs for a species
+def get_references_ids_for_species(species):
+    refs = get_reference_file_list_for_species(species)
+    return [ref[0] for ref in refs]
+
+# -----------------------------------------------------------------------------------------------
+# Get sample IDs for a specific individual within a species
+def get_samples_for_species_individual(species, individual):
+    samples = get_sample_ids_for_species(species)
+    samples_of_individual = [f for f in samples if f.startswith(f"{individual}_")]
+    
+    return samples_of_individual

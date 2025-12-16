@@ -188,7 +188,7 @@ Bger1_326862_S37_R1_001.fastq.gz
 │   │   │   ├── <Individual>/
 │   │   ├── damage/
 │   │   │   └── <Individual>/
-│   │   ├── statistics/
+│   │   ├── analytics/
 │   │   │   └── <Individual>/
 │   │   ├── coverage/
 │   │   │   └── <Individual>/

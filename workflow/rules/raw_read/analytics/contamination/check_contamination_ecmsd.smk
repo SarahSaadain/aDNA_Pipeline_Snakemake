@@ -13,12 +13,8 @@ rule analyze_contamination_with_ecmsd:
         RMUS            = "{species}/results/contamination_analysis/ecmsd/{sample}/mapping/{sample}_Mito_summary.RMUS.txt", 
         proportions     = "{species}/results/contamination_analysis/ecmsd/{sample}/mapping/{sample}_Mito_summary_genus_proportions.txt",
         genus           = "{species}/results/contamination_analysis/ecmsd/{sample}/mapping/{sample}_Mito_summary_genus.txt",
-        readlength      = report("{species}/results/contamination_analysis/ecmsd/{sample}/mapping/{sample}_Mito_summary_genus_ReadLengths.png",
-                                category="contamination_analysis",
-                                subcategory="ECMSD"),
-        proportions_png = report("{species}/results/contamination_analysis/ecmsd/{sample}/mapping/{sample}_Mito_summary_genus_Proportions.png",
-                                category="contamination_analysis",
-                                subcategory="ECMSD"),
+        readlength      = "{species}/results/contamination_analysis/ecmsd/{sample}/mapping/{sample}_Mito_summary_genus_ReadLengths.png",
+        proportions_png = "{species}/results/contamination_analysis/ecmsd/{sample}/mapping/{sample}_Mito_summary_genus_Proportions.png",
     params:
         executable = config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["ecmsd"]["settings"]["executable"]
     threads: 15

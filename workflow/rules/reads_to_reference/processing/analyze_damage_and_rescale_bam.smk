@@ -39,7 +39,7 @@ rule analyze_damageprofile:
         ref = "{species}/raw/ref/{reference}.fa",
         ref_index = "{species}/raw/ref/{reference}.fa.fai"
     output:
-        damage_profile = directory("{species}/results/{reference}/damage/damageprofile/{individual}")
+        damage_profile = directory("{species}/results/{reference}/analytics/{individual}/damageprofile/")
     message:
         "Generate damage profile for {wildcards.individual} mapped to {wildcards.reference}",
     resources:
@@ -59,15 +59,16 @@ rule analyze_mapdamage_and_rescale_bam:
         bam_index = analyze_mapdamage_and_rescale_bam_input_bam_index,
         ref = "{species}/raw/ref/{reference}.fa"
     output:
-        log = "{species}/results/{reference}/damage/mapdamage/{individual}/Runtime_log.txt",
-        GtoA3p = "{species}/results/{reference}/damage/mapdamage/{individual}/3pGtoA_freq.txt",
-        CtoT5p = "{species}/results/{reference}/damage/mapdamage/{individual}/5pCtoT_freq.txt",
-        dnacomp = "{species}/results/{reference}/damage/mapdamage/{individual}/dnacomp.txt",
-        frag_misincorp = "{species}/results/{reference}/damage/mapdamage/{individual}/Fragmisincorporation_plot.pdf",
+        directory = directory("{species}/results/{reference}/analytics/{individual}/mapdamage/"),
+        log = "{species}/results/{reference}/analytics/{individual}/mapdamage/Runtime_log.txt",
+        GtoA3p = "{species}/results/{reference}/analytics/{individual}/mapdamage/3pGtoA_freq.txt",
+        CtoT5p = "{species}/results/{reference}/analytics/{individual}/mapdamage/5pCtoT_freq.txt",
+        dnacomp = "{species}/results/{reference}/analytics/{individual}/mapdamage/dnacomp.txt",
+        frag_misincorp = "{species}/results/{reference}/analytics/{individual}/mapdamage/Fragmisincorporation_plot.pdf",
         #len = "{species}/results/{reference}/damage/{individual}/Length_plot.pdf",
-        lg_dist = "{species}/results/{reference}/damage/mapdamage/{individual}/lgdistribution.txt",
-        misincorp = "{species}/results/{reference}/damage/mapdamage/{individual}/misincorporation.txt",
-        rescaled_bam = temp("{species}/results/{reference}/damage/mapdamage/{individual}/{individual}_{reference}.bam")
+        lg_dist = "{species}/results/{reference}/analytics/{individual}/mapdamage/lgdistribution.txt",
+        misincorp = "{species}/results/{reference}/analytics/{individual}/mapdamage/misincorporation.txt",
+        rescaled_bam = temp("{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}.bam")
     params:
         extra="--merge-reference-sequences --rescale",  # optional parameters for mapdamage2 (except -i, -r, -d, --rescale)
     message:
@@ -83,9 +84,9 @@ rule analyze_mapdamage_and_rescale_bam:
 # 3 Sort BAM
 rule sort_rescaled_bam:
     input:
-        "{species}/results/{reference}/damage/mapdamage/{individual}/{individual}_{reference}.bam"
+        "{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}.bam"
     output:
-        "{species}/results/{reference}/damage/mapdamage/{individual}/{individual}_{reference}_sorted.bam"
+        "{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}_sorted.bam"
     log:
         "{species}/logs/{reference}/damage/mapdamage/{individual}/{individual}_{reference}_sorted.bam.log"
     message:
@@ -98,9 +99,9 @@ rule sort_rescaled_bam:
 # 4 Index BAM
 rule index_rescaled_bam:
     input:
-        "{species}/results/{reference}/damage/mapdamage/{individual}/{individual}_{reference}_sorted.bam"
+        "{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}_sorted.bam"
     output:
-        "{species}/results/{reference}/damage/mapdamage/{individual}/{individual}_{reference}_sorted.bam.bai"
+        "{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}_sorted.bam.bai"
     log:
         "{species}/logs/{reference}/damage/mapdamage/{individual}/{individual}_{reference}_sorted.bam.bai.log"
     message:
@@ -112,8 +113,8 @@ rule index_rescaled_bam:
 # Rule: Move rescaled BAM and index to processed directory
 rule move_rescaled_bam:
     input:
-        sorted_bam="{species}/results/{reference}/damage/mapdamage/{individual}/{individual}_{reference}_sorted.bam",
-        bam_index ="{species}/results/{reference}/damage/mapdamage/{individual}/{individual}_{reference}_sorted.bam.bai"
+        sorted_bam="{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}_sorted.bam",
+        bam_index ="{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}_sorted.bam.bai"
     output:
         sorted_bam="{species}/processed/{reference}/mapped/{individual}_{reference}_sorted_dedupped_rescaled.bam",
         bam_index ="{species}/processed/{reference}/mapped/{individual}_{reference}_sorted_dedupped_rescaled.bam.bai"

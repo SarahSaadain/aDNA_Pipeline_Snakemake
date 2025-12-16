@@ -21,6 +21,10 @@ include: "rules/raw_reads_processing.smk"
 # rules/reads_to_reference_processing.smk: Contains rules for mapping reads to reference.
 include: "rules/reads_to_reference_processing.smk"
 
+# create_multiqc_species_individual.smk
+# Contains rules for generating MultiQC reports for each species and individual.
+include: "rules/analytics/create_multiqc_species_individual.smk"
+
 # Define the all rule to specify the final targets of the workflow
 # This rule ensures that all necessary processing is completed for each species
 rule all:

@@ -4,6 +4,7 @@ rule analyze_bam_with_qualimap:
         bam="{species}/processed/{reference}/mapped/{individual}_{reference}_final.bam"
     output:
         directory("{species}/results/{reference}/analytics/{individual}/qualimap"),
+        "{species}/results/{reference}/analytics/{individual}/qualimap/qualimapReport.html"
     log:
         "{species}/results/{reference}/analytics/{individual}/{individual}_qualimap.log",
     # optional specification of memory usage of the JVM that snakemake will respect with global

@@ -185,7 +185,22 @@ def get_expected_output_reference_processing(species):
             
             expected_outputs.append(os.path.join(species, "processed" ,reference_id, "mapped", f"{ind}_{reference_id}_final.bam"))
             expected_outputs.append(os.path.join(species, "processed" ,reference_id, "mapped", f"{ind}_{reference_id}_final.bam.bai"))
+
+            #"{species}/results/{reference}/analytics/{individual}_multiqc.html",
+            expected_outputs.append(os.path.join(species, "results" ,reference_id, "analytics", f"{ind}_{reference_id}_multiqc.html"))
             
+            #directory("{species}/results/{reference}/analytics/{individual}/qualimap"),
+            #expected_outputs.append(directory(os.path.join(species, "results" ,reference_id, "analytics", ind, "qualimap")))
+
+            #"{species}/results/{reference}/analytics/{individual}/preseq/{individual}_{reference}.lc_extrap"
+            #expected_outputs.append(os.path.join(species, "results" ,reference_id, "analytics", ind, "preseq", f"{ind}_{reference_id}.lc_extrap"))
+            
+            #{species}/results/{reference}/analytics/{individual}/picard_duplicates/{individual}_{reference}_metrics.txt
+            #expected_outputs.append(os.path.join(species, "results" ,reference_id, "analytics", ind, "picard_duplicates", f"{ind}_{reference_id}_metrics.txt"))
+
+            #"{species}/results/{reference}/analytics/{individual}/samtools_flagstats/{individual}_{reference}_final.bam.flagstats"
+            #expected_outputs.append(os.path.join(species, "results" ,reference_id, "analytics", ind, "samtools_flagstats", f"{ind}_{reference_id}_final.bam.flagstats"))
+
             if config.get("pipeline", {}).get("reference_processing", {}).get("damage_analysis", {}).get("execute", True) == True:
                 expected_outputs.append(os.path.join(species, "results" ,reference_id, "damage", "mapdamage", ind, "misincorporation.txt"))
                 #expected_outputs.append(directory(os.path.join(species, "results" ,reference_id, "damage", "damageprofile", ind)))
@@ -235,6 +250,10 @@ def get_expected_outputs_from_pipeline(wildcards):
     for species in config["species"]:
         expected_output += get_expexted_output_raw_read_processing(species)
         expected_output += get_expected_output_reference_processing(species)
+
+        #{species}/results/analytics/{individual}_multiqc.html
+        for individual in get_individuals_for_species(species):
+            expected_output.append(os.path.join(species, "results", "analytics", f"{individual}_multiqc.html"))
 
     # Optionally skip files that already exist to avoid redundant processing
     expected_output = skip_existing_files(expected_output)
