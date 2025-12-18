@@ -7,7 +7,7 @@ rule plot_mapped_reads_coverage_breadth_violin:
     input:
         "{species}/results/{reference}/analytics/{species}/coverage/{reference}_combined_coverage_analysis_detailed.csv"
     output:
-        report("{species}/results/{reference}/plots/coverage/{species}_{reference}_individual_coverage_breadth_violin.png")
+        "{species}/results/{reference}/plots/coverage/{species}_{reference}_individual_coverage_breadth_violin.png"
     params:
         species="{species}"
     message: "Plotting coverage breadth violin for species {wildcards.species} and reference {wildcards.reference}"
@@ -23,7 +23,7 @@ rule plot_mapped_reads_coverage_breadth_bar:
     input:
         "{species}/results/{reference}/analytics/{species}/coverage/{reference}_combined_coverage_analysis_detailed.csv"
     output:
-        report("{species}/results/{reference}/plots/coverage/{species}_{reference}_individual_coverage_breadth_bar.png")
+        "{species}/results/{reference}/plots/coverage/{species}_{reference}_individual_coverage_breadth_bar.png"
     message: "Plotting coverage breadth bar for species {wildcards.species} and reference {wildcards.reference}"
     params:
         species="{species}"

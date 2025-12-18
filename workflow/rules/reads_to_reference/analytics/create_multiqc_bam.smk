@@ -14,14 +14,13 @@ def create_multiqc_bam_individual_input(wildcards):
     file_list.append(f"{species}/results/{reference}/analytics/{individual}/preseq/{individual}_{reference}.lc_extrap")
     file_list.append(f"{species}/processed/{reference}/coverage/{individual}/{individual}_{reference}_depth.tsv")
     file_list.append(f"{species}/results/{reference}/analytics/{individual}/qualimap/qualimapReport.html")
-    file_list.append(f"{species}/results/{reference}/analytics/{individual}/samtools_flagstats/{individual}_{reference}_final.bam.flagstats")
     file_list.append(f"{species}/results/{reference}/analytics/{individual}/samtools_stats/{individual}_{reference}_final.bam.stats")
     
     if config.get("pipeline", {}).get("reference_processing", {}).get("damage_rescaling", {}).get("execute", True) == True:
         file_list.append(f"{species}/results/{reference}/analytics/{individual}/mapdamage/misincorporation.txt")
     
-    if config.get("pipeline", {}).get("reference_processing", {}).get("deduplication", {}).get("execute", True) == True:
-        file_list.append(f"{species}/results/{reference}/analytics/{individual}/dedup/{individual}_{reference}_sorted.dedup.json")
+    #if config.get("pipeline", {}).get("reference_processing", {}).get("deduplication", {}).get("execute", True) == True:
+    #    file_list.append(f"{species}/results/{reference}/analytics/{individual}/dedup/{individual}_{reference}_sorted.dedup.json")
 
     return file_list
 
@@ -54,7 +53,6 @@ rule validate_multiqc_preprocessing:
     input:
         picard_metrics = "{species}/results/{reference}/analytics/{individual}/picard_duplicates/{individual}_{reference}_metrics.txt",
         preseq_lc_extrap = "{species}/results/{reference}/analytics/{individual}/preseq/{individual}_{reference}.lc_extrap",
-        samtools_flagstat = "{species}/results/{reference}/analytics/{individual}/samtools_flagstats/{individual}_{reference}_final.bam.flagstats",
         samtools_stats = "{species}/results/{reference}/analytics/{individual}/samtools_stats/{individual}_{reference}_final.bam.stats",
         qualimap = "{species}/results/{reference}/analytics/{individual}/qualimap",
     output:

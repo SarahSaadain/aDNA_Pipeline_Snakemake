@@ -46,9 +46,9 @@ rule remove_adapters_single_with_fastp:
             else ""
         ),  
         extra=lambda wc: (
-            f"--length_required {config['pipeline']['raw_reads_processing']['adapter_removal'].get('settings', {}).get('min_length',15)} "
+            f"--length_required {config['pipeline']['raw_reads_processing']['adapter_removal'].get('settings', {}).get('min_length',0)} "
             f"--trim_poly_x 5 "
-            f"--qualified_quality_phred {config['pipeline']['raw_reads_processing']['adapter_removal'].get('settings', {}).get('min_quality',5)} "
+            f"--qualified_quality_phred {config['pipeline']['raw_reads_processing']['adapter_removal'].get('settings', {}).get('min_quality',0)} "
             f"--unqualified_percent_limit 40 "
             f"--n_base_limit 5"
         ),
@@ -84,9 +84,9 @@ rule remove_adapters_paired_with_fastp:
             else "--detect_adapter_for_pe"
         ),
         extra=lambda wc: (
-            f"--length_required {config['pipeline']['raw_reads_processing']['adapter_removal'].get('settings', {}).get('min_length',15)} "
+            f"--length_required {config['pipeline']['raw_reads_processing']['adapter_removal'].get('settings', {}).get('min_length',0)} "
             f"--trim_poly_x 5 "
-            f"--qualified_quality_phred {config['pipeline']['raw_reads_processing']['adapter_removal'].get('settings', {}).get('min_quality',5)} "
+            f"--qualified_quality_phred {config['pipeline']['raw_reads_processing']['adapter_removal'].get('settings', {}).get('min_quality',0)} "
             f"--unqualified_percent_limit 40 "
             f"--n_base_limit 5 "
             f"--merge"

@@ -1,19 +1,151 @@
+
+####################################################
+# Python helper functions for rules
+# Naming of functions: <rule_name>_<rule_parameter>[_<rule_subparameter>]>
+####################################################
+
+def dedup_merge_split_bams_input(wildcards):
+    """
+    Get all dedup BAMs corresponding to the contig group files named as 'cluster_{start}_{end}.bed'.
+    """
+    import glob
+    import os
+
+    # Get checkpoint output folder
+    # we use the checkpoint here to make sure that the files are generated before we try to access them
+    # for more info see: https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#data-dependent-conditional-execution
+    checkpoint_output = checkpoints.dedup_create_all_contig_clusters.get(
+        species=wildcards.species, reference=wildcards.reference
+    ).output.cluster_folder
+
+    # Find all group files
+    group_files = sorted(glob.glob(os.path.join(checkpoint_output, "cluster_*.bed")))
+
+    logger.info(f"Found {len(group_files)} contig cluster files for deduplication.")
+    logger.info(f"Cluster files: {group_files}")
+
+    bam_files = []
+    for group_file in group_files:
+        group_name = os.path.splitext(os.path.basename(group_file))[0]  # "group_1_50"
+        start_end = group_name.split("_")[1:]  # ["1", "50"]
+        start, end = map(int, start_end)
+        bam_path = (
+            f"{wildcards.species}/processed/{wildcards.reference}/dedup_cluster/"
+            f"{wildcards.individual}/dedup_{start}_{end}/{wildcards.individual}_{wildcards.reference}_cluster_{start}_{end}_rmdup.bam"
+        )
+        bam_files.append(bam_path)
+
+    logger.info(f"Requesting {len(bam_files)} deduplicated BAM files for merging.")
+    logger.info(f"Deduplicated BAM files: {bam_files}")
+
+    return bam_files
+
+
+def dedup_merge_split_jsons_input(wildcards):
+    """
+    Get all DeDup JSON files corresponding to contig group files
+    named as 'cluster_{start}_{end}.bed'.
+    """
+    import glob
+    import os
+
+    # Resolve checkpoint output folder (forces execution before globbing)
+    checkpoint_output = checkpoints.dedup_create_all_contig_clusters.get(
+        species=wildcards.species,
+        reference=wildcards.reference
+    ).output.cluster_folder
+
+    # Find all contig group files
+    group_files = sorted(
+        glob.glob(os.path.join(checkpoint_output, "cluster_*_*.bed"))
+    )
+
+    logger.info(f"Found {len(group_files)} contig group files.")
+    logger.debug(f"Group files: {group_files}")
+
+    json_files = []
+
+    for group_file in group_files:
+        # group_1_500.txt → start=1, end=500
+        group_name = os.path.basename(group_file)
+        group_name = os.path.splitext(group_name)[0]
+
+        _, start, end = group_name.split("_", 2)
+
+        json_path = (
+            f"{wildcards.species}/processed/{wildcards.reference}/dedup_cluster/"
+            f"{wildcards.individual}/dedup_{start}_{end}/{wildcards.individual}_{wildcards.reference}_cluster_{start}_{end}.dedup.json"
+        )
+
+        json_files.append(json_path)
+
+    logger.info(f"Requesting {len(json_files)} DeDup JSON files for MultiQC.")
+    logger.debug(f"DeDup JSON files: {json_files}")
+
+    return json_files
+
 ####################################################
 # Snakemake rules
 ####################################################
 
-rule deduplicate_bam_with_dedup:
+# Rule: Extract contig names from reference FAI
+# Rule: Extract contigs as BED (full-length intervals) from reference FAI
+rule dedup_extract_contigs_from_reference_fai:
     input:
-        bam="{species}/processed/{reference}/mapped/{individual}_{reference}_sorted.bam"
+        fai="{species}/raw/ref/{reference}.fa.fai"
     output:
-        dedup_folder= directory("{species}/results/{reference}/analytics/{individual}/dedup"),
-        dedup_bam   = "{species}/results/{reference}/analytics/{individual}/dedup/{individual}_{reference}_sorted_rmdup.bam",
-        dedup_hist  = "{species}/results/{reference}/analytics/{individual}/dedup/{individual}_{reference}_sorted.hist",
-        dedup_json  = "{species}/results/{reference}/analytics/{individual}/dedup/{individual}_{reference}_sorted.dedup.json",
+        bed=temp("{species}/processed/{reference}/dedup_cluster/contigs.bed")
+    message:
+        "Extracting full-length contig BED from FAI for {wildcards.species} / {wildcards.reference}"
+    shell:
+        """
+        awk '{{print $1 "\t0\t" $2}}' {input.fai} > {output.bed}
+        """
+
+
+# Checkpoint: Create all contig clusters for deduplication
+checkpoint dedup_create_all_contig_clusters:
+    input:
+        contigs="{species}/processed/{reference}/dedup_cluster/contigs.bed"
+    output:
+        cluster_folder=directory("{species}/processed/{reference}/dedup_cluster/clusters")
+    message:
+        "Creating contig clusters for deduplication for species {wildcards.species} and reference {wildcards.reference}"
+    params:
+        contigs_per_cluster=500  # configurable
+    script:
+        "../../../scripts/reads_to_reference/processing/deduplication_script_dedup_create_all_contig_clusters.py"
+
+# Rule: Split BAM file into contig clusters
+rule dedup_split_bam_into_clusters_by_contig_cluster:
+    input:
+        "{species}/processed/{reference}/mapped/{individual}_{reference}_sorted.bam"
+    output:
+        bam = temp("{species}/processed/{reference}/dedup_cluster/{individual}/split_cluster/{individual}_{reference}_cluster_{start}_{end}.bam"),
+    message:
+        "Splitting BAM file {input} into cluster {wildcards.start}-{wildcards.end} for individual {wildcards.individual} in species {wildcards.species}",
+    log:
+        "{species}/processed/{reference}/dedup_cluster/{individual}/split_cluster/{individual}_{reference}_{start}_{end}.bam.log",
+    params:
+        extra="-L {species}/processed/{reference}/dedup_cluster/clusters/cluster_{start}_{end}.bed",
+        region="",  # optional region string
+    threads: 2
+    wrapper:
+        "v7.6.0/bio/samtools/view"
+
+# Rule: Deduplicate BAM file for each contig cluster
+rule dedup_deduplicate_bam_cluster:
+    input:
+        bam="{species}/processed/{reference}/dedup_cluster/{individual}/split_cluster/{individual}_{reference}_cluster_{start}_{end}.bam"
+    output:
+        dedup_folder= directory("{species}/processed/{reference}/dedup_cluster/{individual}/dedup_{start}_{end}/"),
+        dedup_bam   = temp("{species}/processed/{reference}/dedup_cluster/{individual}/dedup_{start}_{end}/{individual}_{reference}_cluster_{start}_{end}_rmdup.bam"),
+        dedup_hist  = "{species}/processed/{reference}/dedup_cluster/{individual}/dedup_{start}_{end}/{individual}_{reference}_cluster_{start}_{end}.hist",
+        dedup_json  = "{species}/processed/{reference}/dedup_cluster/{individual}/dedup_{start}_{end}/{individual}_{reference}_cluster_{start}_{end}.dedup.json",
     message:
         "Deduplicating BAM file for {input.bam} using dedup for individual {wildcards.individual} in species {wildcards.species}",
     log: 
-        "{species}/processed/{reference}/deduplication/{individual}_dedup.log",
+        "{species}/processed/{reference}/dedup_cluster/{individual}/dedup_{start}_{end}/{individual}_{reference}_{start}_{end}.dedup.log",
     resources:
         mem_mb = 20000
     conda:
@@ -24,15 +156,21 @@ rule deduplicate_bam_with_dedup:
         dedup -Xms5g -Xmx20g --input {input.bam} --merged --output {output.dedup_folder} > {log}
         """
 
-rule move_deduplicated_to_mapped:
+# Rule: Merge deduplicated BAM files
+rule dedup_merge_bam_clusters:
     input:
-        dedup_bam = "{species}/results/{reference}/analytics/{individual}/dedup/{individual}_{reference}_sorted_rmdup.bam",
+        dedup_merge_split_bams_input
     output:
-        moved_bam = temp("{species}/processed/{reference}/mapped/{individual}_{reference}_unsorted_dedupped.bam"),
-    shell:
-        """
-        mv {input.dedup_bam} {output.moved_bam}
-        """
+        temp("{species}/processed/{reference}/mapped/{individual}_{reference}_unsorted_dedupped.bam")
+    log:
+        "{species}/processed/{reference}/mapped/{individual}_{reference}_unsorted_dedupped.log"
+    message:
+        "Merging deduplicated BAM files for individual {wildcards.individual} in species {wildcards.species}"
+    params:
+        extra="",  # optional additional parameters as string
+    threads: 8
+    wrapper:
+        "v7.6.0/bio/samtools/merge"
 
 # Rule: Sort BAM file
 rule sort_mapped_dedupped_reads_bam:
@@ -41,24 +179,35 @@ rule sort_mapped_dedupped_reads_bam:
         "{species}/processed/{reference}/mapped/{individual}_{reference}_unsorted_dedupped.bam"
     output:
         temp("{species}/processed/{reference}/mapped/{individual}_{reference}_sorted_dedupped.bam")
-    message: "Sorting BAM file for {input}"
+    message: "Sorting deduplicated BAM file for {input}"
     log:
         "{species}/logs/{reference}/mapped/{individual}_{reference}_sorted_bam.log",
     threads: 10
     wrapper:
         "v7.5.0/bio/samtools/sort"
 
-
 # Rule: Index BAM file
-rule index_mapped_sorted_dedupped_reads_bam:
+rule dedup_index_dedupped_bam:
     # 4 Index BAM
     input:
         "{species}/processed/{reference}/mapped/{individual}_{reference}_sorted_dedupped.bam" 
     output:
         temp("{species}/processed/{reference}/mapped/{individual}_{reference}_sorted_dedupped.bam.bai")
-    message: "Indexing BAM file for {input}"
+    message: "Indexing deduplicated BAM file for {input}"
     params:
         extra="",  # optional params string
     threads: 5
     wrapper:
         "v7.5.0/bio/samtools/index"
+
+# Rule: Merge DeDup JSON files
+rule dedup_merge_cluster_jsons:
+    input:
+        dedup_merge_split_jsons_input
+    output:
+        json="{species}/results/{reference}/analytics/{individual}/dedup/{individual}_{reference}_final.dedup.json"
+    message:
+        "Merging DeDup JSON files for individual {wildcards.individual} in species {wildcards.species}"
+    script:
+        "../../../scripts/reads_to_reference/processing/deduplication_script_dedup_merge_cluster_jsons.py"
+

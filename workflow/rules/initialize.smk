@@ -12,6 +12,7 @@ from datetime import datetime
 import logging
 from pathlib import Path
 import yaml
+import json
 
 # Import Snakemake plugin settings for executor modes
 from snakemake_interface_executor_plugins.settings import ExecMode

@@ -113,7 +113,10 @@ def get_reference_file_list_for_species(species: str) -> list[tuple[str, str]]:
         raise Exception(f"No reference found for species {species}.")
         
     # Return as list of tuples: (filename without extension, full path)
-    reference_files_with_filename = [(os.path.splitext(os.path.basename(f))[0], f) for f in reference_files]
+    reference_files_with_filename = [(os.path.splitext(os.path.basename(f))[0].replace('.', '_'), f) for f in reference_files]
+
+    logger.debug(f"Reference files for species {species}: {reference_files_with_filename}")
+
     return reference_files_with_filename
 
 # -----------------------------------------------------------------------------------------------

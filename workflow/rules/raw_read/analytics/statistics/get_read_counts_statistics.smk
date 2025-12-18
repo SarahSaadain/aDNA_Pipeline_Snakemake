@@ -4,7 +4,6 @@
 ####################################################
 
 def count_reads_raw_input_fastq(wildcards):
-    #lambda wildcards: get_files_in_folder_matching_pattern(os.path.join(wildcards.species, "raw", "reads"), f"{wildcards.sample}*R1*.fastq.gz")[0]
     
     files = get_r1_read_files_for_species(wildcards.species)
     matched_files = [f for f in files if wildcards.sample in os.path.basename(f)]

@@ -34,9 +34,6 @@ include: "reads_to_reference/analytics/analyze_bam_with_picard_duplicates.smk"
 # Calculate additional mapping statistics using preseq
 include: "reads_to_reference/analytics/analyze_bam_with_preseq_lc_extrap.smk"
 
-# Analyze bam with samtools flagstat
-include: "reads_to_reference/analytics/analyze_bam_with_samtools_flagstat.smk"
-
 #create_multiqc_bam.smk
 include: "reads_to_reference/analytics/create_multiqc_bam.smk"
 

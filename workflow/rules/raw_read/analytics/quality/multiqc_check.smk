@@ -24,10 +24,7 @@ rule run_multiqc_raw:
     input:
         run_multiqc_raw_input
     output:
-        report("{species}/results/reads/{species}_multiqc_raw.html",
-            category="quality control",
-            subcategory="multiqc",
-        ),
+        "{species}/results/reads/{species}_multiqc_raw.html"
     params:
         extra="--verbose",  # Optional: extra parameters for multiqc.
     log:
@@ -41,10 +38,7 @@ rule run_multiqc_trimmed:
     input:
         run_multiqc_trimmed_input
     output:
-        report("{species}/results/reads/{species}_multiqc_trimmed.html",
-            category="quality control",
-            subcategory="multiqc",
-        ),
+        "{species}/results/reads/{species}_multiqc_trimmed.html"
     params:
         extra="--verbose",  # Optional: extra parameters for multiqc.
     log:
@@ -58,10 +52,7 @@ rule run_multiqc_quality_filtered:
     input:
         run_multiqc_quality_filtered_input
     output:
-        report("{species}/results/reads/{species}_multiqc_quality_filtered.html",
-            category="quality control",
-            subcategory="multiqc",
-        ),
+        "{species}/results/reads/{species}_multiqc_quality_filtered.html"
     params:
         extra="--verbose",  # Optional: extra parameters for multiqc.
     log:
@@ -70,16 +61,12 @@ rule run_multiqc_quality_filtered:
     wrapper:
         "v7.2.0/bio/multiqc"
 
-
 # Rule: Run MultiQC on merged FastQC outputs
 rule run_multiqc_merged:
     input:
         run_multiqc_merged_input
     output:
-        report("{species}/results/reads/{species}_multiqc_merged.html",
-            category="quality control",
-            subcategory="multiqc",
-        ),
+        "{species}/results/reads/{species}_multiqc_merged.html"
     params:
         extra="--verbose",  # Optional: extra parameters for multiqc.
     log:

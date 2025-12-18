@@ -1,35 +1,43 @@
 ####################################################
-# Python helper functions for rules
-# Naming of functions: <rule_name>_<rule_parameter>[_<rule_subparameter>]>
-####################################################
-
-def standardize_reference_extension_to_fa_input_fasta(wc):
-
-    # get ref paths for the given species
-    reference_tuple = get_reference_file_list_for_species(wc.species)  # validate species and ref name
-
-    reference_path = next((path for name, path in reference_tuple if name == wc.reference), None)
-
-    if reference_path is None:
-        raise ValueError(f"Reference {wc.reference} not found for species {wc.species}")
-
-    return reference_path
-
-####################################################
 # Snakemake rules
 ####################################################
-
-# Rule: Standardize reference extension to .fa
-# 1) Normalize/standardize reference to .fa (symlink to avoid copying)
 rule standardize_reference_extension_to_fa:
-    input:
-        fasta=standardize_reference_extension_to_fa_input_fasta
     output:
         fa="{species}/raw/ref/{reference}.fa"
     message:
-        "Standardizing reference extension to .fa for {output.fa}"
-    shell:
-        "mv {input.fasta} {output.fa}"
+        "Ensuring reference {wildcards.reference} for {wildcards.species} is standardized to .fa"
+    run:
+        # we use python to rename the file if necessary
+        import os
+        import shutil
+
+        # Get the list of reference tuples (sanitized_name, full_path)
+        # the full_path contains the original file path
+        reference_tuples = get_reference_file_list_for_species(wildcards.species)
+
+        # Find the path corresponding to the sanitized reference name
+        ref_path = next((path for name, path in reference_tuples if name == wildcards.reference), None)
+
+        if ref_path is None:
+            logger.error(f"Reference {wildcards.reference} not found for species {wildcards.species}")
+            logger.debug(f"Available references: {reference_tuples}")
+            raise ValueError(f"Reference {wildcards.reference} not found for species {wildcards.species}")
+
+        if not os.path.exists(ref_path):
+            logger.error(f"Reference file {ref_path} does not exist.")
+            raise FileNotFoundError(f"Reference file {ref_path} does not exist.")
+
+        # Create the output folder if it doesn't exist
+        os.makedirs(os.path.dirname(output.fa), exist_ok=True)
+
+        # Only rename if the standardized file doesn't already exist
+        if not os.path.exists(output.fa):
+            # Use symlink if you don't want to copy the file
+            os.rename(ref_path, output.fa)
+            logger.info(f"Reference {ref_path} renamed to {output.fa}")
+        else:
+            logger.info(f"Reference {output.fa} already exists, skipping.")
+
 
 # Rule: Index reference with BWA
 # 2) BWA index on the standardized .fa

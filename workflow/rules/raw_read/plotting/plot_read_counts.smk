@@ -7,7 +7,7 @@ rule plot_read_counts:
     input:
         "{species}/results/reads/statistics/{species}_reads_counts.csv"
     output:
-        report("{species}/results/reads/plots/{species}_read_counts.png")
+        "{species}/results/reads/plots/{species}_read_counts.png"
     message: "Plotting read counts comparison for species {wildcards.species}"
     log:
         "{species}/logs/reads/plots/{species}_read_counts.log"
@@ -21,7 +21,7 @@ rule plot_read_counts_comparison_by_individual:
     input:
         "{species}/results/reads/statistics/{species}_reads_counts.csv"
     output:
-         report("{species}/results/reads/plots/{species}_read_counts_comparison_by_individual.png")
+         "{species}/results/reads/plots/{species}_read_counts_comparison_by_individual.png"
     message: "Plotting read counts comparison per individual for species {wildcards.species}"
     log:
         "{species}/logs/reads/plots/{species}_read_counts_comparison_by_individual.log"
