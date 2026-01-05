@@ -28,14 +28,14 @@ def create_multiqc_species_individual_input(wildcards):
             file_list.append(f"{species}/results/reads/reads_trimmed/fastp_report/{sample}_trimmed.se.json")
 
         # fastp quality filtering reports
-        #file_list.append(f"{species}/results/reads/reads_quality_filtered/fastp_report/{sample}_quality_filtered.json")
+        file_list.append(f"{species}/results/reads/reads_quality_filtered/fastp_report/{sample}_quality_filtered.json")
 
         # add fastqc reports
         # raw reads fastqc
-        for read in raw_reads:
-            file_list.append(f"{species}/results/reads/reads_raw/fastqc/{os.path.basename(read).replace('.fastq.gz','')}_raw_fastqc.zip")
+        #for read in raw_reads:
+        #    file_list.append(f"{species}/results/reads/reads_raw/fastqc/{os.path.basename(read).replace('.fastq.gz','')}_raw_fastqc.zip")
         # trimmed reads fastqc
-        file_list.append(f"{species}/results/reads/reads_trimmed/fastqc/{sample}_trimmed_fastqc.zip")
+        #file_list.append(f"{species}/results/reads/reads_trimmed/fastqc/{sample}_trimmed_fastqc.zip")
 
         # eCMSD contamination analysis outputs
         file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{sample}/{sample}_Mito_summary_genus_ReadLengths.png")

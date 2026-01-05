@@ -27,6 +27,6 @@ rule combine_determine_mapped_reads_endogenous:
         "{species}/results/{reference}/analytics/{species}/endogenous/{reference}_endogenous.csv"
     message: "Combining endogenous reads for species {wildcards.species}"
     log:
-        "{species}/logs/{reference}/endogenous/{reference}_endogenous.log"
+        "{species}/logs/{reference}/analytics/{species}/endogenous/{reference}_endogenous.log"
     script:
         "../../../scripts/reads_to_reference/analytics/statistics/combine_endogenous_reads.py"
