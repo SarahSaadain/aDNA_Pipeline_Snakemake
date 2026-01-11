@@ -6,32 +6,30 @@ rule analyze_contamination_with_centrifuge:
     input:
         fastq = "{species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered.fastq.gz",
     output:
-        centrifuge_out = "{species}/results/contamination_analysis/centrifuge/{sample}_centrifuge.txt",
-        report = "{species}/results/contamination_analysis/centrifuge/{sample}_report.tsv"
+        output = "{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_centrifuge_output.tsv",
+        report = "{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_centrifuge_report.tsv"
     params:
-        db = config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["centrifuge"]["settings"]["database"],
-        executable = config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["centrifuge"]["settings"]["executable"]
+        index = config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["centrifuge"]["settings"]["index"],
     threads: 15
     conda:
-        config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["centrifuge"]["settings"]["conda_env"]
+        config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["centrifuge"]["settings"].get("conda_env", "../../../../envs/centrifuge.yaml")
     message: "Running Centrifuge contamination analysis for {input.fastq}"
     shell:
         """
         # Run centrifuge
-        {params.executable] \
-            -x {params.db} \
+        centrifuge \
+            -x {params.index} \
             -U {input.fastq} \
-            -S {output.centrifuge_out} \
+            -S {output.output} \
             --report-file {output.report} \
-            --threads {threads} \
-            --seed 999
+            --threads {threads}
         """
 
 rule taxon_counts:
     input:
-        centrifuge_out = "{species}/results/contamination_analysis/centrifuge/{sample}.centrifuge.txt"
+        centrifuge_out = "{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_centrifuge_output.tsv"
     output:
-        taxon_counts = "{species}/results/contamination_analysis/centrifuge/{sample}.taxon_counts.txt"
+        taxon_counts = "{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_taxon_counts.tsv"
     message: "Counting taxon occurrences in {input.centrifuge_out}"
     shell:
         r"""

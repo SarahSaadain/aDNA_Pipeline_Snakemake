@@ -1,0 +1,8 @@
+name: centrifuge
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - centrifuge
+  - zlib

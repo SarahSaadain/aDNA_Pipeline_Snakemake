@@ -21,7 +21,7 @@ rule ecmsd_analyze_contamination:
     log:
         "{species}/logs/contamination_analysis/ecmsd/{individual}/{sample}/{sample}_ecmsd.log"
     conda:
-        config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["ecmsd"]["settings"]["conda_env"]
+        config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["ecmsd"]["settings"].get("conda_env", "../../../../envs/ecmsd.yaml")
     message: "Running eCMSD contamination analysis for {input.fastq}"
     shell:
         """

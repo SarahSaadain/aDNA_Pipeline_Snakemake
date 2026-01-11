@@ -32,7 +32,7 @@ include: "raw_read/plotting/plot_read_counts.smk"
 include: "raw_read/analytics/contamination/check_contamination_ecmsd.smk"
 
 # Check for contamination using Centrifuge
-#include: "raw_read/analytics/contamination/check_contamination_centrifuge.smk"
+include: "raw_read/analytics/contamination/check_contamination_centrifuge.smk"
 
 # Check for contamination using Kraken
 #include: "raw_read/analytics/contamination/check_contamination_kraken.smk"
