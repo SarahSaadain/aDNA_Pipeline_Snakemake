@@ -8,12 +8,13 @@ Note: This pipeline is still in development, but can already be used for analysi
 
 - Before running the pipeline, ensure you have an environment with Snakemake and the required dependencies installed.
 - Required dependencies for pipeline processing will be installed automatically, except for the contamination analysis tools. Those have to be installed separately and their details need to be added to the config file.
-- You need to add the project path to the config file.
-- you need to add species details to the pipeline.
+  - The pipeline supports ECMSD for contamination analysis. Ensure ECMSD is configured in the `config.yaml` file under `contamination_analysis`.
+  - The pipeline supports Centrifuge for contamination analysis. Ensure Centrifuge is configured in the `config.yaml` file under `contamination_analysis`.
+- You need to add species details to the pipeline.
 
 When adding a new species, make sure to 
 - the species folder should be placed in the root folder of your pipeline
-- add the folder name to the `config.yaml` below `species:` 
+- add the folder name should match the species key which is defined in `config.yaml` below `species:` 
 - your reads should be renamed according to the naming convention specified in the [RAW Reads filenames](#RAW-Reads-filenames) section
 - the pipeline supports automatically moving the raw reads to the `<species>/raw/reads/` folder as well as the reference to the `<species>/raw/ref/` folder. Simply provide the files in the `<species>` folder. Alternatively, you can manually move the files to the respective folders.
   - provide the raw reads in `<species>/raw/reads/` folder
@@ -51,58 +52,146 @@ Defines the overall pipeline behavior, including execution controls and process 
 
 ```yaml
 # config.yaml - Configuration file for aDNA pipeline
+# This file contains settings for various stages of the pipeline
 
-# Global settings
+
 project_name: "aDNA_Project"
 
+# Pipeline stages and their configurations
 pipeline:
-  raw_reads_processing:     # stage
-    execute: true           # disable or enable this stage. Default true
-    quality_checking_raw:   # process step
-      execute: true         # disable or enable this stage. Default true
+
+  # Global settings
+  global:
+    # When true, existing output files will be skipped to avoid re-computation (Default: true)
+    skip_existing_files: true
+
+  # Stages of the pipeline
+
+  # Raw reads processing
+  # Includes quality checking, adapter removal, quality filtering, merging, 
+  # contamination analysis, and statistical analysis
+  raw_reads_processing:
+    # When true, this stage will be executed. (Default: true)
+    execute: true
+
+    # Sub-stages with their respective settings
+    # Quality checking of raw reads
+    quality_checking_raw:
+      # When true, this sub-stage will be executed (Default: true)
+      execute: true
+    
+    # Adapter removal from raw reads
     adapter_removal:
-      execute: true         # disable or enable this stage. Default true
-      settings: 
-        min_quality: 5      # default 5
-        min_length: 15      # default 15
-        adapters_sequences: # if not provided, fastp will try to identify adapters
-          r1: "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"
-          r2: "AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT" 
-    quality_checking_trimmed:
-      execute: true         # disable or enable this stage. Default true
-    quality_filtering:
-      execute: true         # disable or enable this stage. Default true
-      settings:
-        min_quality: 15     # default 15
-        min_length: 15      # default 15
-    quality_checking_quality_filtered:
-      execute: true         # disable or enable this stage. Default true
-    quality_checking_merged:
-      execute: true         # disable or enable this stage. Default true
-    contamination_analysis:
-      execute: true         # disable or enable this stage. Default true
-      tools:
-        ecmsd:
-          settings:
-            conda_env: "/your/path/to/ecmsd/conda/envs/"
-            executable: "/your/path/to/ecmsd/shell/ECMSD.sh"
-    statistical_analysis:
+      # When true, this sub-stage will be executed (Default: true)
       execute: true
 
+      # Settings for adapter removal
+      settings: 
+        # Minimum quality score for adapter removal
+        min_quality: 0
+        # Minimum length of reads after adapter removal
+        min_length: 0
+        # Optional: Adapter sequences for read 1 and read 2
+        # If not provided, fastp will try to identify adapters automatically
+        adapters_sequences:
+          # Adapter sequence for read 1
+          r1: "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"
+          # Adapter sequence for read 2
+          r2: "AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT" 
+    
+    # Quality checking of trimmed reads
+    quality_checking_trimmed:
+      # When true, this sub-stage will be executed (Default: true)
+      execute: true
+
+    # Quality filtering of trimmed reads
+    quality_filtering:
+      # When true, this sub-stage will be executed (Default: true)
+      execute: true
+      settings:
+        # Minimum quality score for quality filtering
+        min_quality: 15
+        # Minimum length of reads after quality filtering
+        min_length: 30
+
+    # Quality checking of quality-filtered reads
+    quality_checking_quality_filtered:
+      # When true, this sub-stage will be executed (Default: true)
+      execute: true
+
+    # Quality checking of merged reads
+    quality_checking_merged:
+      # When true, this sub-stage will be executed (Default: true)
+      execute: true
+
+    # Contamination analysis
+    contamination_analysis:
+      # When true, this sub-stage will be executed (Default: true)
+      execute: true
+      tools:
+        # ECMSD tool settings for contamination analysis
+        ecmsd:
+          # When true, this tool will be executed (Default: true)
+          execute: true
+          settings:
+            # Optional: Path to the conda environment for ECMSD
+            # If not provided, the default environment will be used
+            #conda_env: "../../../../envs/ecmsd.yaml"
+            # Path to the ECMSD executable
+            # Curretnly, ecmsd can not be installed via conda. Provide the path to the shell script to run ECMSD.
+            executable: "/path/to/ecmsd/shell/ECMSD.sh"
+        # Centrifuge tool settings for contamination analysis
+        centrifuge:
+          # When true, this tool will be executed (Default: true)
+          execute: true
+          settings:
+            # Optional: Path to the conda environment for Centrifuge
+            # If not provided, the default environment will be used
+            #conda_env: "../../../../envs/centrifuge.yaml"
+            # Path to the Centrifuge index
+            index: "/path/to/centrifuge_index"
+    
+    # Statistical analysis
+    statistical_analysis:
+      # When true, this sub-stage will be executed (Default: true)
+      execute: true
+
+  # Reference processing
   reference_processing:
-    execute: true           # disable or enable this stage. Default true
+    # When true, this stage will be executed (Default: true)
+    execute: true
+    
+    # Deduplication settings
     deduplication:
-      execute: true         # disable or enable this stage. Default true
+      # When true, this sub-stage will be executed (Default: true)
+      execute: false
+      settings:
+        # To increase performance, deduplication will be done per cluster of contigs
+        # Below settings define how the contigs will be clustered
+        # Optional: Maximum number of contigs per cluster (Default: 10 if not specified)
+        max_contigs_per_cluster: 10
+        # Optional: Maximum number of contigs per cluster (Default: 500 if not specified)
+        max_contigs_per_cluster: 500
+    
+    # Damage rescaling settings for mapDamage2
     damage_rescaling:
-      execute: true         # disable or enable this stage. Default true
+      # When true, this sub-stage will be executed (Default: true)
+      execute: true
+
+    # Damage analysis settings for mapDamage2
     damage_analysis:
-      execute: true         # disable or enable this stage. Default true
+      # When true, this sub-stage will be executed (Default: true)
+      execute: true
+
+    # Endogenous reads analysis settings
     endogenous_reads_analysis: 
-      execute: true         # disable or enable this stage. Default true
+      # When true, this sub-stage will be executed (Default: true)
+      execute: true
+
+    # Coverage analysis settings
     coverage_analysis: 
-      execute: true         # disable or enable this stage. Default true
-    generate_reference_plots: 
-      execute: true         # disable or enable this stage. Default true
+      # When true, this sub-stage will be executed (Default: true)
+      execute: true
 
 # Species details
 species:
@@ -129,7 +218,7 @@ Replace `<number_of_threads>` with the number of CPU threads you want to allocat
 
 **Note:** 
 * The `--use-conda` flag enables the use of conda environments specified in the `Snakefile`.
-* The `--keep-going` flag allows the pipeline to continue even if a rule fails. This is useful for debugging purposes. Somtimes the analysis of ECMSD fails due to issues with the input data. In this case, the rest of the pipeline can still be executed.
+* The `--keep-going` flag allows the pipeline to continue even if a rule fails. Somtimes the analysis of ECMSD fails due to issues with the input data (e.g. low quality reads or low coverage). In this case, the rest of the pipeline can still be executed.
 * The number of threads can be adjusted using the `--cores` option when running Snakemake.
 
 ### Running the Pipeline in the Background
@@ -173,69 +262,4 @@ Notes:
 #### Example:
 ```
 Bger1_326862_S37_R1_001.fastq.gz
-```
-
-### Output Folder Structure
-
-```
-<species>/
-├── raw/
-│   ├── ref/
-│   └── reads/
-├── results/
-│   ├── <reference>/
-│   │   ├── endogenous/
-│   │   │   ├── <Individual>/
-│   │   ├── damage/
-│   │   │   └── <Individual>/
-│   │   ├── analytics/
-│   │   │   └── <Individual>/
-│   │   ├── coverage/
-│   │   │   └── <Individual>/
-│   │   └── plots/
-│   │       ├── endogenous_reads/
-│   │       └── coverage/
-│   ├── contamination_analysis/
-│   │   └── ecmsd/
-│   │       └── <read_name>/
-│   └── reads/
-│       ├── reads_merged/
-│       │   └── fastqc/
-│       ├── reads_raw/
-│       │   └── fastqc/
-│       ├── reads_quality_filtered/
-│       │   ├── fastqc/
-│       │   └── fastp_report/
-│       ├── reads_trimmed/
-│       │   └── fastqc/
-│       └── statistics/
-├── logs/
-│   ├── <reference>/
-│   │   ├── endogenous/
-│   │   │   └── <Individual>/
-│   │   ├── damage/
-│   │   │   └── <Individual>/
-│   │   ├── statistics/
-│   │   │   └── <Individual>/
-│   │   ├── coverage/
-│   │   │   └── <Individual>/
-│   │   └── plots/
-│   │       ├── endogenous_reads/
-│   │       └── coverage/
-│   ├── contamination_analysis/
-│   │   └── ecmsd/
-│   └── reads/
-│       ├── reads_merged/
-│       │   └── fastqc/
-│       ├── reads_raw/
-│       │   └── fastqc/
-│       ├── reads_quality_filtered/
-│       │   └── fastqc/
-│       └── reads_trimmed/
-│           └── fastqc/
-├── processed/
-│   ├── <reference>/
-│   │   └── mapped/
-│   └── reads/
-│       └── reads_merged/
 ```

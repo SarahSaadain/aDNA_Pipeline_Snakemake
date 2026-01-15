@@ -112,7 +112,9 @@ checkpoint dedup_create_all_contig_clusters:
     message:
         "Creating contig clusters for deduplication for species {wildcards.species} and reference {wildcards.reference}"
     params:
-        contigs_per_cluster=500  # configurable
+        cores = workflow.cores,
+        min_contigs_per_cluster = config.get("pipeline", {}).get("reference_processing", {}).get("deduplication", {}).get("settings", {}).get("min_contigs_per_cluster", 10),
+        max_contigs_per_cluster = config.get("pipeline", {}).get("reference_processing", {}).get("deduplication", {}).get("settings", {}).get("max_contigs_per_cluster", 500)
     script:
         "../../../scripts/reads_to_reference/processing/deduplication_script_dedup_create_all_contig_clusters.py"
 

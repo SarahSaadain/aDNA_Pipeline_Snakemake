@@ -223,15 +223,6 @@ def get_expected_output_reference_processing(species):
 
             #"{species}/results/{reference}/analytics/{individual}_multiqc.html",
             expected_outputs.append(os.path.join(species, "results" ,reference, "analytics", f"{individual}_{reference}_multiqc.html"))
-            
-            #directory("{species}/results/{reference}/analytics/{individual}/qualimap"),
-            #expected_outputs.append(directory(os.path.join(species, "results" ,reference_id, "analytics", ind, "qualimap")))
-
-            #"{species}/results/{reference}/analytics/{individual}/preseq/{individual}_{reference}.lc_extrap"
-            #expected_outputs.append(os.path.join(species, "results" ,reference_id, "analytics", ind, "preseq", f"{ind}_{reference_id}.lc_extrap"))
-            
-            #{species}/results/{reference}/analytics/{individual}/picard_duplicates/{individual}_{reference}_metrics.txt
-            #expected_outputs.append(os.path.join(species, "results" ,reference_id, "analytics", ind, "picard_duplicates", f"{ind}_{reference_id}_metrics.txt"))
 
             if config.get("pipeline", {}).get("reference_processing", {}).get("damage_analysis", {}).get("execute", True) == True:
                 #{species}/results/{reference}/analytics/{individual}/mapdamage/misincorporation.txt

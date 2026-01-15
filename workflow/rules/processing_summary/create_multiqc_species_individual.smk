@@ -20,49 +20,44 @@ def create_multiqc_species_individual_input(wildcards):
         # get raw read file paths
         raw_reads = get_raw_reads_for_sample(species, sample)
 
-        # add fastp json reports
-        # fastp trimming reports
-        if len(raw_reads) == 2:
-            file_list.append(f"{species}/results/reads/reads_trimmed/fastp_report/{sample}_trimmed.pe.json")
-        else:
-            file_list.append(f"{species}/results/reads/reads_trimmed/fastp_report/{sample}_trimmed.se.json")
+        if config.get("pipeline", {}).get("reads_processing", {}).get("adapter_removal", {}).get("execute", True) == True:
+            # add fastp json reports
+            # fastp trimming reports
+            if len(raw_reads) == 2:
+                file_list.append(f"{species}/results/reads/reads_trimmed/fastp_report/{sample}_trimmed.pe.json")
+            else:
+                file_list.append(f"{species}/results/reads/reads_trimmed/fastp_report/{sample}_trimmed.se.json")
 
-        # fastp quality filtering reports
-        file_list.append(f"{species}/results/reads/reads_quality_filtered/fastp_report/{sample}_quality_filtered.json")
+        if config.get("pipeline", {}).get("reads_processing", {}).get("quality_filtering", {}).get("execute", True) == True:
+            # fastp quality filtering reports
+            file_list.append(f"{species}/results/reads/reads_quality_filtered/fastp_report/{sample}_quality_filtered.json")
 
-        # add fastqc reports
-        # raw reads fastqc
-        #for read in raw_reads:
-        #    file_list.append(f"{species}/results/reads/reads_raw/fastqc/{os.path.basename(read).replace('.fastq.gz','')}_raw_fastqc.zip")
-        # trimmed reads fastqc
-        #file_list.append(f"{species}/results/reads/reads_trimmed/fastqc/{sample}_trimmed_fastqc.zip")
+        # contamination analysis outputs
+        if config.get("pipeline", {}).get("reference_processing", {}).get("contamination_analysis", {}).get("execute", True) == True:
 
-        # eCMSD contamination analysis outputs
-        file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{sample}/{sample}_Mito_summary_genus_ReadLengths.png")
-         #"{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_centrifuge_report.tsv"
-        file_list.append(f"{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_centrifuge_report.tsv")
+            if config.get("pipeline", {}).get("reference_processing", {}).get("contamination_analysis", {}).get("tools", {}).get("ecmsd", {}).get("execute", True) == True:
+                file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{sample}/{sample}_Mito_summary_genus_ReadLengths.png")
+
+            if config.get("pipeline", {}).get("reference_processing", {}).get("contamination_analysis", {}).get("tools", {}).get("centrifuge", {}).get("execute", True) == True:
+                file_list.append(f"{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_centrifuge_report.tsv")
     
     file_list.append(f"{species}/results/contamination_analysis/ecmsd/{individual}_Mito_summary_genus_proportions_combined.tsv")
-   
-        
+
     # merged reads fastqc
-    file_list.append(f"{species}/results/reads/reads_merged/fastqc/{individual}_merged_fastqc.zip")
+    if config.get("pipeline", {}).get("reads_processing", {}).get("quality_checking_merged", {}).get("execute", True) == True:
+        file_list.append(f"{species}/results/reads/reads_merged/fastqc/{individual}_merged_fastqc.zip")
 
     # bam analytics
     for reference in references:
-
-        file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_reads_processing_summary.tsv",)
-        file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_coverage_analysis.tsv")
-        file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_depth_coverage_avg.csv")
-        file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_coverage_summary.tsv")
-        #file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_depth_coverage_max.csv")
-
-        file_list.append(f"{species}/results/{reference}/plots/endogenous_reads/{species}_{reference}_raw_and_endogenous_reads_bar_chart.png")
         
-        #file_list.append(f"{species}/results/{reference}/analytics/{individual}/picard_duplicates/{individual}_{reference}_metrics.txt")
-        file_list.append(f"{species}/results/{reference}/analytics/{individual}/preseq/{individual}_{reference}.lc_extrap")
-        file_list.append(directory(f"{species}/results/{reference}/analytics/{individual}/qualimap"))
-        file_list.append(f"{species}/results/{reference}/analytics/{individual}/samtools_stats/{individual}_{reference}_final.bam.stats")
+        if config.get("pipeline", {}).get("reference_processing", {}).get("coverage_analysis", {}).get("execute", True) == True:
+            file_list.append(f"{species}/results/{reference}/analytics/{individual}/preseq/{individual}_{reference}.lc_extrap")
+            file_list.append(directory(f"{species}/results/{reference}/analytics/{individual}/qualimap"))
+            file_list.append(f"{species}/results/{reference}/analytics/{individual}/samtools_stats/{individual}_{reference}_final.bam.stats")
+            file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_reads_processing_summary.tsv")
+            file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_coverage_analysis.tsv")
+            file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_depth_coverage_avg.csv")
+            file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_coverage_summary.tsv")
         
         if config.get("pipeline", {}).get("reference_processing", {}).get("damage_rescaling", {}).get("execute", True) == True:
             file_list.append(directory(f"{species}/results/{reference}/analytics/{individual}/mapdamage/"))
