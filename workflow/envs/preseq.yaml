@@ -1,0 +1,6 @@
+name: preseq
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - preseq

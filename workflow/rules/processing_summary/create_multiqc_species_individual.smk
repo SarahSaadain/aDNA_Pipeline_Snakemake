@@ -51,7 +51,8 @@ def create_multiqc_species_individual_input(wildcards):
     for reference in references:
         
         if config.get("pipeline", {}).get("reference_processing", {}).get("coverage_analysis", {}).get("execute", True) == True:
-            file_list.append(f"{species}/results/{reference}/analytics/{individual}/preseq/{individual}_{reference}.lc_extrap")
+            #file_list.append(f"{species}/results/{reference}/analytics/{individual}/preseq/{individual}_{reference}.lc_extrap")
+            file_list.append(f"{species}/results/{reference}/analytics/{individual}/preseq/{individual}_{reference}.c_curve.txt")
             file_list.append(directory(f"{species}/results/{reference}/analytics/{individual}/qualimap"))
             file_list.append(f"{species}/results/{reference}/analytics/{individual}/samtools_stats/{individual}_{reference}_final.bam.stats")
             file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_reads_processing_summary.tsv")

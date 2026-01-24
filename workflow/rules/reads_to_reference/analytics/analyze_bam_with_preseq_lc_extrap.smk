@@ -16,3 +16,22 @@ rule analyze_bam_with_preseq_lc_extrap:
        "{species}/results/{reference}/analytics/{individual}/preseq/{individual}_{reference}.lc_extrap.log"
     wrapper:
         "v2.10.0/bio/preseq/lc_extrap"
+
+rule preseq_c_curve:
+    input:
+        bam="{species}/processed/{reference}/mapped/{individual}_{reference}_sorted.bam"
+    output:
+        txt="{species}/results/{reference}/analytics/{individual}/preseq/{individual}_{reference}.c_curve.txt"
+    log:
+        "{species}/results/{reference}/analytics/{individual}/preseq/{individual}_{reference}.c_curve.log"
+    threads: 1
+    conda:
+        "../../../envs/preseq.yaml"
+    shell:
+        """
+        preseq c_curve \
+            -B \
+            -o {output.txt} \
+            {input.bam} \
+            > {log} 2>&1
+        """
