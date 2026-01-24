@@ -4,6 +4,7 @@ import pandas as pd
 input_file = snakemake.input[0]
 output_file = snakemake.output[0]
 individual = snakemake.params.individual
+reference = snakemake.params.reference
 
 # Read CSV
 df = pd.read_csv(input_file)
@@ -26,7 +27,7 @@ header = [
 ]
 
 row = [
-    individual,
+    f"{individual}_{reference}",
     total_avg_depth,
     max_depth,
     total_covered_bases,

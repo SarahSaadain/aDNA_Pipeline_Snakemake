@@ -5,7 +5,8 @@ rule summarize_coverage:
     output:
         "{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_coverage_summary.tsv"
     params:
-        individual="{individual}"    
+        individual="{individual}",  
+        reference="{reference}"
     script:
         "../../scripts/processing_summary/summarize_coverage.py"
 

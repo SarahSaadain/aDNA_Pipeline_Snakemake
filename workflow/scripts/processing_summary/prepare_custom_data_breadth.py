@@ -3,6 +3,7 @@ import csv
 input_csv = snakemake.input.csv
 output_tsv = snakemake.output.tsv
 individual = snakemake.params.individual
+reference = snakemake.params.reference
 
 covered = 0
 total = 0
@@ -16,5 +17,5 @@ with open(input_csv, newline="") as f:
 uncovered = total - covered
 
 with open(output_tsv, "w") as out:
-    out.write("sample\tcovered_bases\tuncovered_bases\n")
-    out.write(f"{individual}\t{covered}\t{uncovered}\n")
+    out.write("individual\tcovered_bases\tuncovered_bases\n")
+    out.write(f"{individual}_{reference}\t{covered}\t{uncovered}\n")

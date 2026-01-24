@@ -4,7 +4,8 @@ import pandas as pd
 # Snakemake variables are automatically available
 reads_file = snakemake.input.reads
 dedup_file = snakemake.input.dedup
-individual = snakemake.wildcards.individual
+individual = snakemake.params.individual
+reference = snakemake.params.reference
 output_file = snakemake.output[0]
 
 # Load reads CSV
@@ -26,7 +27,7 @@ with open(dedup_file) as f:
 
 # Build final table
 summary = {
-    "individual": individual,
+    "individual": f"{individual}_{reference}",
     "raw_reads": reads_summary["raw_count"],
     "after_adapter_removed": reads_summary["adapter_removed_count"],
     "after_quality_filter": reads_summary["quality_filtered_count"],

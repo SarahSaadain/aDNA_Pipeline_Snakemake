@@ -180,7 +180,7 @@ def generate_multiqc_config_for_species_and_individual(species, individual):
     )
 
 species = snakemake.wildcards.species
-individual = snakemake.wildcards.individual
+individual = snakemake.wildcards.get("individual", "overall")
 
 # Generate the MultiQC config content
 config_content = generate_multiqc_config_for_species_and_individual(species, individual)
