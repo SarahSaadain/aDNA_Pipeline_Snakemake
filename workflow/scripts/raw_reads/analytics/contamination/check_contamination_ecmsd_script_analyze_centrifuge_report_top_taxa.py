@@ -13,6 +13,9 @@ df = pd.read_csv(input_file, sep='\t')
 def top_n_wide(df, col, sample_name, n=10):
     # Sort by column
     df_sorted = df.sort_values(by=col, ascending=False).copy()
+
+    # add taxID to name
+    df_sorted['name'] = df_sorted.apply(lambda row: f"{row['name']} (taxID:{row['taxID']})", axis=1)
     
     # Top N taxa
     top = df_sorted.iloc[:n].copy()

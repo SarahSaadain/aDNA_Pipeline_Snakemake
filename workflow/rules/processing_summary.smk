@@ -1,6 +1,5 @@
 include: "processing_summary/prepare_custom_data_breadth.smk"
 include: "processing_summary/prepare_custom_data_depth.smk"
-include: "processing_summary/prepare_custom_data_ecmsd.smk"
 include: "processing_summary/prepare_custom_data_reads_processing.smk"
 include: "processing_summary/prepare_custom_folder_links.smk"
 

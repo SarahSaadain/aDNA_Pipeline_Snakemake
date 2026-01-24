@@ -35,13 +35,16 @@ def create_multiqc_bam_individual_input(wildcards):
         # contamination analysis outputs
         if config.get("pipeline", {}).get("reference_processing", {}).get("contamination_analysis", {}).get("execute", True) == True:
 
-            if config.get("pipeline", {}).get("reference_processing", {}).get("contamination_analysis", {}).get("tools", {}).get("ecmsd", {}).get("execute", True) == True:
-                file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{sample}/{sample}_Mito_summary_genus_ReadLengths.png")
+            #if config.get("pipeline", {}).get("reference_processing", {}).get("contamination_analysis", {}).get("tools", {}).get("ecmsd", {}).get("execute", True) == True:
+            #    file_list.append(f"{species}/results/contamination_analysis/ecmsd/{individual}/{sample}/pipeline/{sample}_ecmsd_proportions.tsv")
 
             if config.get("pipeline", {}).get("reference_processing", {}).get("contamination_analysis", {}).get("tools", {}).get("centrifuge", {}).get("execute", True) == True:
-                #file_list.append(f"{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_centrifuge_report.tsv")
-                file_list.append(f"{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_top10_unique_taxa.tsv")
+                file_list.append(f"{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_centrifuge_proportions.tsv")
                 file_list.append(f"{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_top10_total_taxa.tsv")
+                file_list.append(f"{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_top10_unique_taxa.tsv")
+
+    if config.get("pipeline", {}).get("reference_processing", {}).get("contamination_analysis", {}).get("tools", {}).get("ecmsd", {}).get("execute", True) == True:
+        file_list.append(f"{species}/results/contamination_analysis/ecmsd/{individual}_Mito_summary_genus_hits_combined.tsv")
 
         
     # merged reads fastqc
@@ -82,46 +85,6 @@ rule create_multiqc_bam_individual:
         "{species}/results/{reference}/analytics/{individual}/multiqc.log",
     wrapper:
         "v7.9.0/bio/multiqc"
-
-# rule create_multiqc_folder:
-#     input:
-#         insurance = "{species}/results/{reference}/analytics/request_multiqc_bam.ready"
-#     output:
-#         temp(directory("{species}/results/{reference}/multiqc/"))
-#     shell:
-#         "mkdir -p {output}"
-
-# rule validate_multiqc_preprocessing:
-#     input:
-#         #picard_metrics = "{species}/results/{reference}/analytics/{individual}/picard_duplicates/{individual}_{reference}_metrics.txt",
-#         preseq_lc_extrap = "{species}/results/{reference}/analytics/{individual}/preseq/{individual}_{reference}.lc_extrap",
-#         samtools_stats = "{species}/results/{reference}/analytics/{individual}/samtools_stats/{individual}_{reference}_final.bam.stats",
-#         qualimap = "{species}/results/{reference}/analytics/{individual}/qualimap",
-#     output:
-#         preprocessing = temp("{species}/results/{reference}/analytics/{individual}/multiqc_preprocessing.ready")
-#     shell:
-#         "touch {output}"
-    
-# rule request_multiqc_bam:
-#     input:
-#         preprocessing = lambda wildcards: expand(
-#             "{species}/results/{reference}/analytics/{individual}/multiqc_preprocessing.ready",
-#             species     = wildcards.species,
-#             reference   = wildcards.reference,
-#             individual  = get_individuals_for_species(wildcards.species),
-#         )
-#     output:
-#         ok_file = temp("{species}/results/{reference}/analytics/request_multiqc_bam.ready")
-#     shell:
-#         """
-#         echo 'Requesting preprocessing for multiqc report:'
-        
-#         for f in {input.preprocessing}; do
-#             echo $f
-#         done
-
-#         touch {output.ok_file}
-#         """
 
 rule create_multiqc_bam_individual_config:
     output:

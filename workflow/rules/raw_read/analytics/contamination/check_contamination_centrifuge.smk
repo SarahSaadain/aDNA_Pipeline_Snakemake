@@ -45,7 +45,7 @@ rule analyze_centrifuge_report_proportions:
         report = "{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_centrifuge_report.tsv",
         count_reads = "{species}/processed/reads/statistics/{sample}_quality_filtered.count"
     output:
-        "{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_proportions.tsv",
+        "{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_centrifuge_proportions.tsv",
     params:
         sample = "{sample}"
     script:

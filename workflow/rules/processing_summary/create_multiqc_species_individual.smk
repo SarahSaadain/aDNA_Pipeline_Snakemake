@@ -35,16 +35,17 @@ def create_multiqc_species_individual_input(wildcards):
         # contamination analysis outputs
         if config.get("pipeline", {}).get("reference_processing", {}).get("contamination_analysis", {}).get("execute", True) == True:
 
-            if config.get("pipeline", {}).get("reference_processing", {}).get("contamination_analysis", {}).get("tools", {}).get("ecmsd", {}).get("execute", True) == True:
-            #    file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{sample}/{sample}_Mito_summary_genus_ReadLengths.png")
-                file_list.append(f"{species}/results/contamination_analysis/ecmsd/{individual}_Mito_summary_genus_proportions_combined.tsv")
+            #if config.get("pipeline", {}).get("reference_processing", {}).get("contamination_analysis", {}).get("tools", {}).get("ecmsd", {}).get("execute", True) == True:
+            #    file_list.append(f"{species}/results/contamination_analysis/ecmsd/{individual}/{sample}/pipeline/{sample}_ecmsd_proportions.tsv")
 
             if config.get("pipeline", {}).get("reference_processing", {}).get("contamination_analysis", {}).get("tools", {}).get("centrifuge", {}).get("execute", True) == True:
-                #file_list.append(f"{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_centrifuge_report.tsv")
-                file_list.append(f"{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_proportions.tsv")
+                file_list.append(f"{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_centrifuge_proportions.tsv")
                 file_list.append(f"{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_top10_total_taxa.tsv")
                 file_list.append(f"{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_top10_unique_taxa.tsv")
-                
+
+    if config.get("pipeline", {}).get("reference_processing", {}).get("contamination_analysis", {}).get("tools", {}).get("ecmsd", {}).get("execute", True) == True:
+        file_list.append(f"{species}/results/contamination_analysis/ecmsd/{individual}_Mito_summary_genus_hits_combined.tsv")
+
     # merged reads fastqc
     if config.get("pipeline", {}).get("reads_processing", {}).get("quality_checking_merged", {}).get("execute", True) == True:
         file_list.append(f"{species}/results/reads/reads_merged/fastqc/{individual}_merged_fastqc.zip")
