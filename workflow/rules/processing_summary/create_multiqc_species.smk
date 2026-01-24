@@ -40,9 +40,11 @@ def create_multiqc_species_input(wildcards):
                     file_list.append(f"{species}/results/contamination_analysis/ecmsd/{individual}_Mito_summary_genus_proportions_combined.tsv")
 
                 if config.get("pipeline", {}).get("reference_processing", {}).get("contamination_analysis", {}).get("tools", {}).get("centrifuge", {}).get("execute", True) == True:
-                    file_list.append(f"{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_centrifuge_report.tsv")
-        
-        
+                    #file_list.append(f"{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_centrifuge_report.tsv")
+                    file_list.append(f"{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_proportions.tsv")
+                    file_list.append(f"{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_top10_unique_taxa.tsv")
+                    file_list.append(f"{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_top10_total_taxa.tsv")
+
 
         # merged reads fastqc
         if config.get("pipeline", {}).get("reads_processing", {}).get("quality_checking_merged", {}).get("execute", True) == True:

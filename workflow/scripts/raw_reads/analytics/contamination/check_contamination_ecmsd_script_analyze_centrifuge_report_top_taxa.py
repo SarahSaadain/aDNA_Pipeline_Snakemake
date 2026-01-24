@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+import pandas as pd
+
+# Snakemake input/output/params
+input_file = snakemake.input[0]
+output_unique = snakemake.output[0]
+output_total = snakemake.output[1]
+sample_name = snakemake.params.sample  # get sample name from Snakemake params
+
+# Read Centrifuge report
+df = pd.read_csv(input_file, sep='\t')
+
+def top_n_wide(df, col, sample_name, n=10):
+    # Sort by column
+    df_sorted = df.sort_values(by=col, ascending=False).copy()
+    
+    # Top N taxa
+    top = df_sorted.iloc[:n].copy()
+    others = df_sorted.iloc[n:]
+    
+    # Sum "others"
+    others_sum = others[col].sum() if not others.empty else 0
+    
+    # Prepare wide format: taxon names as columns
+    top_dict = dict(zip(top['name'], top[col]))
+    top_dict['Others'] = others_sum
+    top_dict['sample'] = sample_name
+    
+    # Convert to DataFrame with sample as first column
+    wide_df = pd.DataFrame([top_dict])
+    cols = ['sample'] + [c for c in wide_df.columns if c != 'sample']
+    wide_df = wide_df[cols]
+    return wide_df
+
+# Create tables
+df_unique = top_n_wide(df, 'numUniqueReads', sample_name, n=10)
+df_total = top_n_wide(df, 'numReads', sample_name, n=10)
+
+# Write output
+df_unique.to_csv(output_unique, sep='\t', index=False)
+df_total.to_csv(output_total, sep='\t', index=False)

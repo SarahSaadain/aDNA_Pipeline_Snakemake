@@ -25,7 +25,7 @@ rule analyze_contamination_with_centrifuge:
             --threads {threads}
         """
 
-rule taxon_counts:
+rule analyze_centrifuge_report_taxon_counts:
     input:
         centrifuge_out = "{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_centrifuge_output.tsv"
     output:
@@ -39,3 +39,25 @@ rule taxon_counts:
             | sort -nr \
             > {output.taxon_counts}
         """
+
+rule analyze_centrifuge_report_proportions:
+    input:
+        report = "{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_centrifuge_report.tsv",
+        count_reads = "{species}/processed/reads/statistics/{sample}_quality_filtered.count"
+    output:
+        "{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_proportions.tsv",
+    params:
+        sample = "{sample}"
+    script:
+        "../../../../scripts/raw_reads/analytics/contamination/check_contamination_ecmsd_script_analyze_centrifuge_report_proportions.py"
+
+rule analyze_centrifuge_report_top_taxa:
+    input:
+        report = "{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_centrifuge_report.tsv",
+    output:
+        top10_unique = "{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_top10_unique_taxa.tsv",
+        top10_total = "{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_top10_total_taxa.tsv"
+    params:
+        sample = "{sample}"
+    script:
+        "../../../../scripts/raw_reads/analytics/contamination/check_contamination_ecmsd_script_analyze_centrifuge_report_top_taxa.py"
