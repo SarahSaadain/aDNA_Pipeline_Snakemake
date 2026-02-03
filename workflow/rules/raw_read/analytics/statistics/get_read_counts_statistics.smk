@@ -51,7 +51,7 @@ rule count_reads_raw:
     input:
         fastq=count_reads_raw_input_fastq
     output:
-        counted=temp("{species}/processed/reads/statistics/{sample}_raw.count")
+        counted="{species}/processed/reads/statistics/{sample}_raw.count"
     message: "Counting reads in raw FASTQ file {input.fastq}"
     run:
         count = get_fastq_read_count(input.fastq)
@@ -64,7 +64,7 @@ rule count_reads_trimmed:
     input:
         fastq="{species}/processed/reads/reads_trimmed/{sample}_trimmed_final.fastq.gz"
     output:
-        counted=temp("{species}/processed/reads/statistics/{sample}_trimmed.count")
+        counted="{species}/processed/reads/statistics/{sample}_trimmed.count"
     message: "Counting reads in {input.fastq}"
     run:
         count = get_fastq_read_count(input.fastq)
@@ -76,7 +76,7 @@ rule count_reads_quality_filtered:
     input:
         fastq="{species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered.fastq.gz"
     output:
-        counted=temp("{species}/processed/reads/statistics/{sample}_quality_filtered.count")
+        counted="{species}/processed/reads/statistics/{sample}_quality_filtered.count"
     message: "Counting reads in {input.fastq}"
     run:
         count = get_fastq_read_count(input.fastq)
@@ -90,7 +90,7 @@ rule combine_counts_per_sample:
         trimmed_reads="{species}/processed/reads/statistics/{sample}_trimmed.count",
         quality_filtered_reads="{species}/processed/reads/statistics/{sample}_quality_filtered.count"
     output:
-        counts=temp("{species}/processed/reads/statistics/{sample}_reads_counts.csv")
+        counts="{species}/processed/reads/statistics/{sample}_reads_counts.csv"
     message: "Combining read counts for sample {wildcards.sample}"
     run:
 
