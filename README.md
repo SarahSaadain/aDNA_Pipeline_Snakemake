@@ -2,204 +2,11 @@
 
 This project contains a pipeline to analyze raw ancient data, obtained from the sequencing facility. The pipeline includes various Snakemake workflows to process, analyze, and generate reports on the sequence quality, which helps decide if an aDNA extraction and sequencing was successful, and further polishes the data for downstream analyses.
 
-Note: This pipeline is still in development, but can already be used for analysis.
+Note: This pipeline is still in the final stages of development. It can already be used for analysis but might still be subject to changes.
 
 ## Setup Overview
 
-- Before running the pipeline, ensure you have an environment with Snakemake and the required dependencies installed.
-- Required dependencies for pipeline processing will be installed automatically, except for the contamination analysis tools. Those have to be installed separately and their details need to be added to the config file.
-  - The pipeline supports ECMSD for contamination analysis. Ensure ECMSD is configured in the `config.yaml` file under `contamination_analysis`.
-  - The pipeline supports Centrifuge for contamination analysis. Ensure Centrifuge is configured in the `config.yaml` file under `contamination_analysis`.
-- You need to add species details to the pipeline.
-
-When adding a new species, make sure to 
-- the species folder should be placed in the root folder of your pipeline
-- add the folder name should match the species key which is defined in `config.yaml` below `species:` 
-- your reads should be renamed according to the naming convention specified in the [RAW Reads filenames](#RAW-Reads-filenames) section
-- the pipeline supports automatically moving the raw reads to the `<species>/raw/reads/` folder as well as the reference to the `<species>/raw/ref/` folder. Simply provide the files in the `<species>` folder. Alternatively, you can manually move the files to the respective folders.
-  - provide the raw reads in `<species>/raw/reads/` folder
-  - provide the reference in `<species>/raw/ref/` folder
-- all other folders will be created and populated automatically
-  - folder `<species>/processed/` contains the intermediary files during processing. Most of these files are marked as temporary and will be deleted at the end of the pipeline. Some files are kept to allow reprocessing the pipeline from different points in case something fails.
-  - folder `<species>/results/` contains the final results and reports. 
-  - general reads processing data will be in either `processed`or `results`. Everything related to a reference will have a `<reference>` folder under `processed`or `results`. Typically, only the `results` folder will contain information required for further analyis. In case more information is required, the original files can often be found in the `processed` folder. Some exemptions include `*.sam` and unsorted `*.bam` files. These are deleted to save storrage space. Most other files are kept in order to allow reprocessing the pipeline from different points in case something fails. If a step should be repeated, the relevant files need to be deleted manually. 
-
-## Configuration File Structure for aDNA Pipeline (`config.yaml`)
-
-The `config.yaml` file is used to configure the aDNA pipeline. It contains settings such as project name, the species list and the pipeline stages and process steps.
-
-### Global Settings
-
-* **project\_name**: Name of the aDNA project.
-
-### Pipeline Settings
-
-Defines the overall pipeline behavior, including execution controls and process details.
-
-#### Pipeline Stages and Process Steps
-
-* The pipeline is broken into **stages** (e.g., `raw_reads_processing`, `reference_processing`, `post_processing`).
-* Each stage contains multiple **process steps** (e.g., `adapter_removal`, `deduplication`, ...).
-* Both stages and process steps can be controlled with `execute: true/false` flags to enable or disable them.
-* Some process steps include additional configurable settings (e.g., adapter sequences, database paths, ...).
-
-#### Important Defaults
-
-* You **do not need to specify all stages or process steps** explicitly.
-* Any **stage or process step not provided in the config defaults to `execute: true`** and will be executed.
-
-### Example `config.yaml`
-
-```yaml
-# config.yaml - Configuration file for aDNA pipeline
-# This file contains settings for various stages of the pipeline
-
-
-project_name: "aDNA_Project"
-
-# Pipeline stages and their configurations
-pipeline:
-
-  # Global settings
-  global:
-    # When true, existing output files will be skipped to avoid re-computation (Default: true)
-    skip_existing_files: true
-
-  # Stages of the pipeline
-
-  # Raw reads processing
-  # Includes quality checking, adapter removal, quality filtering, merging, 
-  # contamination analysis, and statistical analysis
-  raw_reads_processing:
-    # When true, this stage will be executed. (Default: true)
-    execute: true
-
-    # Sub-stages with their respective settings
-    # Quality checking of raw reads
-    quality_checking_raw:
-      # When true, this sub-stage will be executed (Default: true)
-      execute: true
-    
-    # Adapter removal from raw reads
-    adapter_removal:
-      # When true, this sub-stage will be executed (Default: true)
-      execute: true
-
-      # Settings for adapter removal
-      settings: 
-        # Minimum quality score for adapter removal
-        min_quality: 0
-        # Minimum length of reads after adapter removal
-        min_length: 0
-        # Optional: Adapter sequences for read 1 and read 2
-        # If not provided, fastp will try to identify adapters automatically
-        adapters_sequences:
-          # Adapter sequence for read 1
-          r1: "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"
-          # Adapter sequence for read 2
-          r2: "AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT" 
-    
-    # Quality checking of trimmed reads
-    quality_checking_trimmed:
-      # When true, this sub-stage will be executed (Default: true)
-      execute: true
-
-    # Quality filtering of trimmed reads
-    quality_filtering:
-      # When true, this sub-stage will be executed (Default: true)
-      execute: true
-      settings:
-        # Minimum quality score for quality filtering
-        min_quality: 15
-        # Minimum length of reads after quality filtering
-        min_length: 30
-
-    # Quality checking of quality-filtered reads
-    quality_checking_quality_filtered:
-      # When true, this sub-stage will be executed (Default: true)
-      execute: true
-
-    # Quality checking of merged reads
-    quality_checking_merged:
-      # When true, this sub-stage will be executed (Default: true)
-      execute: true
-
-    # Contamination analysis
-    contamination_analysis:
-      # When true, this sub-stage will be executed (Default: true)
-      execute: true
-      tools:
-        # ECMSD tool settings for contamination analysis
-        ecmsd:
-          # When true, this tool will be executed (Default: true)
-          execute: true
-          settings:
-            # Optional: Path to the conda environment for ECMSD
-            # If not provided, the default environment will be used
-            #conda_env: "../../../../envs/ecmsd.yaml"
-            # Path to the ECMSD executable
-            # Curretnly, ecmsd can not be installed via conda. Provide the path to the shell script to run ECMSD.
-            executable: "/path/to/ecmsd/shell/ECMSD.sh"
-        # Centrifuge tool settings for contamination analysis
-        centrifuge:
-          # When true, this tool will be executed (Default: true)
-          execute: true
-          settings:
-            # Optional: Path to the conda environment for Centrifuge
-            # If not provided, the default environment will be used
-            #conda_env: "../../../../envs/centrifuge.yaml"
-            # Path to the Centrifuge index
-            index: "/path/to/centrifuge_index"
-    
-    # Statistical analysis
-    statistical_analysis:
-      # When true, this sub-stage will be executed (Default: true)
-      execute: true
-
-  # Reference processing
-  reference_processing:
-    # When true, this stage will be executed (Default: true)
-    execute: true
-    
-    # Deduplication settings
-    deduplication:
-      # When true, this sub-stage will be executed (Default: true)
-      execute: false
-      settings:
-        # To increase performance, deduplication will be done per cluster of contigs
-        # Below settings define how the contigs will be clustered
-        # Optional: Maximum number of contigs per cluster (Default: 10 if not specified)
-        max_contigs_per_cluster: 10
-        # Optional: Maximum number of contigs per cluster (Default: 500 if not specified)
-        max_contigs_per_cluster: 500
-    
-    # Damage rescaling settings for mapDamage2
-    damage_rescaling:
-      # When true, this sub-stage will be executed (Default: true)
-      execute: true
-
-    # Damage analysis settings for mapDamage2
-    damage_analysis:
-      # When true, this sub-stage will be executed (Default: true)
-      execute: true
-
-    # Endogenous reads analysis settings
-    endogenous_reads_analysis: 
-      # When true, this sub-stage will be executed (Default: true)
-      execute: true
-
-    # Coverage analysis settings
-    coverage_analysis: 
-      # When true, this sub-stage will be executed (Default: true)
-      execute: true
-
-# Species details
-species:
-  Bger:
-    name: "Blatella germanica"
-  Dsim:
-    name: "Drosophila simulans"
-```
+The aDNA pipeline is implemented using Snakemake, a workflow management system. Snakemake ensures reproducibility and efficient execution of the pipeline. Information about the setup as well as configuration options can be found in the [Setup Instructions](docs/setup.md).
 
 ## Running the Pipeline
 
@@ -210,8 +17,11 @@ The aDNA pipeline is implemented using Snakemake, a workflow management system. 
 To run the pipeline, navigate to the root directory containing the `workflow/Snakefile` and execute:
 
 ```bash
+# minimum command to run the pipeline
 #snakemake --cores <number_of_threads> --use-conda
-snakemake --cores <number_of_threads> --use-conda --keep-going
+
+# suggested command to run the pipeline
+snakemake --cores <number_of_threads> --use-conda --keep-going –rerun-trigger mtime
 ```
 
 Replace `<number_of_threads>` with the number of CPU threads you want to allocate for the pipeline.
@@ -220,46 +30,75 @@ Replace `<number_of_threads>` with the number of CPU threads you want to allocat
 * The `--use-conda` flag enables the use of conda environments specified in the `Snakefile`.
 * The `--keep-going` flag allows the pipeline to continue even if a rule fails. Somtimes the analysis of ECMSD fails due to issues with the input data (e.g. low quality reads or low coverage). In this case, the rest of the pipeline can still be executed.
 * The number of threads can be adjusted using the `--cores` option when running Snakemake.
+* The `–rerun-trigger mtime` flag ensures that the pipeline only re-runs rules if the input files have been modified since the last run.
+
+Other useful flags:
+* `--dryrun` or `-n` to simulate the execution of the pipeline without actually running it
+* `--configfile <path_to_config.yaml>` to specify a custom config file
+* `--rerun-incomplete` to re-run rules that failed or were cancelled in the previous run
+* `--rerun-trigger` to specify which triggers to use for rerunning rules
+  * Possible choices: code, input, mtime, params, software-env
+  * Define what triggers the rerunning of a job. By default, all triggers are used, which guarantees that results are consistent with the workflow code and configuration. If you rather prefer the traditional way of just considering file modification dates, use `–rerun-trigger mtime`.
+* `--touch` to touch output files (mark them up to date without really changing them) instead of running their commands. This is used to pretend that the rules were executed, in order to fool future invocations of snakemake. Note that this will only touch files that would otherwise be recreated by Snakemake (e.g. because their input files are newer). For enforcing a touch, combine this with –force, –forceall, or –forcerun. Note however that you lose the provenance information when the files have been created in reality. Hence, this should be used only as a last resort.
+
+For more information on Snakemake command-line options, see the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/executing/cli.html).
 
 ### Running the Pipeline in the Background
 
 Depending on the size of the data, it may take some time to complete the pipeline. Thus it is recommended to run the pipeline in the background. You can do this by running the following command:
 
 ```bash
-nohup snakemake --cores <number_of_threads> --use-conda --keep-going > pipeline.log 2>&1 &
+nohup snakemake --cores 40 --use-conda --keep-going --rerun-trigger mtime > pipeline.log 2>&1 &
 ```
 
 ### Restarting the Pipeline
 
 Snakemake automatically tracks the state of the pipeline and will only re-run steps that are incomplete or outdated. If you want to restart the pipeline from the beginning, you can delete the relevant output files and re-run the pipeline.
 
-## Folder Structure
+If you want to restart the pipeline, because it has crashed or was terminated, you might need to use the `--rerun-incomplete` flag. This will re-run all incomplete steps, even if they have not been modified since the last run.
 
-### Species Folders
 
-The project contains folders for different species, which contain the raw data, processed data, and results for each species.
 
-#### RAW Reads Filenames
+## Reports
 
-The pipeline expects input read files to follow a standardized naming convention:
+The aDNA pipeline generates several MultiQC reports to provide a comprehensive summary of the quality control and analysis results at various stages of the workflow. These reports are essential for assessing the quality of the sequencing data and the results of the processing pipeline.
 
-```bash
-<Individual>_<Original_Filename>.fastq.gz
-```
+By leveraging the AI functionality in the MultiQC reports, you can use ai to interpret the results of the pipeline and make informed decisions about the quality of the data and the results of the analysis.
 
-Following this convention ensures proper organization and automated processing within the pipeline.  
+Note: Currently, the report functionality of snakemake is not available for the aDNA pipeline.
 
-##### Filename Components:
-- **`<Individual>`** – A unique identifier for the sample or individual.  
-- **`<Original_Filename>`** – The original filename assigned by the sequencing platform.  
-- **`.fastq.gz`** – The expected file extension, indicating compressed FASTQ format.  
+### BAM File MultiQC Reports
 
-Notes:
- - This name must contain `_R1_` and, if paired-end, `_R2_`.
- - For paired-end data, the name of the reads must be identical except for `_R1_` and `_R2_`.
- - Individual names/IDs will be used to name the output files as well as in the reports and plots.
+The BAM file MultiQC reports are a key output of the aDNA pipeline and are essential for downstream analysis and quality checking. These reports are generated at two levels:
 
-#### Example:
-```
-Bger1_326862_S37_R1_001.fastq.gz
-```
+1. **Reference-Level BAM File MultiQC Report**:
+   - **Location**: `{species}/results/{reference}/analytics/{individual}_{reference}_multiqc.html`
+   - **Description**: Summarizes the quality metrics of BAM files, including results from reads processing, contamination, coverage analysis, deduplication, and damage rescaling and additiional statistics. Provides a detailed report for each individual and reference.
+
+2. **Individual-Level BAM File MultiQC Report**:
+   - **Location**: `{species}/results/summary/{individual}_multiqc.html`
+   - **Description**: Summarizes the quality metrics of BAM files, including results from reads processing, contamination, coverage analysis, deduplication, and damage rescaling and additiional statistics. Provides a detailed report for each individual across all references.
+
+3. **Species-Level BAM File MultiQC Report**:
+   - **Location**: `{species}/results/summary/{species}_multiqc.overall.html`
+   - **Description**: Summarizes the quality metrics of BAM files, including results from reads processing, contamination, coverage analysis, deduplication, and damage rescaling and additiional statistics. Provides a detailed report for all individuals across all references.
+
+### Additional MultiQC Reports for Reads
+
+In addition to the BAM file reports, the pipeline generates MultiQC reports for raw, trimmed, quality-filtered, and merged reads. These reports provide more detailed insights into the quality of the sequencing reads and can be used for additional analysis if required. The locations of these reports are as follows:
+
+1. **Raw Reads MultiQC Report**:
+   - **Location**: `{species}/results/reads/{species}_multiqc_raw.html`
+   - **Description**: Summarizes the quality metrics of raw sequencing reads.
+
+2. **Trimmed Reads MultiQC Report**:
+   - **Location**: `{species}/results/reads/{species}_multiqc_trimmed.html`
+   - **Description**: Provides quality metrics for reads after adapter trimming.
+
+3. **Quality-Filtered Reads MultiQC Report**:
+   - **Location**: `{species}/results/reads/{species}_multiqc_quality_filtered.html`
+   - **Description**: Details the quality metrics of reads after quality filtering.
+
+4. **Merged Reads MultiQC Report**:
+   - **Location**: `{species}/results/reads/{species}_multiqc_merged.html`
+   - **Description**: Contains quality metrics for reads after merging paired-end reads.
