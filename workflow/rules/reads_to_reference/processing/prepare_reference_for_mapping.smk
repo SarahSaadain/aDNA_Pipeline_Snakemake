@@ -20,7 +20,7 @@ rule standardize_reference_extension_to_fa:
 
         if ref_path is None:
             logger.error(f"Reference {wildcards.reference} not found for species {wildcards.species}")
-            logger.debug(f"Available references: {reference_tuples}")
+            logger.error(f"Available references: {reference_tuples}")
             raise ValueError(f"Reference {wildcards.reference} not found for species {wildcards.species}")
 
         if not os.path.exists(ref_path):

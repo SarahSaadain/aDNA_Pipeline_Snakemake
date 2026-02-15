@@ -65,7 +65,7 @@ def create_multiqc_species_individual_input(wildcards):
                 file_list.append(f"{species}/results/{reference}/analytics/{individual}/preseq/{individual}_{reference}.c_curve.txt")
                 file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/qualimap/{individual}_{reference}")
                 file_list.append(f"{species}/results/{reference}/analytics/{individual}/samtools_stats/{individual}_{reference}_final.bam.stats")
-                #file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_reads_processing_summary.tsv")
+                file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_reads_processing_summary.tsv")
                 file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_coverage_analysis.tsv")
                 file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_depth_coverage_avg.csv")
                 file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_coverage_summary.tsv")

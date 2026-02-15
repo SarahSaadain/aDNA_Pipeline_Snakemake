@@ -1,39 +1,70 @@
 import json
 import pandas as pd
 
-# Snakemake variables are automatically available
+# Snakemake variables
 reads_file = snakemake.input.reads
-dedup_file = snakemake.input.dedup
+endogenous_file = snakemake.input.get("endogenous", None)
+dedup_file = snakemake.input.get("dedup", None)
+
 individual = snakemake.params.individual
 reference = snakemake.params.reference
 output_file = snakemake.output[0]
 
+# ------------------------
 # Load reads CSV
+# ------------------------
 reads_df = pd.read_csv(reads_file)
-
-# Filter rows for this individual
 reads_df = reads_df[reads_df["individual"] == individual]
 
-# Aggregate read-processing steps (sum across samples)
-reads_summary = reads_df[[
-    "raw_count",
-    "adapter_removed_count",
-    "quality_filtered_count"
-]].sum().to_dict()
+reads_summary = reads_df[
+    [
+        "raw_count",
+        "adapter_removed_count",
+        "quality_filtered_count"
+    ]
+].sum().to_dict()
 
-# Load DeDup JSON
-with open(dedup_file) as f:
-    dedup_data = json.load(f)["metrics"]
+# ------------------------
+# Default dedup structure (safe fallback)
+# ------------------------
+dedup_data = {
+    "mapped_reads": 0,
+    "total_removed": 0
+}
 
-# Build final table
+# ------------------------
+# If mapping stats provided → set endogenous
+# ------------------------
+if endogenous_file:
+    mapping_df = pd.read_csv(endogenous_file, sep="\t")
+    mapped_reads = int(mapping_df["mapped_reads"].iloc[0])
+    dedup_data["mapped_reads"] = mapped_reads
+
+# ------------------------
+# If dedup provided → overwrite with real dedup metrics
+# ------------------------
+if dedup_file:
+    with open(dedup_file) as f:
+        real_dedup = json.load(f)["metrics"]
+
+    dedup_data["mapped_reads"] = real_dedup.get(
+        "mapped_reads", dedup_data["mapped_reads"]
+    )
+    dedup_data["total_removed"] = real_dedup.get("total_removed", 0)
+
+# ------------------------
+# Build final table (UNCHANGED STRUCTURE)
+# ------------------------
 summary = {
     "individual": f"{individual}_{reference}",
-    "raw_reads": reads_summary["raw_count"],
-    "after_adapter_removed": reads_summary["adapter_removed_count"],
-    "after_quality_filter": reads_summary["quality_filtered_count"],
+    "raw_reads": reads_summary.get("raw_count", 0),
+    "after_adapter_removed": reads_summary.get("adapter_removed_count", 0),
+    "after_quality_filter": reads_summary.get("quality_filtered_count", 0),
     "mapped_endogenous_reads": dedup_data["mapped_reads"],
     "endogenous_duplicates_removed": dedup_data["mapped_reads"] - dedup_data["total_removed"]
 }
 
+# ------------------------
 # Write TSV
+# ------------------------
 pd.DataFrame([summary]).to_csv(output_file, sep="\t", index=False)

@@ -8,7 +8,12 @@ def count_reads_raw_input_fastq(wildcards):
     files = get_r1_read_files_for_species(wildcards.species)
     matched_files = [f for f in files if wildcards.sample in os.path.basename(f)]
     if len(matched_files) == 0:
+        logging.error(f"No raw read files found for sample {wildcards.sample} in species {wildcards.species}.")
+        logging.error(f"Available files for species {wildcards.species}: {files}")
         raise Exception(f"No raw read files found for sample {wildcards.sample} in species {wildcards.species}.")
+    
+    logger.debug(f"Matched raw read files for sample {wildcards.sample} in species {wildcards.species}: {matched_files}")
+    
     return matched_files[0] 
 
 ####################################################
@@ -25,7 +30,7 @@ def get_fastq_read_count(fastq_file):
     Each read is 4 lines, so counted lines and divide by 4.
     """
 
-    print(f"Counting reads in {fastq_file}")
+    logger.info(f"Counting reads in {fastq_file}")
 
     count = 0
 
@@ -39,7 +44,7 @@ def get_fastq_read_count(fastq_file):
         with open(fastq_file, "r") as f:
             count = sum(1 for _ in f) // 4
 
-    print(f"Found {count} reads in {fastq_file}")
+    logger.info(f"Found {count} reads in {fastq_file}")
     return count
 
 ####################################################
@@ -57,7 +62,6 @@ rule count_reads_raw:
         count = get_fastq_read_count(input.fastq)
         with open(output.counted, "w") as f:
             f.write(str(count))
-
 
 # Rule: Count reads in trimmed FASTQ files
 rule count_reads_trimmed:

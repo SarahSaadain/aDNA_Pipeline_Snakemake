@@ -99,15 +99,19 @@ def get_reference_file_list_for_species(species: str) -> list[tuple[str, str]]:
     species_folder = species
     reference_folder = os.path.join(species, "raw", "ref")
     try:
-    # Collect all supported reference files
-        reference_files = get_files_in_folder_matching_pattern(reference_folder, f"*.fna")
-        reference_files += get_files_in_folder_matching_pattern(reference_folder, f"*.fasta")
-        reference_files += get_files_in_folder_matching_pattern(reference_folder, f"*.fa")
+        # Collect all supported reference files
+        logger.debug(f"Looking for reference files in {reference_folder} for species {species}.")
+
+        reference_files = get_files_in_folder_matching_pattern(reference_folder, "*.fna")
+        reference_files += get_files_in_folder_matching_pattern(reference_folder, "*.fasta")
+        reference_files += get_files_in_folder_matching_pattern(reference_folder, "*.fa")
     except Exception as e:
         # Try looking in species folder directly as fallback.
-        reference_files = get_files_in_folder_matching_pattern(species_folder, f"*.fna")
-        reference_files += get_files_in_folder_matching_pattern(species_folder, f"*.fasta")
-        reference_files += get_files_in_folder_matching_pattern(species_folder, f"*.fa")
+        logger.debug(f"Reference folder not found for species {species}. Trying species folder directly.")
+
+        reference_files = get_files_in_folder_matching_pattern(species_folder, "*.fna")
+        reference_files += get_files_in_folder_matching_pattern(species_folder, "*.fasta")
+        reference_files += get_files_in_folder_matching_pattern(species_folder, "*.fa")
 
     if len(reference_files) == 0:
         raise Exception(f"No reference found for species {species}.")
