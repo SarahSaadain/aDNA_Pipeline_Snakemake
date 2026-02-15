@@ -8,6 +8,7 @@ import re
 def get_files_in_folder_matching_pattern(folder: str, pattern: str) -> list:
     # Check if the folder exists
     if not os.path.exists(folder):
+        logger.error(f"Invalid folder: {folder}")
         raise Exception(f"Invalid folder: {folder}")
     # Read all files matching the pattern into a list
     files = glob.glob(os.path.join(folder, pattern))
@@ -17,15 +18,21 @@ def get_files_in_folder_matching_pattern(folder: str, pattern: str) -> list:
 # Get all raw read files for a given species    
 def get_read_files_for_species(species: str) -> list[str]:
 
-    try:
-        read_folder = os.path.join(species, "raw", "reads")
+    read_folder = os.path.join(species, "raw", "reads")
+
+    try:   
+        logger.debug(f"Looking for read files in {read_folder} for species {species}.")
         read_files = get_files_in_folder_matching_pattern(read_folder, "*.fastq.gz")
     except Exception as e:  
         # Try looking in species folder directly as fallback.
+        logger.debug(f"Read folder not found for species {species}. Trying species folder directly.")
         read_files = get_files_in_folder_matching_pattern(species, "*.fastq.gz")
         
     if len(read_files) == 0:
+        logger.error(f"No read files found for species {species}.")
         raise Exception(f"No read files found for species {species}.")
+    
+    logger.debug(f"Read files for species {species}: {read_files}")
         
     return read_files
 
@@ -35,7 +42,12 @@ def get_r1_read_files_for_species(species: str) -> list[str]:
     files = get_read_files_for_species(species)
     r1_files = [f for f in files if "_R1" in os.path.basename(f)]
     if len(r1_files) == 0:
+        logger.error(f"No R1 read files found for species {species}.")
+        logger.error(f"Available read files for species {species}: {files}")
         raise Exception(f"No R1 read files found for species {species}.")
+    
+    logger.debug(f"R1 read files for species {species}: {r1_files}")
+    
     return r1_files
 
 # -----------------------------------------------------------------------------------------------
@@ -47,6 +59,8 @@ def get_sample_ids_for_species(species):
     for raw_file in files:
         filename = os.path.basename(raw_file).replace('.fastq.gz','').split("_R1")[0]
         samples.append(filename)
+    
+    logger.debug(f"Sample IDs for species {species}: {samples}")
     
     return samples
 
@@ -65,6 +79,7 @@ def get_raw_reads_for_sample(species, sample):
                      if re.match(base_r1 + r"(\S*)?\.fastq\.gz", f)]
     
     if not candidates_r1:
+        logger.error(f"No R1 found for {sample}. Expected pattern: {base_r1}*.fastq.gz in {reads_dir}. Found files: {read_files}")
         raise FileNotFoundError(f"No R1 found for {sample}. Expected pattern: {base_r1}*.fastq.gz in {reads_dir}. Found files: {read_files}")
 
     r1 = os.path.join(reads_dir, sorted(candidates_r1)[0])
@@ -86,10 +101,14 @@ def get_individuals_for_species(species):
 
     samples = get_sample_ids_for_species(species)
     if len(samples) == 0:
-        raise Exception(f"No raw reads found for species {species}.")
+        logger.error(f"No samples found for species {species}.")
+        raise Exception(f"No samples found for species {species}.")
     individuals = set()
     for s in samples:
         individuals.add(get_individual_from_sample(s))
+
+    logger.debug(f"Individuals for species {species}: {individuals}")
+
     return sorted(list(individuals))
 
 # -----------------------------------------------------------------------------------------------
@@ -151,5 +170,7 @@ def get_references_ids_for_species(species):
 def get_samples_for_species_individual(species, individual):
     samples = get_sample_ids_for_species(species)
     samples_of_individual = [f for f in samples if f.startswith(f"{individual}_")]
+
+    logger.debug(f"Samples for individual {individual} in species {species}: {samples_of_individual}")
     
     return samples_of_individual
