@@ -81,6 +81,7 @@ rule create_multiqc_bam_individual:
         directory("{species}/results/{reference}/analytics/{individual}/multiqc_data"),
     params:
         extra="--verbose",  # Optional: extra parameters for multiqc.
+        use_input_files_only=True,  # Optional: only use the specified input files.
     log:
         "{species}/results/{reference}/analytics/{individual}/multiqc.log",
     wrapper:
