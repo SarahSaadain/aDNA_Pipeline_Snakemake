@@ -1,7 +1,22 @@
+####################################################
+# Snakemake rules
+####################################################
+
+def prepare_custom_data_reads_processing_dedup(wildcards):
+    
+    if config.get("pipeline", {}).get("reference_processing", {}).get("deduplication", {}).get("execute", True) == True:
+        return f"{wildcards.species}/results/{wildcards.reference}/analytics/{wildcards.individual}/dedup/{wildcards.individual}_{wildcards.reference}_final.dedup.json"
+    else:
+        return None
+
+####################################################
+# Snakemake rules
+####################################################
+
 rule prepare_custom_data_reads_processing:
     input:
         reads = "{species}/results/reads/statistics/{species}_reads_counts.csv",
-        dedup = "{species}/results/{reference}/analytics/{individual}/dedup/{individual}_{reference}_final.dedup.json"
+        dedup = prepare_custom_data_reads_processing_dedup
     output:
         "{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_reads_processing_summary.tsv",
     params:

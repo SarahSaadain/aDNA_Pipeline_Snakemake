@@ -23,7 +23,7 @@ def get_expected_output_fastqc_raw(species):
         all_inputs.append(os.path.join(species, "results", "reads", "reads_raw", "fastqc", f"{filename}_raw_fastqc.html"))
         # Add R2 if exists
         if os.path.exists(raw_file.replace("_R1_", "_R2_")):
-            all_inputs.append(os.path.join(species, "results", "reads", "reads_raw", "fastqc", f"{filename.replace("_R1_", "_R2_")}_raw_fastqc.html"))
+            all_inputs.append(os.path.join(species, "results", "reads", "reads_raw", "fastqc", f"{filename.replace('_R1_', '_R2_')}_raw_fastqc.html"))
     return all_inputs
 
 # -----------------------------------------------------------------------------------------------
