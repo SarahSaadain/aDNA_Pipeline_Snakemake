@@ -3,8 +3,8 @@ import pandas as pd
 
 # Snakemake variables
 reads_file = snakemake.input.reads
-endogenous_file = snakemake.input.get("endogenous", None)
-dedup_file = snakemake.input.get("dedup", None)
+endogenous_file = snakemake.input.get("endogenous", [])
+dedup_file = snakemake.input.get("dedup", [])
 
 individual = snakemake.params.individual
 reference = snakemake.params.reference

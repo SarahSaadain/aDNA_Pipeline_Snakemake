@@ -5,12 +5,12 @@
 def prepare_custom_data_reads_processing_dedup(wildcards):
 
     if config.get("pipeline", {}).get("reference_processing", {}).get("execute", True) == False:
-        return None
+        return []
     
     if config.get("pipeline", {}).get("reference_processing", {}).get("deduplication", {}).get("execute", True) == True:
         return f"{wildcards.species}/results/{wildcards.reference}/analytics/{wildcards.individual}/dedup/{wildcards.individual}_{wildcards.reference}_final.dedup.json"
     else:
-        return None
+        return []
 
 def prepare_custom_data_reads_processing_endogenous(wildcards):
     
@@ -18,7 +18,7 @@ def prepare_custom_data_reads_processing_endogenous(wildcards):
         #"{species}/results/{reference}/analytics/{individual}/endogenous/{individual}_{reference}.endogenous.csv"
         return f"{wildcards.species}/results/{wildcards.reference}/analytics/{wildcards.individual}/endogenous/{wildcards.individual}_{wildcards.reference}.endogenous.csv"
     else:
-        return None
+        return []
 
 ####################################################
 # Snakemake rules
