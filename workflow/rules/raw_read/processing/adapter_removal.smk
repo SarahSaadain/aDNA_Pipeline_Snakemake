@@ -62,13 +62,13 @@ rule remove_adapters_paired_with_fastp:
     input:
         sample=remove_adapters_type_with_fastp_input_sample,
     output:
-        trimmed=[
-            temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.R1.fastq.gz"),
-            temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.R2.fastq.gz"),
-        ],
-        # Unpaired reads separately
-        unpaired1=temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.unpaired.R1.fastq.gz"),
-        unpaired2=temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.unpaired.R2.fastq.gz"),
+        # trimmed=[
+        #     temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.R1.fastq.gz"),
+        #     temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.R2.fastq.gz"),
+        # ],
+        # # Unpaired reads separately
+        # unpaired1=temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.unpaired.R1.fastq.gz"),
+        # unpaired2=temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.unpaired.R2.fastq.gz"),
         merged=temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.fastq.gz"),
         failed=temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.failed.fastq.gz"),
         html="{species}/results/reads/reads_trimmed/fastp_report/{sample}_trimmed.pe.html",
