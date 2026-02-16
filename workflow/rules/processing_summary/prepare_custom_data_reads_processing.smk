@@ -27,7 +27,7 @@ def prepare_custom_data_reads_processing_endogenous(wildcards):
 rule prepare_custom_data_reads_processing:
     input:
         reads = "{species}/results/reads/statistics/{species}_reads_counts.csv",
-        endogenous = prepare_custom_data_reads_processing_endogenous
+        endogenous = prepare_custom_data_reads_processing_endogenous,
         dedup = prepare_custom_data_reads_processing_dedup
     output:
         "{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_reads_processing_summary.tsv",
