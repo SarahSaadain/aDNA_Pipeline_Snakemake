@@ -16,7 +16,7 @@ def determine_reads_trimmed_final_input(wildcards):
     reads = remove_adapters_type_with_fastp_input_sample(wildcards)
     if len(reads) == 2:
         # Paired-end: use the merged reads from fastp_pe
-        return f"{wildcards.species}/processed/reads/reads_trimmed/{wildcards.sample}_trimmed.pe.fastq.gz"
+        return f"{wildcards.species}/processed/reads/reads_trimmed/{wildcards.sample}_trimmed.pe.merged.fastq.gz"
     else:
         # Single-end: use the trimmed reads from fastp_se
         return f"{wildcards.species}/processed/reads/reads_trimmed/{wildcards.sample}_trimmed.se.fastq.gz"
@@ -62,13 +62,13 @@ rule remove_adapters_paired_with_fastp:
     input:
         sample=remove_adapters_type_with_fastp_input_sample,
     output:
-        # trimmed=[
-        #     temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.R1.fastq.gz"),
-        #     temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.R2.fastq.gz"),
-        # ],
-        # # Unpaired reads separately
-        # unpaired1=temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.unpaired.R1.fastq.gz"),
-        # unpaired2=temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.unpaired.R2.fastq.gz"),
+        trimmed=[
+            temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.R1.fastq.gz"),
+            temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.R2.fastq.gz"),
+        ],
+        # Unpaired reads separately
+        unpaired1=temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.unpaired.R1.fastq.gz"),
+        unpaired2=temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.unpaired.R2.fastq.gz"),
         merged=temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.fastq.gz"),
         failed=temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.failed.fastq.gz"),
         html="{species}/results/reads/reads_trimmed/fastp_report/{sample}_trimmed.pe.html",
@@ -89,8 +89,7 @@ rule remove_adapters_paired_with_fastp:
             f"--qualified_quality_phred {config['pipeline']['raw_reads_processing']['adapter_removal'].get('settings', {}).get('min_quality',0)} "
             f"--unqualified_percent_limit 40 "
             f"--n_base_limit 5 "
-            f"--merge "
-            f"--include_unmerged"
+            f"--merge"
         ),   
     threads: workflow.cores
     wrapper:
@@ -105,13 +104,15 @@ rule determine_reads_trimmed_final:
     shell:
         "mv {input} {output}"
 
-# rule merge_reads_trimmed_pe:
-#     input:
-#         merged="{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.fastq.gz",
-#         unpaired1="{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.unpaired.R1.fastq.gz",
-#         unpaired2="{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.unpaired.R2.fastq.gz",
-#     output:
-#         temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.merged.fastq.gz"),
-#     message: "Merging trimmed reads for paired-end"
-#     shell:
-#         "cat {input.merged} {input.unpaired1} {input.unpaired2} > {output}"
+rule merge_reads_trimmed_pe:
+    input:
+        merged="{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.fastq.gz",
+        trimmed1="{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.R1.fastq.gz"
+        trimmed2="{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.R2.fastq.gz",
+        unpaired1="{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.unpaired.R1.fastq.gz",
+        unpaired2="{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.unpaired.R2.fastq.gz",
+    output:
+        temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.merged.fastq.gz"),
+    message: "Merging trimmed reads for paired-end"
+    shell:
+        "cat {input.merged} {input.trimmed1} {input.trimmed2} {input.unpaired1} {input.unpaired2} > {output}"
