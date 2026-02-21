@@ -1,4 +1,4 @@
-# FastForward - An aDNA Snakemake Pipeline
+# PastForward - An aDNA Snakemake Pipeline
 
 This project contains a pipeline to analyze raw ancient data, obtained from the sequencing facility. The pipeline includes various Snakemake workflows to process, analyze, and generate reports on the sequence quality, which helps decide if an aDNA extraction and sequencing was successful, and further polishes the data for downstream analyses.
 
@@ -6,11 +6,11 @@ Note: This pipeline is still in the final stages of development. It can already 
 
 ## Setup Overview
 
-The FastForward pipeline is implemented using Snakemake, a workflow management system. Snakemake ensures reproducibility and efficient execution of the pipeline. Information about the setup as well as configuration options can be found in the [Setup Instructions](docs/setup.md).
+The PastForward pipeline is implemented using Snakemake, a workflow management system. Snakemake ensures reproducibility and efficient execution of the pipeline. Information about the setup as well as configuration options can be found in the [Setup Instructions](docs/setup.md).
 
 ## Running the Pipeline
 
-The FastForward pipeline is implemented using Snakemake, a workflow management system. Snakemake ensures reproducibility and efficient execution of the pipeline.
+The PastForward pipeline is implemented using Snakemake, a workflow management system. Snakemake ensures reproducibility and efficient execution of the pipeline.
 
 ### Running the Pipeline
 
@@ -61,15 +61,15 @@ If you want to restart the pipeline, because it has crashed or was terminated, y
 
 ## Reports
 
-The FastForward pipeline generates several MultiQC reports to provide a comprehensive summary of the quality control and analysis results at various stages of the workflow. These reports are essential for assessing the quality of the sequencing data and the results of the processing pipeline.
+The PastForward pipeline generates several MultiQC reports to provide a comprehensive summary of the quality control and analysis results at various stages of the workflow. These reports are essential for assessing the quality of the sequencing data and the results of the processing pipeline.
 
 By leveraging the AI functionality in the MultiQC reports, you can use ai to interpret the results of the pipeline and make informed decisions about the quality of the data and the results of the analysis.
 
-Note: Currently, the report functionality of snakemake is not available for the FastForward pipeline.
+Note: Currently, the report functionality of snakemake is not available for the PastForward pipeline.
 
 ### BAM File MultiQC Reports
 
-The BAM file MultiQC reports are a key output of the FastForward pipeline and are essential for downstream analysis and quality checking. These reports are generated at two levels:
+The BAM file MultiQC reports are a key output of the PastForward pipeline and are essential for downstream analysis and quality checking. These reports are generated at two levels:
 
 1. **Reference-Level BAM File MultiQC Report**:
    - **Location**: `{species}/results/{reference}/analytics/{individual}_{reference}_multiqc.html`
