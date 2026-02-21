@@ -36,7 +36,7 @@ dedup_data = {
 # If mapping stats provided → set endogenous
 # ------------------------
 if endogenous_file:
-    mapping_df = pd.read_csv(endogenous_file, sep="\t")
+    mapping_df = pd.read_csv(endogenous_file, sep=",")
     mapped_reads = int(mapping_df["mapped_reads"].iloc[0])
     dedup_data["mapped_reads"] = mapped_reads
 

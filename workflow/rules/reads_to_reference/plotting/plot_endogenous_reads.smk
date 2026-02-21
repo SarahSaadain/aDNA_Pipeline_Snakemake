@@ -5,7 +5,7 @@
 # Rule: Plot endogenous reads bar chart
 rule plot_mapped_reads_endogenous_bar:
     input:
-        "{species}/results/{reference}/analytics/{species}/endogenous/{reference}_endogenous.csv"
+        "{species}/results/summary/{species}_overall/multiqc_custom_content/{species}_{reference}_reads_processing_summary_combined.tsv"
     output:
         plot = "{species}/results/{reference}/plots/endogenous_reads/{species}_{reference}_endogenous_reads_bar_chart.png"
     message: "Plotting endogenous reads bar chart for species {wildcards.species} and reference {wildcards.reference}"

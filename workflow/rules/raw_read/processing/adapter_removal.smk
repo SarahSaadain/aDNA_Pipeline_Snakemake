@@ -107,7 +107,7 @@ rule determine_reads_trimmed_final:
 rule merge_reads_trimmed_pe:
     input:
         merged="{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.fastq.gz",
-        trimmed1="{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.R1.fastq.gz"
+        trimmed1="{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.R1.fastq.gz",
         trimmed2="{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.R2.fastq.gz",
         unpaired1="{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.unpaired.R1.fastq.gz",
         unpaired2="{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.unpaired.R2.fastq.gz",

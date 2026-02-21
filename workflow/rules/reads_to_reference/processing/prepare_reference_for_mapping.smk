@@ -6,6 +6,8 @@ rule standardize_reference_extension_to_fa:
         fa="{species}/raw/ref/{reference}.fa"
     message:
         "Ensuring reference {wildcards.reference} for {wildcards.species} is standardized to .fa"
+    conda:
+        "../../../envs/python.yaml",
     run:
         # we use python to rename the file if necessary
         import os

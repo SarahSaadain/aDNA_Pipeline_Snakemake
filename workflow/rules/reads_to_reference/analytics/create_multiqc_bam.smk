@@ -46,7 +46,6 @@ def create_multiqc_bam_individual_input(wildcards):
     if config.get("pipeline", {}).get("raw_reads_processing", {}).get("contamination_analysis", {}).get("execute", True) == True and config.get("pipeline", {}).get("raw_reads_processing", {}).get("contamination_analysis", {}).get("tools", {}).get("ecmsd", {}).get("execute", True) == True:
         file_list.append(f"{species}/results/contamination_analysis/ecmsd/{individual}_Mito_summary_genus_hits_combined.tsv")
 
-        
     # merged reads fastqc
     if config.get("pipeline", {}).get("reads_processing", {}).get("quality_checking_merged", {}).get("execute", True) == True:
         file_list.append(f"{species}/results/reads/reads_merged/fastqc/{individual}_merged_fastqc.zip")
@@ -57,6 +56,7 @@ def create_multiqc_bam_individual_input(wildcards):
         file_list.append(directory(f"{species}/results/{reference}/analytics/{individual}/qualimap"))
         file_list.append(f"{species}/results/{reference}/analytics/{individual}/samtools_stats/{individual}_{reference}_final.bam.stats")
         file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_reads_processing_summary.tsv")
+        file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_reads_processing_summary_stacked.tsv")
         file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_coverage_analysis.tsv")
         file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_depth_coverage_avg.csv")
         file_list.append(f"{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_coverage_summary.tsv")
@@ -90,6 +90,8 @@ rule create_multiqc_bam_individual:
 rule create_multiqc_bam_individual_config:
     output:
         "{species}/results/summary/{individual}/{individual}_{reference}_multiqc_config.yaml"
+    conda:
+        "../../../envs/python.yaml",
     script:
         "../../../scripts/processing_summary/create_multiqc_species_individual_script_create_multiqc_species_individual_config.py"
         
