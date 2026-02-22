@@ -1,9 +1,12 @@
-name: r_plot
 channels:
   - conda-forge
   - bioconda
   - defaults
 dependencies:
+  - python  # choose your preferred version
+  - biopython
+  - pysam
+  - pandas
   - r-base=4.3
   - r-ggplot2
   - r-dplyr

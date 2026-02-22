@@ -22,7 +22,7 @@ def dedup_merge_split_bams_input(wildcards):
     group_files = sorted(glob.glob(os.path.join(checkpoint_output, "cluster_*.bed")))
 
     logger.info(f"Found {len(group_files)} contig cluster files for deduplication.")
-    logger.info(f"Cluster files: {group_files}")
+    logger.debug(f"Cluster files: {group_files}")
 
     bam_files = []
     for group_file in group_files:
@@ -36,7 +36,7 @@ def dedup_merge_split_bams_input(wildcards):
         bam_files.append(bam_path)
 
     logger.info(f"Requesting {len(bam_files)} deduplicated BAM files for merging.")
-    logger.info(f"Deduplicated BAM files: {bam_files}")
+    logger.debug(f"Deduplicated BAM files: {bam_files}")
 
     return bam_files
 

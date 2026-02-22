@@ -2,6 +2,7 @@
 import os
 import glob
 import re
+from venv import logger
 
 # -----------------------------------------------------------------------------------------------
 # Get all files in a folder matching a specific pattern (e.g., *.fastq.gz)
@@ -174,3 +175,85 @@ def get_samples_for_species_individual(species, individual):
     logger.debug(f"Samples for individual {individual} in species {species}: {samples_of_individual}")
     
     return samples_of_individual
+
+# -----------------------------------------------------------------------------------------------
+# Get reference files for a given species (supports .fna, .fasta, .fa)
+def get_feature_library_file_list_for_species(species: str) -> list[tuple[str, str]]:
+    # Construct reference folder path
+    species_folder = species
+
+    library_files = []
+
+    feature_library_folder = os.path.join(f"{species_folder}/raw/dynamics/feature_library")
+    try:
+        # Collect all supported reference files
+        logger.debug(f"Looking for feature library files in {feature_library_folder} for species {species}.")
+
+        library_files = get_files_in_folder_matching_pattern(feature_library_folder, "*.fna")
+        library_files += get_files_in_folder_matching_pattern(feature_library_folder, "*.fasta")
+        library_files += get_files_in_folder_matching_pattern(feature_library_folder, "*.fa")
+    except Exception as e:
+        # Try looking in species folder directly as fallback.
+        logger.warning(f"Failed to find feature library files in {feature_library_folder} for species {species}. Exception: {e}")
+
+    if len(library_files) == 0:
+        raise Exception(f"No feature library files found for species {species}.")
+        
+    # Return as list of tuples: (filename without extension, full path)
+    library_files_with_filename = [(os.path.splitext(os.path.basename(f))[0].replace('.', '_'), f) for f in library_files]
+
+    logger.debug(f"Feature library files for species {species}: {library_files_with_filename}")
+
+    return library_files_with_filename
+
+# -----------------------------------------------------------------------------------------------
+# Get only reference file paths for a species
+def get_feature_library_paths_for_species(species):
+    refs = get_feature_library_file_list_for_species(species)
+    return [ref[1] for ref in refs]
+
+# -----------------------------------------------------------------------------------------------
+# Get only reference IDs for a species
+def get_feature_library_ids_for_species(species):
+    refs = get_feature_library_file_list_for_species(species)
+    return [ref[0] for ref in refs]
+
+# -----------------------------------------------------------------------------------------------
+# Get scg library files for a given species (supports .fna, .fasta, .fa)
+def get_scg_library_file_list_for_species(species: str) -> list[tuple[str, str]]:
+    # Construct reference folder path
+    species_folder = species
+
+    scg_library_folder = os.path.join(f"{species_folder}/raw/dynamics/scg")
+    try:
+        # Collect all supported reference files
+        logger.debug(f"Looking for SCG library files in {scg_library_folder} for species {species}.")
+
+        library_files = get_files_in_folder_matching_pattern(scg_library_folder, "*.fna")
+        library_files += get_files_in_folder_matching_pattern(scg_library_folder, "*.fasta")
+        library_files += get_files_in_folder_matching_pattern(scg_library_folder, "*.fa")
+    except Exception as e:
+        # Try looking in species folder directly as fallback.
+        logger.debug(f"Failed to find SCG library files in {scg_library_folder} for species {species}. Exception: {e}")
+
+    if len(library_files) == 0:
+        raise Exception(f"No SCG library files found for species {species}.")
+        
+    # Return as list of tuples: (filename without extension, full path)
+    library_files_with_filename = [(os.path.splitext(os.path.basename(f))[0].replace('.', '_'), f) for f in library_files]
+
+    logger.debug(f"SCG library files for species {species}: {library_files_with_filename}")
+
+    return library_files_with_filename
+
+# -----------------------------------------------------------------------------------------------
+# Get only scg library file paths for a species
+def get_scg_library_paths_for_species(species):
+    refs = get_scg_library_file_list_for_species(species)
+    return [ref[1] for ref in refs] 
+
+# -----------------------------------------------------------------------------------------------
+# Get only scg library IDs for a species  
+def get_scg_library_ids_for_species(species):
+    refs = get_scg_library_file_list_for_species(species)
+    return [ref[0] for ref in refs]
