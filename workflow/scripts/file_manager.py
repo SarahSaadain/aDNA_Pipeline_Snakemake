@@ -170,7 +170,7 @@ def get_references_ids_for_species(species):
 # Get sample IDs for a specific individual within a species
 def get_samples_for_species_individual(species, individual):
     samples = get_sample_ids_for_species(species)
-    samples_of_individual = [f for f in samples if f.startswith(f"{individual}")]
+    samples_of_individual = [f for f in samples if f.startswith(f"{individual}_")]
 
     logger.debug(f"Samples for individual {individual} in species {species}: {samples_of_individual}")
     

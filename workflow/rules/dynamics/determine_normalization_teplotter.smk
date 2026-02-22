@@ -94,7 +94,7 @@ rule run_teplotter_visualization_of_individual:
         python workflow/scripts/dynamics/teplotter/run_plotable.py --folder {input} --outdir {output}
         """
 
-rule run_teplotter_visualization_of_individual:
+rule run_teplotter_visualization_of_species:
     input:
         lambda wildcards: expand(
             "{species}/results/dynamics/{feature_library}/teplotter/{individual}_plotable", 
