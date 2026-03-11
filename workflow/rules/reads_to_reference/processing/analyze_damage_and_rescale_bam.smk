@@ -17,15 +17,12 @@ def helper_get_bam_for_damage_analysis(wildcards):
 
     return os.path.join(species, "processed" ,reference_id, "mapped", f"{ind}_{reference_id}_sorted.bam")
 
-
-def analyze_damageprofile_input_bam(wildcards):
-    return helper_get_bam_for_damage_analysis(wildcards)
     
 def analyze_mapdamage_and_rescale_bam_input_bam(wildcards):
     return helper_get_bam_for_damage_analysis(wildcards)
 
 def analyze_mapdamage_and_rescale_bam_input_bam_index(wildcards):
-    return f"{analyze_damageprofile_input_bam(wildcards)}.bai"
+    return f"{analyze_mapdamage_and_rescale_bam_input_bam(wildcards)}.bai"
 
 #"{species}/processed/{reference}/mapped/{individual}_{reference}_sorted_dedupped.bam",
 
@@ -33,52 +30,39 @@ def analyze_mapdamage_and_rescale_bam_input_bam_index(wildcards):
 # Snakemake rules
 ####################################################
 
-rule analyze_damageprofile:
-    input:
-        bam = analyze_damageprofile_input_bam,
-        ref = "{species}/raw/ref/{reference}.fa",
-        ref_index = "{species}/raw/ref/{reference}.fa.fai"
-    output:
-        damage_profile = directory("{species}/results/{reference}/analytics/{individual}/damageprofile/")
-    message:
-        "Generate damage profile for {wildcards.individual} mapped to {wildcards.reference}",
-    resources:
-        mem_mb = 20000   # request 10 GB from cluster / cgroups
-    conda:
-        "../../../envs/damage_profiler.yaml"
-    shell:
-        """
-        mkdir -p {output.damage_profile}
-        damageprofiler -Xms5g -Xmx20g -i {input.bam} -r {input.ref} -o {output.damage_profile}
-        """
-
 # Rule: Analyze DNA damage and rescale BAM using mapDamage2
 rule analyze_mapdamage_and_rescale_bam:
     input:
         bam = analyze_mapdamage_and_rescale_bam_input_bam,
-        bam_index = analyze_mapdamage_and_rescale_bam_input_bam_index,
         ref = "{species}/raw/ref/{reference}.fa"
     output:
-        directory = directory("{species}/results/{reference}/analytics/{individual}/mapdamage/"),
-        log = "{species}/results/{reference}/analytics/{individual}/mapdamage/Runtime_log.txt",
-        GtoA3p = "{species}/results/{reference}/analytics/{individual}/mapdamage/3pGtoA_freq.txt",
-        CtoT5p = "{species}/results/{reference}/analytics/{individual}/mapdamage/5pCtoT_freq.txt",
-        dnacomp = "{species}/results/{reference}/analytics/{individual}/mapdamage/dnacomp.txt",
-        frag_misincorp = "{species}/results/{reference}/analytics/{individual}/mapdamage/Fragmisincorporation_plot.pdf",
-        #len = "{species}/results/{reference}/damage/{individual}/Length_plot.pdf",
-        lg_dist = "{species}/results/{reference}/analytics/{individual}/mapdamage/lgdistribution.txt",
-        misincorp = "{species}/results/{reference}/analytics/{individual}/mapdamage/misincorporation.txt",
-        rescaled_bam = temp("{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}.bam")
+        directory           = directory("{species}/results/{reference}/analytics/{individual}/mapdamage/"),
+        GtoA3p              ="{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}.3pGtoA_freq.txt",
+        CtoT5p              ="{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}.5pCtoT_freq.txt",
+        dnacomp             ="{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}.dnacomp.txt",
+        lg_dist             ="{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}.lgdistribution.txt",
+        misinc              ="{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}.misincorporation.txt",
+        plot_misinc         ="{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}.Fragmisincorporation_plot.pdf",
+        plot_len            ="{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}.Length_plot.pdf",
+        stats_ref           ="{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}.dnacomp_genome.csv",
+        stats_prob          ="{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}.Stats_out_MCMC_correct_prob.csv",
+        stats_hist          ="{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}.Stats_out_MCMC_hist.pdf",
+        stats_iter          ="{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}.Stats_out_MCMC_iter.csv",
+        stats_summ          ="{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}.Stats_out_MCMC_iter_summ_stat.csv",
+        stats_plot_freq     ="{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}.Stats_out_MCMC_post_pred.pdf",
+        stats_plot_trace    ="{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}.Stats_out_MCMC_trace.pdf",
+        bam                 ="{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}.bam",
+        log                 ="{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}.Runtime_log.txt",
     params:
-        extra="--merge-reference-sequences --rescale",  # optional parameters for mapdamage2 (except -i, -r, -d, --rescale)
+        extra="",  # optional parameters for mapdamage2 (except -i, -r, -d, --rescale)
     message:
         "Analyze damage and rescale {input.bam}",
     benchmark:
         "benchmark/{species}_{individual}_{reference}_mapdamage2.benchmark.json",
     log:
-        "{species}/logs/{reference}/damage/mapdamage/{individual}/mapdamage2.log",
+        "{species}/logs/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}.rule.log",
     wrapper:
-        "v7.2.0/bio/mapdamage2"
+        "v9.3.0/bio/mapdamage2"
 
 # Rule: Sort rescaled BAM file
 # 3 Sort BAM
@@ -88,12 +72,12 @@ rule sort_rescaled_bam:
     output:
         "{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}_sorted.bam"
     log:
-        "{species}/logs/{reference}/damage/mapdamage/{individual}/{individual}_{reference}_sorted.bam.log"
+        "{species}/logs/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}_sorted.bam.log"
     message:
         "Sort rescaled BAM for {input}",
     threads: 10
     wrapper:
-        "v7.5.0/bio/samtools/sort"
+        "v9.3.0/bio/samtools/sort"
 
 # Rule: Index rescaled BAM file
 # 4 Index BAM
@@ -103,12 +87,12 @@ rule index_rescaled_bam:
     output:
         "{species}/results/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}_sorted.bam.bai"
     log:
-        "{species}/logs/{reference}/damage/mapdamage/{individual}/{individual}_{reference}_sorted.bam.bai.log"
+        "{species}/logs/{reference}/analytics/{individual}/mapdamage/{individual}_{reference}_sorted.bam.bai.log"
     message:
         "Index rescaled BAM for {input}",
     threads: 10
     wrapper:
-        "v7.5.0/bio/samtools/index"
+        "v9.3.0/bio/samtools/index"
 
 # Rule: Move rescaled BAM and index to processed directory
 rule move_rescaled_bam:

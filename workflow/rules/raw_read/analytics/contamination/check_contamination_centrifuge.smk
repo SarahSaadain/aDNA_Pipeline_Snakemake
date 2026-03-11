@@ -1,22 +1,60 @@
 ####################################################
 # Snakemake rules
 ####################################################
+# Determine index path: use config if provided, otherwise use downloaded
+# We use the index from https://benlangmead.github.io/aws-indexes/centrifuge
+# Refseq: bacteria, archaea, viral, human
+def get_centrifuge_index(wildcards):
+    configured_index = config.get("pipeline", {}).get("raw_reads_processing", {}).get("contamination_analysis", {}).get("tools", {}).get("centrifuge", {}).get("settings", {}).get("index")
+    if configured_index:
+        return configured_index
+    else:
+        return "resources/centrifuge_index/p+h+v"
+
+def get_centrifuge_index_input(wildcards):
+    configured_index = config.get("pipeline", {}).get("raw_reads_processing", {}).get("contamination_analysis", {}).get("tools", {}).get("centrifuge", {}).get("settings", {}).get("index")
+    if configured_index:
+        return []
+    else:
+        return expand("resources/centrifuge_index/p+h+v.{ext}.cf", ext=["1", "2", "3"])
+
+rule download_centrifuge_index:
+    output:
+        expand("resources/centrifuge_index/p+h+v.{ext}.cf", ext=["1", "2", "3"])
+    params:
+        url = "https://genome-idx.s3.amazonaws.com/centrifuge/p%2Bh%2Bv.tar.gz",
+        outdir = "resources/centrifuge_index"
+    message: "Downloading Centrifuge index"
+    shell:
+        """
+        echo "Downloading Centrifuge index from {params.url} to {params.outdir}"
+        echo "This may take a while depending on your internet connection..."
+
+        mkdir -p {params.outdir}
+        wget -O {params.outdir}/p+h+v.tar.gz {params.url}
+
+        echo "Extracting Centrifuge index..."
+        tar -xzf {params.outdir}/p+h+v.tar.gz -C {params.outdir}
+
+        echo "Cleaning up downloaded archive..."
+        rm {params.outdir}/p+h+v.tar.gz
+        """
 
 rule analyze_contamination_with_centrifuge:
     input:
         fastq = "{species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered.fastq.gz",
+        index = get_centrifuge_index_input
     output:
         output = "{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_centrifuge_output.tsv",
         report = "{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_centrifuge_report.tsv"
-    params:
-        index = config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["centrifuge"]["settings"]["index"],
     threads: 15
+    params:
+        index = get_centrifuge_index,
     conda:
-        config["pipeline"]["raw_reads_processing"]["contamination_analysis"]["tools"]["centrifuge"]["settings"].get("conda_env", "../../../../envs/centrifuge.yaml")
+        config.get("pipeline", {}).get("raw_reads_processing", {}).get("contamination_analysis", {}).get("tools", {}).get("centrifuge", {}).get("settings", {}).get("conda_env", "../../../../envs/centrifuge.yaml")
     message: "Running Centrifuge contamination analysis for {input.fastq}"
     shell:
         """
-        # Run centrifuge
         centrifuge \
             -x {params.index} \
             -U {input.fastq} \
@@ -24,6 +62,7 @@ rule analyze_contamination_with_centrifuge:
             --report-file {output.report} \
             --threads {threads}
         """
+
 
 rule analyze_centrifuge_report_taxon_counts:
     input:
@@ -58,6 +97,7 @@ rule analyze_centrifuge_report_top_taxa:
         top10_unique = "{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_top10_unique_taxa.tsv",
         top10_total = "{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_top10_total_taxa.tsv"
     params:
-        sample = "{sample}"
+        sample = "{sample}",
+        include_human = config.get("pipeline", {}).get("raw_reads_processing", {}).get("contamination_analysis", {}).get("tools", {}).get("centrifuge", {}).get("settings", {}).get("include_human_taxid", False)
     script:
         "../../../../scripts/raw_reads/analytics/contamination/check_contamination_ecmsd_script_analyze_centrifuge_report_top_taxa.py"

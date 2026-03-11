@@ -31,7 +31,7 @@ rule run_multiqc_raw:
         "{species}/logs/reads/{species}_multiqc_raw.log"
     message: "Running MultiQC on raw FastQC outputs for species {wildcards.species}"
     wrapper:
-        "v7.2.0/bio/multiqc"
+        "v9.3.0/bio/multiqc"
 
 # Rule: Run MultiQC on trimmed FastQC outputs
 rule run_multiqc_trimmed:
@@ -45,7 +45,7 @@ rule run_multiqc_trimmed:
         "{species}/logs/reads/{species}_multiqc_trimmed.log"
     message: "Running MultiQC on trimmed FastQC outputs for species {wildcards.species}"
     wrapper:
-        "v7.2.0/bio/multiqc"
+        "v9.3.0/bio/multiqc"
 
 # Rule: Run MultiQC on quality-filtered FastQC outputs
 rule run_multiqc_quality_filtered:
@@ -59,7 +59,7 @@ rule run_multiqc_quality_filtered:
         "{species}/logs/reads/{species}_multiqc_quality_filtered.log"
     message: "Running MultiQC on quality-filtered FastQC outputs for species {wildcards.species}"
     wrapper:
-        "v7.2.0/bio/multiqc"
+        "v9.3.0/bio/multiqc"
 
 # Rule: Run MultiQC on merged FastQC outputs
 rule run_multiqc_merged:
@@ -73,4 +73,4 @@ rule run_multiqc_merged:
         "{species}/logs/reads/{species}_multiqc_merged.log"
     message: "Running MultiQC on merged FastQC outputs for species {wildcards.species}"
     wrapper:
-        "v7.2.0/bio/multiqc"
+        "v9.3.0/bio/multiqc"

@@ -7,7 +7,7 @@ rule standardize_reference_extension_to_fa:
     message:
         "Ensuring reference {wildcards.reference} for {wildcards.species} is standardized to .fa"
     conda:
-        "../../../envs/python.yaml",
+        "../../../envs/python_and_r.yaml",
     run:
         # we use python to rename the file if necessary
         import os
@@ -55,7 +55,7 @@ rule index_reference_for_mapping:
         mem_mb=369000,
     cache: True
     wrapper:
-        "v7.2.0/bio/bwa/index"
+        "v9.3.0/bio/bwa/index"
 
 rule index_reference_with_samtools:
     input:
@@ -67,4 +67,4 @@ rule index_reference_with_samtools:
     params:
         extra="",
     wrapper:
-        "v7.6.0/bio/samtools/faidx"
+        "v9.3.0/bio/samtools/faidx"

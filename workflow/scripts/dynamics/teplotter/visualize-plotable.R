@@ -195,8 +195,13 @@ if (nplots>1) {
   height<-2*(nplots)
 }
 
+# heigt max 50
+if (height>50) {
+  height<-50
+}
+
 if(!debug){
-  ggsave(outfile, plot = plo, width = width, height = height, dpi = dpi)
+  ggsave(outfile, plot = plo, width = width, height = height, dpi = dpi, limitsize = FALSE)
 }else{
   plot(plo)
 }

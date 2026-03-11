@@ -13,7 +13,7 @@ rule map_reads_to_reference:
         "{species}/logs/{reference}/mapped/{individual}_{reference}.bam.log"
     threads: 15
     wrapper:
-        "v7.6.0/bio/bwa/mem"
+        "v9.3.0/bio/bwa/mem"
 
 # Rule: Sort BAM file
 rule sort_mapped_reads_bam:
@@ -27,7 +27,7 @@ rule sort_mapped_reads_bam:
         "{species}/logs/{reference}/mapped/{individual}_{reference}_sorted_bam.log",
     threads: 10
     wrapper:
-        "v7.5.0/bio/samtools/sort"
+        "v9.3.0/bio/samtools/sort"
 
 # Rule: Index BAM file
 rule index_mapped_sorted_reads_bam:
@@ -41,4 +41,4 @@ rule index_mapped_sorted_reads_bam:
         extra="",  # optional params string
     threads: 5
     wrapper:
-        "v7.5.0/bio/samtools/index"
+        "v9.3.0/bio/samtools/index"

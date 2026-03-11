@@ -6,6 +6,7 @@ input_file = snakemake.input[0]
 output_unique = snakemake.output[0]
 output_total = snakemake.output[1]
 sample_name = snakemake.params.sample  # get sample name from Snakemake params
+include_human = snakemake.params.get('include_human', False)  # get include_human flag from Snakemake params
 
 # Read Centrifuge report
 df = pd.read_csv(input_file, sep='\t')
@@ -38,6 +39,12 @@ def top_n_wide(df, col, sample_name, n=10):
 # Create tables
 df_unique = top_n_wide(df, 'numUniqueReads', sample_name, n=10)
 df_total = top_n_wide(df, 'numReads', sample_name, n=10)
+
+if not include_human:
+    # Remove human taxa if present
+    human_taxids = [9606]  # Common human tax 
+    df_unique = df_unique[[col for col in df_unique.columns if not any(str(taxid) in col for taxid in human_taxids)]]
+    df_total = df_total[[col for col in df_total.columns if not any(str(taxid) in col for taxid in human_taxids)]]
 
 # Write output
 df_unique.to_csv(output_unique, sep='\t', index=False)

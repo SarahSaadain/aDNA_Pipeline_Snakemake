@@ -15,7 +15,7 @@ rule filter_reads_by_quality:
     log:
         "{species}/logs/reads/reads_quality_filtered/{sample}_quality_filtered.log",
     params:
-        extra=f"--disable_adapter_trimming --qualified_quality_phred {config['pipeline']['raw_reads_processing']['quality_filtering'].get('settings', {}).get('min_quality','15')} --length_required {config['pipeline']['raw_reads_processing']['quality_filtering'].get('settings', {}).get('min_length','15')} --unqualified_percent_limit 40 --n_base_limit 5"
+        extra=f"--disable_adapter_trimming --qualified_quality_phred {config.get('pipeline', {}).get('raw_reads_processing', {}).get('quality_filtering', {}).get('settings', {}).get('min_quality','15')} --length_required {config.get('pipeline', {}).get('raw_reads_processing', {}).get('quality_filtering', {}).get('settings', {}).get('min_length','15')} --unqualified_percent_limit 40 --n_base_limit 5"
     threads: 10
     wrapper:
-        "v7.5.0/bio/fastp"
+        "v9.3.0/bio/fastp"

@@ -1,5 +1,5 @@
 # =================================================================================================
-#     Input Manager Utility Functions for aDNA Pipeline
+#     Input Manager Utility Functions for pastForward Pipeline
 # =================================================================================================
 # This script provides helper functions for managing input files and sample metadata in the pipeline.
 # Functions include file discovery, reference handling, and sample identification.
@@ -20,10 +20,10 @@ def get_expected_output_fastqc_raw(species):
     all_inputs = []
     for raw_file in files:
         filename = os.path.basename(raw_file).replace('.fastq.gz','')
-        all_inputs.append(os.path.join(species, "results", "reads", "reads_raw", "fastqc", f"{filename}_raw_fastqc.html"))
+        all_inputs.append(f"{species}/results/reads/reads_raw/fastqc/{filename}_raw_fastqc.html")
         # Add R2 if exists
-        if os.path.exists(raw_file.replace("_R1_", "_R2_")):
-            all_inputs.append(os.path.join(species, "results", "reads", "reads_raw", "fastqc", f"{filename.replace('_R1_', '_R2_')}_raw_fastqc.html"))
+        if os.path.exists(raw_file.replace("_R1", "_R2")):
+            all_inputs.append(f"{species}/results/reads/reads_raw/fastqc/{filename.replace('_R1', '_R2')}_raw_fastqc.html")
     return all_inputs
 
 # -----------------------------------------------------------------------------------------------
@@ -35,7 +35,7 @@ def get_expected_output_fastqc_trimmed(species):
 
     all_inputs = []
     for sample in get_sample_ids_for_species(species):
-        all_inputs.append(os.path.join(species, "results", "reads", "reads_trimmed", "fastqc",  f"{sample}_trimmed_fastqc.html"))
+        all_inputs.append(f"{species}/results/reads/reads_trimmed/fastqc/{sample}_trimmed_fastqc.html")
     return all_inputs
 
 # -----------------------------------------------------------------------------------------------
@@ -47,7 +47,7 @@ def get_expected_output_fastqc_quality_filtered(species):
 
     all_inputs = []
     for sample in get_sample_ids_for_species(species):
-        all_inputs.append(os.path.join(species, "results", "reads", "reads_quality_filtered", "fastqc", f"{sample}_quality_filtered_fastqc.html"))
+        all_inputs.append(f"{species}/results/reads/reads_quality_filtered/fastqc/{sample}_quality_filtered_fastqc.html")
     return all_inputs
 
 # -----------------------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ def get_expected_output_fastqc_quality_filtered(species):
 def get_expected_output_fastqc_merged(species):
     all_inputs = []
     for individual in get_individuals_for_species(species):
-        all_inputs.append(os.path.join(species, "results", "reads", "reads_merged", "fastqc", f"{individual}_merged_fastqc.html"))
+        all_inputs.append(f"{species}/results/reads/reads_merged/fastqc/{individual}_merged_fastqc.html")
     return all_inputs
 
 #-----------------------------------------------------------------------------------------------
@@ -70,7 +70,7 @@ def get_expected_output_contamination_ecmsd(species):
 
     for individual in get_individuals_for_species(species):
         for sample in get_samples_for_species_individual(species, individual):
-            expected_outputs.append(os.path.join(species, "results", "contamination_analysis", "ecmsd", individual, sample, "mapping", f"{sample}_Mito_summary.txt"))
+            expected_outputs.append(f"{species}/results/contamination_analysis/ecmsd/{individual}/{sample}/mapping/{sample}_Mito_summary.txt")
     
     return expected_outputs
 
@@ -86,8 +86,8 @@ def get_expected_output_contamination_centrifuge(species):
 
     for individual in get_individuals_for_species(species):
         for sample in get_samples_for_species_individual(species, individual):
-            expected_outputs.append(os.path.join(species, "results", "contamination_analysis", "centrifuge", individual, sample, f"{sample}_centrifuge_report.tsv"))
-            expected_outputs.append(os.path.join(species, "results", "contamination_analysis", "centrifuge", individual, sample, f"{sample}_taxon_counts.tsv"))
+            expected_outputs.append(f"{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_centrifuge_report.tsv")
+            expected_outputs.append(f"{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_taxon_counts.tsv")
     
     return expected_outputs
 
@@ -117,22 +117,22 @@ def get_expected_output_multiqc(species):
 
     # Add MultiQC reports for different read processing stages
     if config.get("pipeline", {}).get("raw_reads_processing", {}).get("quality_checking_raw", {}).get("execute", True) == True:
-        expected_outputs.append(os.path.join(species, "results", "reads", f"{species}_multiqc_raw.html"))
+        expected_outputs.append(f"{species}/results/reads/{species}_multiqc_raw.html")
     else:
         logging.info(f"Skipping MultiQC report for raw reads for {species}. Disabled in config.")
 
     if config.get("pipeline", {}).get("raw_reads_processing", {}).get("quality_checking_trimmed", {}).get("execute", True) == True:
-        expected_outputs.append(os.path.join(species, "results", "reads", f"{species}_multiqc_trimmed.html"))
+        expected_outputs.append(f"{species}/results/reads/{species}_multiqc_trimmed.html")
     else:
         logging.info(f"Skipping MultiQC report for trimmed reads for {species}. Disabled in config.")
 
     if config.get("pipeline", {}).get("raw_reads_processing", {}).get("quality_checking_quality_filtered", {}).get("execute", True) == True:
-        expected_outputs.append(os.path.join(species, "results", "reads", f"{species}_multiqc_quality_filtered.html"))
+        expected_outputs.append(f"{species}/results/reads/{species}_multiqc_quality_filtered.html")
     else:
         logging.info(f"Skipping MultiQC report for quality filtered reads for {species}. Disabled in config.")
     
     if config.get("pipeline", {}).get("raw_reads_processing", {}).get("quality_checking_merged", {}).get("execute", True) == True:
-        expected_outputs.append(os.path.join(species, "results", "reads", f"{species}_multiqc_merged.html"))
+        expected_outputs.append(f"{species}/results/reads/{species}_multiqc_merged.html")
     else:
         logging.info(f"Skipping MultiQC report for merged reads for {species}. Disabled in config.")
 
@@ -147,8 +147,8 @@ def get_expected_output_reads_plots(species):
     
     expected_outputs = []
 
-    expected_outputs.append(os.path.join(species, "results", "reads", "plots", f"{species}_read_counts.png"))
-    expected_outputs.append(os.path.join(species, "results", "reads", "plots", f"{species}_read_counts_comparison_by_individual.png"))
+    expected_outputs.append(f"{species}/results/reads/plots/{species}_read_counts.png")
+    expected_outputs.append(f"{species}/results/reads/plots/{species}_read_counts_comparison_by_individual.png")
 
     return expected_outputs
 

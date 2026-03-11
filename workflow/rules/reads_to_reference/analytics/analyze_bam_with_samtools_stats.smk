@@ -12,4 +12,4 @@ rule analyze_bam_with_samtools_stats:
     log:
         "{species}/logs/{reference}/statistics/{individual}/{individual}_{reference}_final.bam.stats.log"
     wrapper:
-        "v7.2.0/bio/samtools/stats"
+        "v9.3.0/bio/samtools/stats"

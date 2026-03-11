@@ -1,8 +1,8 @@
-# config.yaml - Configuration file for aDNA pipeline
+# config.yaml - Configuration file for PastForward
 # This file contains settings for various stages of the pipeline
 
 
-project_name: "aDNA_Project"
+project_name: "PastForward_Project"
 
 # Pipeline stages and their configurations
 pipeline:
@@ -40,11 +40,13 @@ pipeline:
         min_length: 0
         # Optional: Adapter sequences for read 1 and read 2
         # If not provided, fastp will try to identify adapters automatically
-        adapters_sequences:
+        #adapters_sequences:
           # Adapter sequence for read 1
-          r1: "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"
+          #r1: "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"
           # Adapter sequence for read 2
-          r2: "AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT" 
+          #r2: "AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT" 
+        # Optional: Extra parameters for adapter removal (Default: "")
+        #extra_params: ""
     
     # Quality checking of trimmed reads
     quality_checking_trimmed:
@@ -84,19 +86,18 @@ pipeline:
             # Optional: Path to the conda environment for ECMSD
             # If not provided, the default environment will be used
             #conda_env: "../../../../envs/ecmsd.yaml"
-            # Path to the ECMSD executable
-            # Curretnly, ecmsd can not be installed via conda. Provide the path to the shell script to run ECMSD.
-            executable: "/path/to/ecmsd/shell/ECMSD.sh"
         # Centrifuge tool settings for contamination analysis
         centrifuge:
           # When true, this tool will be executed (Default: true)
           execute: true
           settings:
+            # Optional: When true, human will be included in the Centrifuge analysis (Default: false)
+            include_human_taxid: true
             # Optional: Path to the conda environment for Centrifuge
             # If not provided, the default environment will be used
             #conda_env: "../../../../envs/centrifuge.yaml"
-            # Path to the Centrifuge index
-            index: "/path/to/centrifuge_index"
+            # Path to the Centrifuge index. If not provided, the default index will be downloaded and used
+            # index: "/path/to/centrifuge_index"
     
     # Statistical analysis
     statistical_analysis:

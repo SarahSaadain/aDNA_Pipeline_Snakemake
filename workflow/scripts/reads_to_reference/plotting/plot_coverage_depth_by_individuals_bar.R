@@ -4,7 +4,6 @@ library(ggplot2)
 library(dplyr)
 library(readr)
 library(stringr)
-library(viridis)
 
 # Access Snakemake variables
 input_file <- snakemake@input[[1]]
@@ -26,17 +25,16 @@ df_summary <- df %>%
             .groups = "drop")
 
 bar_plot <- ggplot(df_summary, aes(x = reorder(individual, -avg_depth),
-                                   y = avg_depth, fill = individual)) +
-  geom_bar(stat = "identity") +
+                                   y = avg_depth)) +
+  geom_bar(stat = "identity", fill = "grey30") +
   theme_bw() +
   ylab("Avg. Depth") +
   xlab("Individual") +
-  ggtitle(paste0("Average Depth per Individual (Aggregated): ", species)) +
-  theme(axis.text.x = element_text(size = 14, angle = 45, hjust = 1),
-        axis.text.y = element_text(size = 14),
-        axis.title.x = element_text(size = 16, face = "bold"),
-        axis.title.y = element_text(size = 16, face = "bold"),
-        plot.title = element_text(size = 18, face = "bold", hjust = 0.5)) +
-  scale_fill_viridis_d()
+  ggtitle(paste0("Average Depth per Individual: ", species)) +
+  theme(axis.text.x = element_text(size = 12, angle = 45, hjust = 1),
+        axis.text.y = element_text(size = 12),
+        axis.title.x = element_text(size = 12, face = "bold"),
+        axis.title.y = element_text(size = 12, face = "bold"),
+        plot.title = element_text(size = 14, hjust = 0.5))
 
 ggsave(output_file, plot = bar_plot, width = 12, height = 6, dpi = 300)

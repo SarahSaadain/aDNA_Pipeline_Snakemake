@@ -1,5 +1,5 @@
 # =================================================================================================
-#     Input Manager Utility Functions for aDNA Pipeline
+#     Input Manager Utility Functions for pastForward Pipeline
 # =================================================================================================
 # This script provides helper functions for managing input files and sample metadata in the pipeline.
 # Functions include file discovery, reference handling, and sample identification.
@@ -44,7 +44,7 @@ def get_expected_outputs_from_pipeline(wildcards):
     expected_output = []
 
     # Loop over each species defined in the config (must be available in the global scope)
-    for species in config["species"]:
+    for species in config.get("species", {}):
         # For each species, gather expected output file paths from all relevant processing stages
         expected_output += get_expexted_output_raw_read_processing(species)
         expected_output += get_expected_output_reference_processing(species)

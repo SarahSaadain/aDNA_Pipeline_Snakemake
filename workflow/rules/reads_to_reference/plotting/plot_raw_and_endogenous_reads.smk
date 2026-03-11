@@ -13,6 +13,6 @@ rule plot_raw_and_endogenous_reads_as_bar_plot:
     log:
         "{species}/logs/{reference}/plots/endogenous_reads/{species}_{reference}_raw_and_endogenous_reads_bar_chart.log"
     conda:
-        "../../../envs/r_plot.yaml"
+        "../../../envs/python_and_r.yaml"
     script:
         "../../../scripts/reads_to_reference/plotting/plot_raw_results_and_endogenous_reads_bar.R"

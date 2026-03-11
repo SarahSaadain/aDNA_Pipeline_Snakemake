@@ -18,4 +18,4 @@ rule analyze_bam_with_picard_duplicates:
     resources:
         mem_mb=1024,
     wrapper:
-        "v7.6.0/bio/picard/markduplicates"
+        "v9.3.0/bio/picard/markduplicates"

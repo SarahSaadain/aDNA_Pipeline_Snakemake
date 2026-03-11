@@ -19,7 +19,7 @@ rule run_fastqc_raw:
     resources:
         mem_mb = 1024,
     wrapper:
-        "v7.5.0/bio/fastqc"
+        "v9.3.0/bio/fastqc"
 
 # Rule: Run FastQC on adapter-trimmed reads
 rule run_fastqc_adapter_removed:
@@ -38,7 +38,7 @@ rule run_fastqc_adapter_removed:
     resources:
         mem_mb = 1024,
     wrapper:
-        "v7.5.0/bio/fastqc"
+        "v9.3.0/bio/fastqc"
 
 # Rule: Run FastQC on quality-filtered reads
 rule run_fastqc_quality_filtered:
@@ -57,7 +57,7 @@ rule run_fastqc_quality_filtered:
     resources:
         mem_mb = 1024,
     wrapper:
-        "v7.5.0/bio/fastqc"
+        "v9.3.0/bio/fastqc"
 
 # Rule: Run FastQC on merged reads
 rule run_fastqc_merged:
@@ -76,4 +76,4 @@ rule run_fastqc_merged:
     resources:
         mem_mb = 1024,
     wrapper:
-        "v7.2.0/bio/fastqc"
+        "v9.3.0/bio/fastqc"

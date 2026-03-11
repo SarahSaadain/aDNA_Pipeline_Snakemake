@@ -14,7 +14,7 @@ rule plot_mapped_reads_depth_coverage_violin:
     log:
         "{species}/logs/{reference}/plots/coverage/{species}_{reference}_individual_depth_coverage_violin.log"
     conda:
-        "../../../envs/r_plot.yaml"
+        "../../../envs/python_and_r.yaml"
     script:
         "../../../scripts/reads_to_reference/plotting/plot_coverage_depth_by_individuals_violin.R"
 
@@ -28,6 +28,6 @@ rule plot_mapped_reads_depth_coverage_bar:
     params:
         species="{species}"
     conda:
-        "../../../envs/r_plot.yaml"
+        "../../../envs/python_and_r.yaml"
     script:
         "../../../scripts/reads_to_reference/plotting/plot_coverage_depth_by_individuals_bar.R"

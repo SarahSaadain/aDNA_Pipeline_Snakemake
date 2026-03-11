@@ -29,8 +29,9 @@ logging.basicConfig(  # Basic config ASAP (for fallback)
     handlers=[logging.StreamHandler()]  # Only console for now
 )
 
-# Add a description of the workflow to the final report
-report: os.path.join(workflow.basedir, "reports/workflow.rst")
+envvars:
+    "CONDA_DEFAULT_ENV",
+    "CONDA_PREFIX"
 
 # =================================================================================================
 #     Snakemake Version Check
@@ -39,7 +40,7 @@ report: os.path.join(workflow.basedir, "reports/workflow.rst")
 snakemake.utils.min_version("9.9.0")
 basedir = workflow.basedir
 
-aDNA_Pipeline_version = "0.0.1" 
+pastForward_version = "0.0.1" 
 
 # =================================================================================================
 #     Configuration Files and Reporting
@@ -57,7 +58,7 @@ cfgfiles = "\n                        ".join(cfgfiles)
 #     Platform and OS Information
 # =================================================================================================
 # Gather platform and OS version information for reproducibility and debugging
-pltfrm = platform.platform() + "; " + platform.version()
+pltfrm = f"{platform.platform()}; {platform.version()}"
 try:
     # Not available in all versions, so we need to catch this
     ld = platform.linux_distribution()
@@ -103,10 +104,10 @@ try:
     )
     out, err = process.communicate()
     out = out.decode("ascii")
-    aDNA_Pipeline_git_hash = out.strip()
-    if aDNA_Pipeline_git_hash:
-        aDNA_Pipeline_version += "-" + aDNA_Pipeline_git_hash
-    del process, out, err, aDNA_Pipeline_git_hash
+    pastForward_git_hash = out.strip()
+    if pastForward_git_hash:
+        pastForward_version += "-" + pastForward_git_hash
+    del process, out, err, pastForward_git_hash
 except:
     pass
 
@@ -127,7 +128,7 @@ except:
 
 # Get the conda env name, if available.
 # See https://stackoverflow.com/a/42660674/4184258
-conda_env = os.environ["CONDA_DEFAULT_ENV"] + " (" + os.environ["CONDA_PREFIX"] + ")"
+conda_env = f"{os.environ['CONDA_DEFAULT_ENV']} ({os.environ['CONDA_PREFIX']})"
 if conda_env == " ()":
     conda_env = "n/a"
 
@@ -139,8 +140,8 @@ for i in range(1, len(sys.argv)):
 # =================================================================================================
 #     Workflow Header Logging
 # =================================================================================================
-# Main aDNA Pipeline header, helping with debugging etc for user issues
-logger.info("aDNA Pipeline " + aDNA_Pipeline_version + " run:")
+# Main pastForward Pipeline header, helping with debugging etc for user issues
+logger.info("PastForward " + pastForward_version + " run:")
 
 logger.info("\tDate:               " + datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 logger.info("\tPlatform:           " + pltfrm)
@@ -157,7 +158,7 @@ logger.info("\tConfig file(s):     " + cfgfiles)
 
 # Print config values of pipline 
 # Convert config dict to a YAML-style string for clean formatting
-config_str = yaml.dump(config["pipeline"], sort_keys=False, default_flow_style=False)
+config_str = yaml.dump(config.get("pipeline", {}), sort_keys=False, default_flow_style=False)
 
 # Log it
 logging.info("Loaded configuration:\n%s", config_str)

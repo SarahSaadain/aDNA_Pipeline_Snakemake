@@ -15,7 +15,7 @@ rule determine_mapped_reads_coverage:
         # optional bed file passed to -b
         extra="-aa",  # optional additional parameters as string
     wrapper:
-        "v7.2.0/bio/samtools/depth"
+        "v9.3.0/bio/samtools/depth"
 
 # Rule: Analyze coverage depth and breadth
 rule analyze_mapped_reads_coverage:
@@ -25,7 +25,7 @@ rule analyze_mapped_reads_coverage:
         analysis="{species}/results/{reference}/analytics/{individual}/coverage/{individual}_{reference}_coverage_analysis.csv"
     message: "Analyzing coverage depth and breadth for {input.depth_txt}"
     conda:
-        "../../../envs/python.yaml",
+        "../../../envs/python_and_r.yaml",
     script:
         "../../../scripts/reads_to_reference/analytics/statistics/analyze_samtools_depth_individual_file.py"
 
@@ -43,7 +43,7 @@ rule combine_analyzed_mapped_reads_coverage:
         detailed="{species}/results/{reference}/analytics/{species}/coverage/{reference}_combined_coverage_analysis_detailed.csv"
     message: "Combining coverage analysis files for species {params.species}"
     conda:
-        "../../../envs/python.yaml",
+        "../../../envs/python_and_r.yaml",
     params:
         species="{species}"
     script:

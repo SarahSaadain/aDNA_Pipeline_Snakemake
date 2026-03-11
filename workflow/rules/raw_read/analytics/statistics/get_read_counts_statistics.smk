@@ -1,28 +1,9 @@
-####################################################
-# Python helper functions for rules
-# Naming of functions: <rule_name>_<rule_parameter>[_<rule_subparameter>]>
-####################################################
-
-def count_reads_raw_input_fastq(wildcards):
-    
-    files = get_r1_read_files_for_species(wildcards.species)
-    matched_files = [f for f in files if wildcards.sample in os.path.basename(f)]
-    if len(matched_files) == 0:
-        logging.error(f"No raw read files found for sample {wildcards.sample} in species {wildcards.species}.")
-        logging.error(f"Available files for species {wildcards.species}: {files}")
-        raise Exception(f"No raw read files found for sample {wildcards.sample} in species {wildcards.species}.")
-    
-    logger.debug(f"Matched raw read files for sample {wildcards.sample} in species {wildcards.species}: {matched_files}")
-    
-    return matched_files[0] 
+import pandas as pd
+import gzip
 
 ####################################################
 # Python helper functions genereal
 ####################################################
-
-import pandas as pd
-import gzip
-#import input_manager as im
 
 def get_fastq_read_count(fastq_file):
     """
@@ -54,14 +35,15 @@ def get_fastq_read_count(fastq_file):
 # Rule: Count reads in raw FASTQ files
 rule count_reads_raw:
     input:
-        fastq=count_reads_raw_input_fastq
+        fastq=lambda wc: get_raw_reads_for_sample(wc.species, wc.sample), 
     output:
         counted="{species}/processed/reads/statistics/{sample}_raw.count"
-    message: "Counting reads in raw FASTQ file {input.fastq}"
+    message: "Counting reads in raw FASTQ file(s) {input.fastq}"
     conda:
-        "../../../../envs/python.yaml",
+        "../../../../envs/python_and_r.yaml",
     run:
-        count = get_fastq_read_count(input.fastq)
+        files = input.fastq if isinstance(input.fastq, list) else [input.fastq]
+        count = sum(get_fastq_read_count(f) for f in files)
         with open(output.counted, "w") as f:
             f.write(str(count))
 
@@ -73,7 +55,7 @@ rule count_reads_trimmed:
         counted="{species}/processed/reads/statistics/{sample}_trimmed.count"
     message: "Counting reads in {input.fastq}"
     conda:
-        "../../../../envs/python.yaml",
+        "../../../../envs/python_and_r.yaml",
     run:
         count = get_fastq_read_count(input.fastq)
         with open(output.counted, "w") as f:
@@ -87,7 +69,7 @@ rule count_reads_quality_filtered:
         counted="{species}/processed/reads/statistics/{sample}_quality_filtered.count"
     message: "Counting reads in {input.fastq}"
     conda:
-        "../../../../envs/python.yaml",
+        "../../../../envs/python_and_r.yaml",
     run:
         count = get_fastq_read_count(input.fastq)
         with open(output.counted, "w") as f:
@@ -103,7 +85,7 @@ rule combine_counts_per_sample:
         counts="{species}/processed/reads/statistics/{sample}_reads_counts.csv"
     message: "Combining read counts for sample {wildcards.sample}"
     conda:
-        "../../../../envs/python.yaml",
+        "../../../../envs/python_and_r.yaml",
     run:
 
         #print(input.raw_reads)
@@ -123,7 +105,7 @@ rule combine_counts_per_sample:
         individual = parts[0] if len(parts) > 0 else "N/A"      
 
         with open(output.counts, "w") as f:
-            f.write(wildcards.sample + "," + individual + "," + str(raw) + "," + str(trimmed) + "," + str(quality_filtered) + "\n")
+            f.write(f"{wildcards.sample},{individual},{str(raw)},{str(trimmed)},{str(quality_filtered)}\n")
 
 # Rule: Combine read counts per species
 rule combine_counts_per_species:
@@ -134,7 +116,7 @@ rule combine_counts_per_species:
     output:
         counts="{species}/results/reads/statistics/{species}_reads_counts.csv"
     conda:
-        "../../../../envs/python.yaml",
+        "../../../../envs/python_and_r.yaml",
     run:
         data = []
         

@@ -1,7 +1,7 @@
 # =================================================================================================
 #     Raw Reads Processing Workflow
 # =================================================================================================
-# This file orchestrates the main steps for processing raw sequencing reads in the aDNA pipeline.
+# This file orchestrates the main steps for processing raw sequencing reads in the pastForward pipeline.
 # Each include statement brings in a specific rule or set of rules for a processing or analysis step.
 
 # Prepare raw reads for processing

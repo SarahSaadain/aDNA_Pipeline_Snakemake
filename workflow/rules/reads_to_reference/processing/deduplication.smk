@@ -21,7 +21,7 @@ def dedup_merge_split_bams_input(wildcards):
     # Find all group files
     group_files = sorted(glob.glob(os.path.join(checkpoint_output, "cluster_*.bed")))
 
-    logger.info(f"Found {len(group_files)} contig cluster files for deduplication.")
+    logger.debug(f"Found {len(group_files)} contig cluster files for deduplication.")
     logger.debug(f"Cluster files: {group_files}")
 
     bam_files = []
@@ -35,7 +35,12 @@ def dedup_merge_split_bams_input(wildcards):
         )
         bam_files.append(bam_path)
 
-    logger.info(f"Requesting {len(bam_files)} deduplicated BAM files for merging.")
+    # add unmapped reads bam file to the list of bams to merge
+    bam_files.append(
+        f"{wildcards.species}/processed/{wildcards.reference}/mapped/{wildcards.individual}_{wildcards.reference}_unmapped_reads.bam"
+    )
+
+    logger.debug(f"Requesting {len(bam_files)} deduplicated BAM files for merging.")
     logger.debug(f"Deduplicated BAM files: {bam_files}")
 
     return bam_files
@@ -102,7 +107,6 @@ rule dedup_extract_contigs_from_reference_fai:
         awk '{{print $1 "\t0\t" $2}}' {input.fai} > {output.bed}
         """
 
-
 # Checkpoint: Create all contig clusters for deduplication
 checkpoint dedup_create_all_contig_clusters:
     input:
@@ -116,9 +120,21 @@ checkpoint dedup_create_all_contig_clusters:
         min_contigs_per_cluster = config.get("pipeline", {}).get("reference_processing", {}).get("deduplication", {}).get("settings", {}).get("min_contigs_per_cluster", 10),
         max_contigs_per_cluster = config.get("pipeline", {}).get("reference_processing", {}).get("deduplication", {}).get("settings", {}).get("max_contigs_per_cluster", 500)
     conda:
-        "../../../envs/python.yaml",
+        "../../../envs/python_and_r.yaml",
     script:
         "../../../scripts/reads_to_reference/processing/deduplication_script_dedup_create_all_contig_clusters.py"
+
+rule save_unmapped_reads_from_bam:
+    input:
+        "{species}/processed/{reference}/mapped/{individual}_{reference}_sorted.bam"
+    output:
+        bam=temp("{species}/processed/{reference}/mapped/{individual}_{reference}_unmapped_reads.bam") # needs to be called .unsorted.bam otherwise snakemake had problems with unambigous names
+    message: "Converting SAM to BAM for {input}"
+    params:
+        extra="-b -f 4",  # optional params string
+    threads: 2
+    wrapper:
+        "v9.3.0/bio/samtools/view"
 
 # Rule: Split BAM file into contig clusters
 rule dedup_split_bam_into_clusters_by_contig_cluster:
@@ -135,7 +151,7 @@ rule dedup_split_bam_into_clusters_by_contig_cluster:
         region="",  # optional region string
     threads: 2
     wrapper:
-        "v7.6.0/bio/samtools/view"
+        "v9.3.0/bio/samtools/view"
 
 # Rule: Deduplicate BAM file for each contig cluster
 rule dedup_deduplicate_bam_cluster:
@@ -174,7 +190,7 @@ rule dedup_merge_bam_clusters:
         extra="",  # optional additional parameters as string
     threads: 8
     wrapper:
-        "v7.6.0/bio/samtools/merge"
+        "v9.3.0/bio/samtools/merge"
 
 # Rule: Sort BAM file
 rule sort_mapped_dedupped_reads_bam:
@@ -188,7 +204,7 @@ rule sort_mapped_dedupped_reads_bam:
         "{species}/logs/{reference}/mapped/{individual}_{reference}_sorted_bam.log",
     threads: 10
     wrapper:
-        "v7.5.0/bio/samtools/sort"
+        "v9.3.0/bio/samtools/sort"
 
 # Rule: Index BAM file
 rule dedup_index_dedupped_bam:
@@ -202,7 +218,7 @@ rule dedup_index_dedupped_bam:
         extra="",  # optional params string
     threads: 5
     wrapper:
-        "v7.5.0/bio/samtools/index"
+        "v9.3.0/bio/samtools/index"
 
 # Rule: Merge DeDup JSON files
 rule dedup_merge_cluster_jsons:
@@ -213,7 +229,7 @@ rule dedup_merge_cluster_jsons:
     message:
         "Merging DeDup JSON files for individual {wildcards.individual} in species {wildcards.species}"
     conda:
-        "../../../envs/python.yaml",
+        "../../../envs/python_and_r.yaml",
     script:
         "../../../scripts/reads_to_reference/processing/deduplication_script_dedup_merge_cluster_jsons.py"
 

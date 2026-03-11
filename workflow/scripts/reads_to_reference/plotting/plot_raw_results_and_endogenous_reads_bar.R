@@ -45,39 +45,40 @@ plot_combined_reads <- function(processing_csv, endogenous_csv, output_plot) {
       read_type = case_match(
         read_type,
         "raw_count_absolute" ~ "Raw Reads",
-        "adapter_removed_count_absolute" ~ "Adapter Trimmed Reads", # NEW LABEL
-        "quality_filtered_count_absolute" ~ "Quality Filtered Reads", # NEW LABEL
-        "endogenous_reads_absolute" ~ "Endogenous (Mapped) Reads",
+        "adapter_removed_count_absolute" ~ "Trimmed Reads", # NEW LABEL
+        "quality_filtered_count_absolute" ~ "Filtered Reads", # NEW LABEL
+        "endogenous_reads_absolute" ~ "Endogenous Reads",
         .default = read_type
       ),
       # Update factor levels for the new four-bar structure
       read_type = factor(read_type,
                          levels = c("Raw Reads",
-                                    "Adapter Trimmed Reads",
-                                    "Quality Filtered Reads",
-                                    "Endogenous (Mapped) Reads"))
+                                    "Trimmed Reads",
+                                    "Filtered Reads",
+                                    "Endogenous Reads"))
     )
 
   # 5. Create the plot
   # Added a fourth color for the new read type
   p <- ggplot(plot_df, aes(x = individual, y = count, fill = read_type)) +
-    geom_bar(stat = "identity", position = position_dodge(preserve = "single")) +
-    scale_fill_manual(values = c("Raw Reads" = "#1f77b4",        # Blue
-                                 "Adapter Trimmed Reads" = "#ff7f0e", # Orange
-                                 "Quality Filtered Reads" = "#2ca02c",# Green
-                                 "Endogenous (Mapped) Reads" = "#d62728")) + # Red
+    geom_bar(stat = "identity", position = position_dodge(preserve = "single"),
+         colour = "black", linewidth = 0.3) +
+    scale_fill_manual(values = c("Raw Reads" = "white",
+                             "Trimmed Reads" = "grey70",
+                             "Filtered Reads" = "grey50",
+                             "Endogenous Reads" = "grey30")) +
     scale_y_continuous(labels = comma) +
     labs(x = "Individual",
-         y = "Read Count (Absolute)",
-         fill = "Read Type",
-         title = "Comparison of Reads Across Processing and Alignment Steps") +
+         y = "Read Count",
+         fill = NULL,
+         title = "Reads Across Processing and Alignment Steps") +
     theme_bw() +
     theme(panel.grid.major = element_line(color = "grey90"),
           panel.grid.minor = element_blank(),
-          axis.text.x = element_text(size = 12),
-          axis.title.x = element_text(size = 14, face = "bold"),
-          axis.title.y = element_text(size = 14, face = "bold"),
-          plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+          axis.text.x = element_text(size = 12, angle = 45, vjust = 1, hjust = 1),
+          axis.title.x = element_text(size = 12, face = "bold"),
+          axis.title.y = element_text(size = 12, face = "bold"),
+          plot.title = element_text(size = 14, hjust = 0.5),
           legend.position = "bottom")
 
   # 6. Save the plot

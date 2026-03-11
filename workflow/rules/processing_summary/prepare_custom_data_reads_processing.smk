@@ -32,7 +32,7 @@ rule prepare_custom_data_reads_processing_absolute_values:
     output:
         "{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_reads_processing_summary.tsv",
     conda:
-        "../../envs/python.yaml",
+        "../../envs/python_and_r.yaml",
     params:
         individual="{individual}",
         reference="{reference}",
@@ -50,7 +50,7 @@ rule combine_custom_data_reads_processing_absolute_values:
     output:
         "{species}/results/summary/{species}_overall/multiqc_custom_content/{species}_{reference}_reads_processing_summary_combined.tsv",
     conda:
-        "../../envs/python.yaml",
+        "../../envs/python_and_r.yaml",
     run:
         import pandas as pd
         import os
@@ -75,7 +75,7 @@ rule prepare_custom_data_reads_processing_stacked_values:
     output:
         "{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_reads_processing_summary_stacked.tsv",
     conda:
-        "../../envs/python.yaml",
+        "../../envs/python_and_r.yaml",
     run:
         import pandas as pd
 
@@ -94,6 +94,10 @@ rule prepare_custom_data_reads_processing_stacked_values:
         df_out["duplicates"] = df["mapped_endogenous_reads"] - df["endogenous_duplicates_removed"]
         df_out["endogenous"] = df["endogenous_duplicates_removed"]
 
+        #sort the columns: endogenous, duplicates, non_endogenous
+        columns_order = ["individual", "endogenous", "duplicates", "non_endogenous"]
+        df_out = df_out[columns_order]
+
         df_out.to_csv(output_file, sep="\t", index=False)
 
 rule combine_custom_data_reads_processing_stacked_values:
@@ -107,7 +111,7 @@ rule combine_custom_data_reads_processing_stacked_values:
     output:
         "{species}/results/summary/{species}_overall/multiqc_custom_content/{species}_{reference}_reads_processing_summary_stacked_combined.tsv",
     conda:
-        "../../envs/python.yaml",
+        "../../envs/python_and_r.yaml",
     run:
         import pandas as pd
         import os
@@ -123,5 +127,9 @@ rule combine_custom_data_reads_processing_stacked_values:
                 combined_df = pd.concat([combined_df, df], ignore_index=True)
             else:
                 print(f"Warning: Input file {file} does not exist and will be skipped.")
+
+        #sort the columns: endogenous, duplicates, non_endogenous
+        columns_order = ["individual", "endogenous", "duplicates", "non_endogenous"]
+        combined_df = combined_df[columns_order]
 
         combined_df.to_csv(output_file, sep="\t", index=False)

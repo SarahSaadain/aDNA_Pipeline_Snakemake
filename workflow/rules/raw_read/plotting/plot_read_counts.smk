@@ -12,7 +12,7 @@ rule plot_read_counts:
     log:
         "{species}/logs/reads/plots/{species}_read_counts.log"
     conda:
-        "../../../envs/r_plot.yaml"
+        "../../../envs/python_and_r.yaml"
     script:
         "../../../scripts/raw_reads/plotting/plot_read_counts.R"
 
@@ -26,6 +26,6 @@ rule plot_read_counts_comparison_by_individual:
     log:
         "{species}/logs/reads/plots/{species}_read_counts_comparison_by_individual.log"
     conda:
-        "../../../envs/r_plot.yaml"
+        "../../../envs/python_and_r.yaml"
     script:
         "../../../scripts/raw_reads/plotting/plot_read_counts_comparison_by_individual.R"

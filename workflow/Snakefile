@@ -1,5 +1,5 @@
 ################################################
-# Snakefile for aDNA Pipeline
+# Snakefile for PastForward
 ################################################
 # This Snakefile orchestrates the workflow for aDNA reads analysis.
 # It includes rules for different processing steps, such as raw read processing, mapping to reference, and quality control.

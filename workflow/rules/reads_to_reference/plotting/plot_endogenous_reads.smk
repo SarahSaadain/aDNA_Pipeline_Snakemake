@@ -12,6 +12,6 @@ rule plot_mapped_reads_endogenous_bar:
     log:
         "{species}/logs/{reference}/plots/endogenous_reads/{species}_{reference}_endogenous_reads_bar_chart.log"
     conda:
-        "../../../envs/r_plot.yaml"
+        "../../../envs/python_and_r.yaml"
     script:
         "../../../scripts/reads_to_reference/plotting/plot_endogenous_reads_bar.R"

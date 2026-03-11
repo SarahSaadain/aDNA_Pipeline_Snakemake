@@ -106,6 +106,9 @@ def multi_folder_mode(folders: list[Path], output: Path, log_arg: str | None = N
             merge_plotables(paths, merged_file)
 
             out_path = output / (Path(name).stem + ".png")
+
+            logging.info("[%s] — plotting merged file to %s", name, out_path)
+
             run_rscript(merged_file, out_path, log_arg)
 
     log.info("Done.")

@@ -37,7 +37,7 @@ rule determine_normalization_of_individual:
     log:
         "{species}/results/dynamics/{feature_library}/normalization/{individual}_normalization.log"
     conda:
-        "../../envs/python.yaml"
+        "../../envs/python_and_r.yaml"
     script:
         "../../scripts/dynamics/normalization/calculate_normalization.py"
 
@@ -48,7 +48,7 @@ rule combine_normalizations_for_species:
         combined="{species}/results/dynamics/{feature_library}/normalization/{species}_normalized_coverage.combined.tsv"
     message: "Combine normalized coverage for {wildcards.species}"
     conda:
-        "../../envs/python.yaml"
+        "../../envs/python_and_r.yaml"
     script:
         "../../scripts/dynamics/normalization/combine_normalized_coverage.py"
 
@@ -62,7 +62,7 @@ rule plot_normalization:
         order=lambda wildcards: ",".join(get_individuals_for_species(wildcards.species)),
         names=lambda wildcards: ",".join(get_individuals_for_species(wildcards.species))
     conda:
-        "../../envs/r_plot.yaml"
+        "../../envs/python_and_r.yaml"
     shell:
         """
         Rscript workflow/scripts/dynamics/normalization/plot_normalization.r --input {input} --output {output} --order {params.order} --names {params.names}

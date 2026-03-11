@@ -12,7 +12,7 @@ rule determine_mapped_reads_endogenous:
     log:
         "{species}/logs/{reference}/analytics/{individual}/endogenous/{individual}_{reference}_endogenous.log"
     conda:
-        "../../../envs/python.yaml",
+        "../../../envs/python_and_r.yaml",
     script:
         "../../../scripts/reads_to_reference/analytics/statistics/parse_endogenous_from_stats.py"
 
@@ -31,6 +31,6 @@ rule combine_determine_mapped_reads_endogenous:
     log:
         "{species}/logs/{reference}/analytics/{species}/endogenous/{reference}_endogenous.log"
     conda:
-        "../../../envs/python.yaml",
+        "../../../envs/python_and_r.yaml",
     script:
         "../../../scripts/reads_to_reference/analytics/statistics/combine_endogenous_reads.py"

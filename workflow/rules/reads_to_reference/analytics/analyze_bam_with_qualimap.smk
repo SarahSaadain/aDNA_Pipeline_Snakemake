@@ -14,4 +14,4 @@ rule analyze_bam_with_qualimap:
     resources:
         mem_mb=4096,
     wrapper:
-        "v7.6.0/bio/qualimap/bamqc"
+        "v9.3.0/bio/qualimap/bamqc"
