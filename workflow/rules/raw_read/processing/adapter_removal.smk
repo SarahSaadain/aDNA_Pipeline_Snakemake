@@ -51,7 +51,7 @@ rule remove_adapters_single_with_fastp:
 # Rule: Adapter removal for paired-end reads using fastp
 rule remove_adapters_paired_with_fastp:
     input:
-        sample=remove_adapters_type_with_fastp_input_sample,
+        sample=lambda wc: get_raw_reads_for_sample(wc.species, wc.sample),
     output:
         trimmed=[
             temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.R1.fastq.gz"),
