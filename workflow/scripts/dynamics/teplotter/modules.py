@@ -495,7 +495,7 @@ class NormFactor:
         return normfactor
 
     @classmethod
-    def compute_normalization_factor_for_sequence_entries(cls, sequence_entities: list[SequenceEntry], ignore_read_ends_base_count:int,quantile:int) -> float:
+    def compute_normalization_factor_for_sequence_entries(cls, sequence_entities: list[SequenceEntry], ignore_read_ends_base_count:int, quantile:int) -> float:
         assert quantile<50 and quantile>=0
         assert ignore_read_ends_base_count >=0
 
@@ -525,12 +525,24 @@ class NormFactor:
 
             logging.debug(f"Excluding {quantile_drop_count} coverage values from the lower and the upper end for normalization factor computation based on quantile {quantile}%.")
 
-            coverages_list = coverages_list[quantile_drop_count:-quantile_drop_count]
+            coverages_list_no_quantile = coverages_list[quantile_drop_count:-quantile_drop_count]
 
         if len(coverages_list)==0:
             raise Exception("Unable to normalize; no valid coverage for a single copy gene")
 
-        mean = float(sum(coverages_list))/float(len(coverages_list))
+        mean = float(sum(coverages_list_no_quantile))/float(len(coverages_list_no_quantile))
+
+        logging.debug(f"Computed normalization factor: {mean:.2f} based on {len(coverages_list_no_quantile)} coverage values from single copy genes after applying end distance and quantile filters. Sum of coverage values used for normalization factor computation: {sum(coverages_list_no_quantile):.2f}.")
+        logging.debug(f"Normalization factor computation details: Total single copy genes considered: {len(sequence_entities)}, Total coverage values before filtering: {len(coverages_list) + 2 * quantile_drop_count}, Total coverage values after filtering: {len(coverages_list_no_quantile)}, Normalization factor (mean coverage): {mean:.2f}")
+
+        if mean == 0:
+            # try without quantile filtering
+            # this is a fallback in case the quantile filtering removes too much data; this can happen if there are very few scgs or if the coverage is very uneven
+            # in this case we will just use the mean of all coverages without quantile filtering; this is not ideal but it is better than not being able to normalize at all
+            # we log a warning in this case
+            logging.warning(f"Normalization factor is zero after applying quantile filtering. This may indicate that the quantile filtering removed too much data. Trying to compute normalization factor without quantile filtering as a fallback.")
+            mean = float(sum(coverages_list))/float(len(coverages_list))            
+
         return mean
 
 def load_fasta(fafile):

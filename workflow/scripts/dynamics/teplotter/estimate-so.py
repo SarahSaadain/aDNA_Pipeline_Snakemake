@@ -3,9 +3,15 @@ import argparse
 import logging
 from modules import SequenceEntryReader, FileWriter, NormFactor
 
+LOG_FORMAT = '[%(asctime)s] [%(levelname)s] %(message)s'
+LOG_DATE_FORMAT = '%Y-%m-%d %H:%M:%S (%Z)'
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
+logging.basicConfig(  # Basic config ASAP (for fallback)
+    level=logging.INFO,
+    format=LOG_FORMAT,
+    datefmt=LOG_DATE_FORMAT,
+    handlers=[logging.StreamHandler()]  # Only console for now
+)
 
 parser = argparse.ArgumentParser(description="""           
 estimates the average coverage for each sequence overview entry;

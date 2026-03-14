@@ -89,11 +89,12 @@ rule run_teplotter_visualization_of_individual:
         directory("{species}/results/dynamics/{feature_library}/teplotter/{individual}_plots")
     conda:
         "../../envs/python_and_r.yaml"
+    threads: 10
     params:
         log_threshhold = 25
     shell:
         """
-        python workflow/scripts/dynamics/teplotter/run_plotable.py --folder {input} --outdir {output}  --log {params.log_threshhold}
+        python workflow/scripts/dynamics/teplotter/run_plotable.py --folder {input} --outdir {output}  --log {params.log_threshhold}  --threads {threads}
         """
 
 rule run_teplotter_visualization_of_species:
@@ -107,9 +108,10 @@ rule run_teplotter_visualization_of_species:
         directory("{species}/results/dynamics/{feature_library}/teplotter/{species}_plots_facet")
     conda:
         "../../envs/python_and_r.yaml"
+    threads: 10
     params:
         log_threshhold = 25
     shell:
         """
-        python workflow/scripts/dynamics/teplotter/run_plotable.py --folders {input} --outdir {output} --log {params.log_threshhold}
+        python workflow/scripts/dynamics/teplotter/run_plotable.py --folders {input} --outdir {output} --log {params.log_threshhold} --threads {threads}
         """

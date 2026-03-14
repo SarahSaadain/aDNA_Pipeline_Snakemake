@@ -22,6 +22,7 @@ import argparse
 import logging
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 import tempfile
 
@@ -36,15 +37,17 @@ def find_plotables(folder: Path) -> dict[str, Path]:
 R_SCRIPT = Path(__file__).parent / "visualize-plotable.R"
 
 
-def run_rscript(input_path: Path, output_path: Path, log_arg: str | None = None):
+def run_rscript(input_path: Path, output_path: Path, log_arg: str | None = None, capture: bool = False):
     """Call the R script with input and output paths, and optional log flag."""
     cmd = ["Rscript", str(R_SCRIPT), str(input_path), str(output_path)]
     if log_arg is not None:
         cmd.append(log_arg)
     log.info("Running: %s", " ".join(cmd))
-    result = subprocess.run(cmd, capture_output=False)
+    result = subprocess.run(cmd, capture_output=capture)
     if result.returncode != 0:
         log.warning("Rscript exited with code %d for %s", result.returncode, input_path.name)
+        if capture and result.stderr:
+            log.warning("stderr: %s", result.stderr.decode(errors="replace").strip())
 
 
 def merge_plotables(file_paths: list[Path], dest: Path):
@@ -58,7 +61,7 @@ def merge_plotables(file_paths: list[Path], dest: Path):
                 out_fh.write(content)
 
 
-def single_folder_mode(folder: Path, output: Path, log_arg: str | None = None):
+def single_folder_mode(folder: Path, output: Path, log_arg: str | None = None, threads: int = 1):
     """Plot each .plotable file in folder independently."""
     output.mkdir(parents=True, exist_ok=True)
     plotables = find_plotables(folder)
@@ -67,16 +70,26 @@ def single_folder_mode(folder: Path, output: Path, log_arg: str | None = None):
         log.error("No .plotable files found in %s", folder)
         sys.exit(1)
 
-    log.info("Found %d .plotable file(s) in %s", len(plotables), folder)
-    for name, src_path in sorted(plotables.items()):
+    log.info("Found %d .plotable file(s) in %s using %d thread(s)", len(plotables), folder, threads)
+    capture = threads > 1
+
+    def _plot(item):
+        name, src_path = item
         out_path = output / (src_path.stem + ".png")
         log.info("[%s]", name)
-        run_rscript(src_path, out_path, log_arg)
+        run_rscript(src_path, out_path, log_arg, capture=capture)
+
+    with ThreadPoolExecutor(max_workers=threads) as pool:
+        futures = {pool.submit(_plot, item): item[0] for item in sorted(plotables.items())}
+        for fut in as_completed(futures):
+            exc = fut.exception()
+            if exc:
+                log.error("Error plotting %s: %s", futures[fut], exc)
 
     log.info("Done.")
 
 
-def multi_folder_mode(folders: list[Path], output: Path, log_arg: str | None = None):
+def multi_folder_mode(folders: list[Path], output: Path, log_arg: str | None = None, threads: int = 1):
     """Merge same-named .plotable files across folders and plot each merged file."""
     output.mkdir(parents=True, exist_ok=True)
 
@@ -95,21 +108,28 @@ def multi_folder_mode(folders: list[Path], output: Path, log_arg: str | None = N
             log.warning("'%s' missing from %d folder(s) — will merge available copies only.",
                         name, n_folders - len(paths))
 
-    log.info("Found %d unique .plotable file name(s) across %d folder(s).", len(all_names), n_folders)
+    log.info("Found %d unique .plotable file name(s) across %d folder(s) using %d thread(s).",
+             len(all_names), n_folders, threads)
+    capture = threads > 1
 
     with tempfile.TemporaryDirectory() as tmpdir:
         tmp_path = Path(tmpdir)
 
-        for name, paths in sorted(all_names.items()):
+        def _merge_and_plot(name_paths):
+            name, paths = name_paths
             merged_file = tmp_path / name
             log.info("[%s] — merging %d file(s)", name, len(paths))
             merge_plotables(paths, merged_file)
-
             out_path = output / (Path(name).stem + ".png")
+            log.info("[%s] — plotting merged file to %s", name, out_path)
+            run_rscript(merged_file, out_path, log_arg, capture=capture)
 
-            logging.info("[%s] — plotting merged file to %s", name, out_path)
-
-            run_rscript(merged_file, out_path, log_arg)
+        with ThreadPoolExecutor(max_workers=threads) as pool:
+            futures = {pool.submit(_merge_and_plot, item): item[0] for item in sorted(all_names.items())}
+            for fut in as_completed(futures):
+                exc = fut.exception()
+                if exc:
+                    log.error("Error processing %s: %s", futures[fut], exc)
 
     log.info("Done.")
 
@@ -160,6 +180,14 @@ def main():
     )
 
     parser.add_argument(
+        "--threads", "-j",
+        type=int,
+        default=1,
+        metavar="N",
+        help="Number of parallel Rscript processes (default: 1).",
+    )
+
+    parser.add_argument(
         "--log",
         nargs="?",        # 0 or 1 argument: bare --log or --log N
         const="",         # value when --log is given with no argument
@@ -184,13 +212,13 @@ def main():
         if not args.folder.is_dir():
             parser.error(f"Folder not found: {args.folder}")
         output = args.outdir if args.outdir else args.folder
-        single_folder_mode(args.folder, output, log_arg)
+        single_folder_mode(args.folder, output, log_arg, threads=args.threads)
 
     else:
         for f in args.folders:
             if not f.is_dir():
                 parser.error(f"Folder not found: {f}")
-        multi_folder_mode(args.folders, args.outdir, log_arg)
+        multi_folder_mode(args.folders, args.outdir, log_arg, threads=args.threads)
 
 
 if __name__ == "__main__":

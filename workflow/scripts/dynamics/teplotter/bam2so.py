@@ -4,8 +4,15 @@ import logging
 import pysam
 from modules import SequenceEntryBuilder, FileWriter, load_fasta
 
+LOG_FORMAT = '[%(asctime)s] [%(levelname)s] %(message)s'
+LOG_DATE_FORMAT = '%Y-%m-%d %H:%M:%S (%Z)'
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(  # Basic config ASAP (for fallback)
+    level=logging.INFO,
+    format=LOG_FORMAT,
+    datefmt=LOG_DATE_FORMAT,
+    handlers=[logging.StreamHandler()]  # Only console for now
+)
 
 parser = argparse.ArgumentParser(description="""           
 summarize coverage for diverse features
@@ -40,6 +47,7 @@ writer = FileWriter(args.outfile)
 reference_dict = load_fasta(args.fasta)
 
 sequence_entry_builder=None
+seen_sequences = set()
 
 infile_path = args.infile
 
@@ -78,7 +86,8 @@ for read in samfile:
             indel_min_frequency=args.mfindel)
         
         writer.write(str(seq_entry))
-        
+        seen_sequences.add(sequence_entry_builder.ref_sequence_name)
+
         ref_sequence = reference_dict[ref_name]
         sequence_entry_builder = SequenceEntryBuilder(ref_sequence, ref_name, args.min_mapq)
 
@@ -92,6 +101,13 @@ seq_entry = None
 if sequence_entry_builder is not None:
     seq_entry = sequence_entry_builder.to_SequenceEntry(args.mcsnp, args.mfsnp, args.mcindel, args.mfindel)
     writer.write(str(seq_entry))
+    seen_sequences.add(seq_entry.sequence_name)
+
+for ref_name, ref_sequence in reference_dict.items():
+    if ref_name not in seen_sequences:
+        empty_builder = SequenceEntryBuilder(ref_sequence, ref_name, args.min_mapq)
+        empty_entry = empty_builder.to_SequenceEntry(args.mcsnp, args.mfsnp, args.mcindel, args.mfindel)
+        writer.write(str(empty_entry))
 
 
 

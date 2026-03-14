@@ -4,6 +4,11 @@ import logging
 from modules import SequenceEntry, SequenceEntryReader, FileWriter, NormFactor
 import os
 
+LOG_FORMAT = '[%(asctime)s] [%(levelname)s] %(message)s'
+LOG_DATE_FORMAT = '%Y-%m-%d %H:%M:%S (%Z)'
+
+
+
 padto=9
 def format_col(topr:list):
     if padto==0:
@@ -78,7 +83,12 @@ def prepareForPrint(se:SequenceEntry, sampleid:str):
     tr="\n".join(lines)
     return tr
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(  # Basic config ASAP (for fallback)
+    level=logging.INFO,
+    format=LOG_FORMAT,
+    datefmt=LOG_DATE_FORMAT,
+    handlers=[logging.StreamHandler()]  # Only console for now
+)
 
 parser = argparse.ArgumentParser(description="""           
 normalizes the coverage for seqentries
