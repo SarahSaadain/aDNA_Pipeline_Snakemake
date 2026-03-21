@@ -2,7 +2,7 @@
 # Snakemake rules
 ####################################################
 
-# Rule: Run eCMSD for contamination analysis
+# Rule: Run ECMSD for contamination analysis
 rule prepare_raw_reads:
     input:
         raw_read = "{species}/{raw_read}",

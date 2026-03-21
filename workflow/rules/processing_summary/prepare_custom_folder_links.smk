@@ -20,7 +20,7 @@ rule copy_mapdamage_result_for_multiqc:
         lg_dist = "{species}/results/summary/individual_level/{individual}/multiqc_custom_content/mapdamage/{individual}_{reference}/lgdistribution.txt",
     shell:
         """
-        mkdir -p {wildcards.species}/results/summary/{wildcards.individual}/multiqc_custom_content/mapdamage/{wildcards.individual}_{wildcards.reference}
+        mkdir -p {wildcards.species}/results/summary/individual_level/{wildcards.individual}/multiqc_custom_content/mapdamage/{wildcards.individual}_{wildcards.reference}
         cp {input.GtoA3p} {output.GtoA3p}
         cp {input.CtoT5p} {output.CtoT5p}
         cp {input.lg_dist} {output.lg_dist}

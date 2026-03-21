@@ -38,13 +38,13 @@ rule ecmsd_analyze_contamination:
     threads: 15
     conda:
         ECMSD_CONDA_ENV
-    message: "Running eCMSD contamination analysis for {input.fastq}"
+    message: "Running ECMSD contamination analysis for {input.fastq}"
     shell:
         """
         outdir=$(dirname $(dirname {output.summary}))
         mkdir -p "$outdir"
 
-        echo "Running eCMSD for sample {wildcards.sample}"
+        echo "Running ECMSD for sample {wildcards.sample}"
         echo "Input FASTQ: {input.fastq}"
         echo "Output folder: $outdir"
 
