@@ -30,7 +30,7 @@ rule prepare_custom_data_reads_processing_absolute_values:
         endogenous = prepare_custom_data_reads_processing_endogenous,
         dedup = prepare_custom_data_reads_processing_dedup
     output:
-        "{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_reads_processing_summary.tsv",
+        "{species}/results/summary/individual_level/{individual}/multiqc_custom_content/{individual}_{reference}_reads_processing_summary.tsv",
     conda:
         "../../envs/python_and_r.yaml",
     params:
@@ -42,13 +42,13 @@ rule prepare_custom_data_reads_processing_absolute_values:
 rule combine_custom_data_reads_processing_absolute_values:
     input:
         lambda wildcards: expand(
-            "{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_reads_processing_summary.tsv",
+            "{species}/results/summary/individual_level/{individual}/multiqc_custom_content/{individual}_{reference}_reads_processing_summary.tsv",
             species=wildcards.species,
             reference=wildcards.reference,
             individual=get_individuals_for_species(wildcards.species),
         )
     output:
-        "{species}/results/summary/{species}_overall/multiqc_custom_content/{species}_{reference}_reads_processing_summary_combined.tsv",
+        "{species}/results/summary/species_level/{species}_overall/multiqc_custom_content/{species}_{reference}_reads_processing_summary_combined.tsv",
     conda:
         "../../envs/python_and_r.yaml",
     run:
@@ -71,9 +71,9 @@ rule combine_custom_data_reads_processing_absolute_values:
 
 rule prepare_custom_data_reads_processing_stacked_values:
     input:
-        "{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_reads_processing_summary.tsv",
+        "{species}/results/summary/individual_level/{individual}/multiqc_custom_content/{individual}_{reference}_reads_processing_summary.tsv",
     output:
-        "{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_reads_processing_summary_stacked.tsv",
+        "{species}/results/summary/individual_level/{individual}/multiqc_custom_content/{individual}_{reference}_reads_processing_summary_stacked.tsv",
     conda:
         "../../envs/python_and_r.yaml",
     run:
@@ -103,13 +103,13 @@ rule prepare_custom_data_reads_processing_stacked_values:
 rule combine_custom_data_reads_processing_stacked_values:
     input:
         lambda wildcards: expand(
-            "{species}/results/summary/{individual}/multiqc_custom_content/{individual}_{reference}_reads_processing_summary_stacked.tsv",
+            "{species}/results/summary/individual_level/{individual}/multiqc_custom_content/{individual}_{reference}_reads_processing_summary_stacked.tsv",
             species=wildcards.species,
             reference=wildcards.reference,
             individual=get_individuals_for_species(wildcards.species),
         )
     output:
-        "{species}/results/summary/{species}_overall/multiqc_custom_content/{species}_{reference}_reads_processing_summary_stacked_combined.tsv",
+        "{species}/results/summary/species_level/{species}_overall/multiqc_custom_content/{species}_{reference}_reads_processing_summary_stacked_combined.tsv",
     conda:
         "../../envs/python_and_r.yaml",
     run:

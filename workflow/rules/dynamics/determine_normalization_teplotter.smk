@@ -16,7 +16,7 @@ def combine_teplotters_for_species_input_coverage_files(wildcards):
     list_of_teplotter_files_of_individuals = []
 
     for individual in individuals:
-        list_of_teplotter_files_of_individuals.append(f"{species}/results/dynamics/{feature_library}/teplotter/{individual}_estimation.tsv")
+        list_of_teplotter_files_of_individuals.append(f"{species}/results/dynamics/{feature_library}/teplotter/individual_level/{individual}_estimation.tsv")
     
     if not list_of_teplotter_files_of_individuals:
         raise ValueError(f"No teplotter files could be determined for species {species}.")
@@ -32,9 +32,9 @@ rule determine_teplotter_of_individual_bam_to_so:
         bam="{species}/processed/dynamics/{feature_library}/mapped/{individual}_{feature_library}_and_scg.sorted.bam",
         fasta="{species}/processed/dynamics/lib/{feature_library}_and_scg.suffixed.fasta"
     output:
-        coverage="{species}/results/dynamics/{feature_library}/teplotter/{individual}_coverage.tsv"
+        coverage="{species}/results/dynamics/{feature_library}/teplotter/individual_level/{individual}_coverage.tsv"
     log:
-        "{species}/results/dynamics/{feature_library}/teplotter/{individual}_bam2so.log"
+        "{species}/results/dynamics/{feature_library}/teplotter/individual_level/{individual}_bam2so.log"
     conda:
         "../../envs/python_and_r.yaml"
     shell:
@@ -44,9 +44,9 @@ rule determine_teplotter_of_individual_bam_to_so:
 
 rule normalize_teplotter_of_individual:
     input:
-        coverage="{species}/results/dynamics/{feature_library}/teplotter/{individual}_coverage.tsv"
+        coverage="{species}/results/dynamics/{feature_library}/teplotter/individual_level/{individual}_coverage.tsv"
     output:
-        normalized="{species}/results/dynamics/{feature_library}/teplotter/{individual}_coverage.normalized.tsv"
+        normalized="{species}/results/dynamics/{feature_library}/teplotter/individual_level/{individual}_coverage.normalized.tsv"
     conda:
         "../../envs/python_and_r.yaml"
     shell:
@@ -56,9 +56,9 @@ rule normalize_teplotter_of_individual:
 
 rule estimate_teplotter_of_individual:
     input:
-        coverage="{species}/results/dynamics/{feature_library}/teplotter/{individual}_coverage.tsv"
+        coverage="{species}/results/dynamics/{feature_library}/teplotter/individual_level/{individual}_coverage.tsv"
     output:
-        estimation="{species}/results/dynamics/{feature_library}/teplotter/{individual}_estimation.tsv"
+        estimation="{species}/results/dynamics/{feature_library}/teplotter/individual_level/{individual}_estimation.tsv"
     conda:
         "../../envs/python_and_r.yaml"
     shell:
@@ -68,9 +68,9 @@ rule estimate_teplotter_of_individual:
 
 rule prepare_teplotter_visualization_of_individual:
     input:
-        coverage="{species}/results/dynamics/{feature_library}/teplotter/{individual}_coverage.normalized.tsv",
+        coverage="{species}/results/dynamics/{feature_library}/teplotter/individual_level/{individual}_coverage.normalized.tsv",
     output:
-        plotable=directory("{species}/results/dynamics/{feature_library}/teplotter/{individual}_plotable")
+        plotable=directory("{species}/results/dynamics/{feature_library}/teplotter/individual_level/{individual}_plotable")
     conda:
         "../../envs/python_and_r.yaml"
     shell:
@@ -84,9 +84,9 @@ rule prepare_teplotter_visualization_of_individual:
 
 rule run_teplotter_visualization_of_individual:
     input:
-        "{species}/results/dynamics/{feature_library}/teplotter/{individual}_plotable"
+        "{species}/results/dynamics/{feature_library}/teplotter/individual_level/{individual}_plotable"
     output:
-        directory("{species}/results/dynamics/{feature_library}/teplotter/{individual}_plots")
+        directory("{species}/results/dynamics/{feature_library}/teplotter/individual_level/{individual}_plots")
     conda:
         "../../envs/python_and_r.yaml"
     threads: 10
@@ -100,12 +100,12 @@ rule run_teplotter_visualization_of_individual:
 rule run_teplotter_visualization_of_species:
     input:
         lambda wildcards: expand(
-            "{species}/results/dynamics/{feature_library}/teplotter/{individual}_plotable", 
+            "{species}/results/dynamics/{feature_library}/teplotter/individual_level/{individual}_plotable", 
             species=wildcards.species,
             feature_library=wildcards.feature_library,
             individual=get_individuals_for_species(wildcards.species))
     output:
-        directory("{species}/results/dynamics/{feature_library}/teplotter/{species}_plots_facet")
+        directory("{species}/results/dynamics/{feature_library}/teplotter/species_level/{species}_plots_facet")
     conda:
         "../../envs/python_and_r.yaml"
     threads: 10

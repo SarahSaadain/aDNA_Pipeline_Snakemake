@@ -84,11 +84,11 @@ The BAM file MultiQC reports are a key output of the PastForward pipeline and ar
    - **Description**: Summarizes the quality metrics of BAM files, including results from reads processing, contamination, coverage analysis, deduplication, and damage rescaling and additiional statistics. Provides a detailed report for each individual and reference.
 
 2. **Individual-Level BAM File MultiQC Report**:
-   - **Location**: `{species}/results/summary/{individual}_multiqc.html`
+   - **Location**: `{species}/results/summary/individual_level/{individual}_multiqc.html`
    - **Description**: Summarizes the quality metrics of BAM files, including results from reads processing, contamination, coverage analysis, deduplication, and damage rescaling and additiional statistics. Provides a detailed report for each individual across all references.
 
 3. **Species-Level BAM File MultiQC Report**:
-   - **Location**: `{species}/results/summary/{species}_multiqc.overall.html`
+   - **Location**: `{species}/results/summary/species_level/{species}_multiqc.overall.html`
    - **Description**: Summarizes the quality metrics of BAM files, including results from reads processing, contamination, coverage analysis, deduplication, and damage rescaling and additiional statistics. Provides a detailed report for all individuals across all references.
 
 ### Additional MultiQC Reports for Reads

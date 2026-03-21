@@ -128,9 +128,9 @@ For each individual, the pipeline calculates read coverage across both the SCG a
 
 ### TEplotter Analysis
 
-TEplotter provides a complementary view focusing on **site occupancy (SO)** — a measure of how consistently a given TE insertion site is represented across individuals. The analysis runs through a multi-step pipeline:
+TEplotter provides a complementary view focusing on a sequence overview (SO) — a tab-delimited file containing coverage, SNP, and indel information for each reference sequence. The analysis runs through a multi-step pipeline:
 
-First, the sorted BAM is converted into a site-occupancy profile, using the combined library FASTA to determine sequence lengths. The raw SO values are then normalised, and occupancy statistics are estimated. The normalised profiles are converted into a plotable directory structure, processing all sequences and labelling outputs with the individual's identifier.
+First, the sorted BAM is converted into a sequence overview profile, using the combined library FASTA to determine sequence lengths. The raw SO values are then normalised, and occupancy statistics are estimated. The normalised profiles are converted into a plotable directory structure, processing all sequences and labelling outputs with the individual's identifier.
 
 From the plotable directories, per-individual TE occupancy plots are generated. A second pass combines all individual plotable directories to produce a faceted species-level comparison plot, allowing side-by-side visual comparison of TE dynamics across all individuals simultaneously.
 

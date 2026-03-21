@@ -31,9 +31,9 @@ def get_expected_output_dynamics_processing(species):
 
         if config.get("pipeline", {}).get("dynamics", {}).get("teplotter", {}).get("execute", True) == True:
             #all_inputs.append(f"{species}/results/dynamics/{feature_library}/teplotter/{species}_estimation.combined.tsv")
-            all_inputs.append(f"{species}/results/dynamics/{feature_library}/teplotter/{species}_plots_facet/")
+            all_inputs.append(f"{species}/results/dynamics/{feature_library}/teplotter/species_level/{species}_plots_facet/")
             for individual in individuals:
-                all_inputs.append(f"{species}/results/dynamics/{feature_library}/teplotter/{individual}_plots/")
+                all_inputs.append(f"{species}/results/dynamics/{feature_library}/teplotter/individual_level/{individual}_plots/")
     
         if config.get("pipeline", {}).get("dynamics", {}).get("pf_normalization", {}).get("execute", True) == True:
             all_inputs.append(f"{species}/results/dynamics/{feature_library}/normalization/plots/")
