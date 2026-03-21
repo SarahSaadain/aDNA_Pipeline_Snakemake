@@ -1,4 +1,4 @@
-![pastForward Logo ](docs/img/pastforward_logo.svg)
+<p align="center"><img src="docs/img/pastforward_logo.svg" width="400"/></p>
 
 # PastForward - An aDNA Pipeline based on snakmake
 
