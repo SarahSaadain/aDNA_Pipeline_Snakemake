@@ -1,7 +1,7 @@
 # Past Forward aDNA Pipeline — Process Overview
 This document describes the processing logic of the Past Forward aDNA Pipeline across its three main modules: raw read processing, reference processing, and dynamics processing. A fourth module handles summary reporting across all results. All pipeline behaviour is controlled through `config/config.yaml`.
 
-![Pipeline Overview](img/aDNA_pipeline_process.svg)
+![Pipeline Overview](img/pf_pipeline_process.svg)
 
 ## Module 1 — Raw Read Processing
 

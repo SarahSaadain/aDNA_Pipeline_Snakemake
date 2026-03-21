@@ -10,7 +10,7 @@ Note: This pipeline is still in the final stages of development. It can already 
 
 Below is a simplified overview of the processing steps of the pipeline:
 
-![Pipeline Overview](docs/img/aDNA_pipeline_process.svg)
+![Pipeline Overview](docs/img/pf_pipeline_process.svg)
 
 For detailed information about the processing steps, see the [Process Overview](docs/process_overview.md) page.
 
