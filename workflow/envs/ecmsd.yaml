@@ -1,16 +1,7 @@
-name: bioenv
+name: ecmsd_env
 channels:
   - conda-forge
   - bioconda
-  - agbiome
   - defaults
 dependencies:
   - ecmsd
-  - python=3.11
-  - numpy
-  - r-base=4.3
-  - r-tidyverse
-  - minimap2
-  - agbiome::bbtools
-  - pigz
-  - openjdk=17
