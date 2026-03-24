@@ -46,7 +46,7 @@ scale_fill_manual(
 scale_pattern_manual(
   name = NULL,
   values = c("percent_after_dup_removal" = "none",
-             "percent_duplicates_removed" = "stripe"),
+             "percent_duplicates_removed" = "none"),
   labels = c("percent_after_dup_removal" = "Final Endogenous",
              "percent_duplicates_removed" = "Duplicates Removed")
 ) +

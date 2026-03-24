@@ -28,16 +28,29 @@ plot_by_individual <- function(df, species, target_file) {
                                          "quality_filtered_count_absolute")))
 
   p <- ggplot(df_individual, aes(x = individual, y = count, fill = read_type)) +
-    geom_bar(stat = "identity", position = position_dodge(preserve = "single")) +
-    scale_fill_manual(values = c("raw_count_absolute" = "#1f77b4",
-                                 "adapter_removed_count_absolute" = "#ff7f0e",
-                                 "quality_filtered_count_absolute" = "#2ca02c")) +
+    geom_bar(stat = "identity", position = position_dodge(preserve = "single"),
+             colour = "black") +
+    scale_fill_manual(
+      name = NULL,
+      values = c("raw_count_absolute" = "white",
+                 "adapter_removed_count_absolute" = "grey70",
+                 "quality_filtered_count_absolute" = "grey30"),
+      labels = c("raw_count_absolute" = "Raw Reads",
+                 "adapter_removed_count_absolute" = "Adapter Removed",
+                 "quality_filtered_count_absolute" = "Quality Filtered")
+    ) +
     scale_y_continuous(labels = comma) +
-    labs(x = "Individual", y = "Read Count", fill = "Read Type") +
+    labs(x = "Individual", y = "Read Count", title = "Read Counts by Individual") +
     theme_bw() +
-    theme(panel.grid.major = element_line(color = "grey90"),
+    theme(axis.text.x = element_text(size = 12, angle = 45, vjust = 1, hjust = 1),
+          axis.text.y = element_text(size = 12),
+          axis.title.x = element_text(size = 14, face = "bold"),
+          axis.title.y = element_text(size = 14, face = "bold"),
+          plot.title = element_text(size = 14, hjust = 0.5),
+          legend.position = "bottom",
+          panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
-          axis.text.x = element_text(angle = 90, hjust = 1))
+          panel.background = element_rect(fill = "white", colour = "black"))
           
   ggsave(file_path, plot = p, width = 8, height = 5, dpi = 300)
 }

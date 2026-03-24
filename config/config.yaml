@@ -150,6 +150,10 @@ pipeline:
     pf_normalization:
       # When true, this sub-stage will be executed (Default: true)
       execute: true
+  
+  summary_processing:
+    # When true, this stage will be executed (Default: true)
+    execute: true
 
 # Species-specific settings
 species:

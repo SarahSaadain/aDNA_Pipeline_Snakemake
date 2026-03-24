@@ -24,16 +24,29 @@ plot_read_counts <- function(df, species, target_file) {
                                          "quality_filtered_count")))
 
   p <- ggplot(df_long, aes(x = species, y = count, fill = read_type)) +
-    geom_bar(stat = "identity", position = position_dodge(preserve = "single")) +
-    scale_fill_manual(values = c("raw_count" = "#1f77b4",
-                                 "adapter_removed_count" = "#ff7f0e",
-                                 "quality_filtered_count" = "#2ca02c")) +
+    geom_bar(stat = "identity", position = position_dodge(preserve = "single"),
+             colour = "black") +
+    scale_fill_manual(
+      name = NULL,
+      values = c("raw_count" = "white",
+                 "adapter_removed_count" = "grey70",
+                 "quality_filtered_count" = "grey30"),
+      labels = c("raw_count" = "Raw Reads",
+                 "adapter_removed_count" = "Adapter Removed",
+                 "quality_filtered_count" = "Quality Filtered")
+    ) +
     scale_y_continuous(labels = scales::comma) +
-    labs(x = "Species", y = "Read Count (summed)", fill = "Read Type") +
+    labs(x = "Species", y = "Read Count (summed)", title = "Read Counts by Species") +
     theme_bw() +
-    theme(panel.grid.major = element_line(color = "grey90"),
+    theme(axis.text.x = element_text(size = 12, angle = 45, vjust = 1, hjust = 1),
+          axis.text.y = element_text(size = 12),
+          axis.title.x = element_text(size = 14, face = "bold"),
+          axis.title.y = element_text(size = 14, face = "bold"),
+          plot.title = element_text(size = 14, hjust = 0.5),
+          legend.position = "bottom",
+          panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
-          axis.text.x = element_text(angle = 90, hjust = 1))
+          panel.background = element_rect(fill = "white", colour = "black"))
 
   ggsave(file_path, plot = p, width = 8, height = 5, dpi = 300)
 }
