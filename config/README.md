@@ -184,13 +184,6 @@ pipeline:
         ecmsd:
           # When true, this tool will be executed (Default: true)
           execute: true
-          settings:
-            # Optional: Path to the conda environment for ECMSD
-            # If not provided, the default environment will be used
-            #conda_env: "../../../../envs/ecmsd.yaml"
-            # Path to the ECMSD executable
-            # Curretnly, ecmsd can not be installed via conda. Provide the path to the shell script to run ECMSD.
-            executable: "/path/to/ecmsd/shell/ECMSD.sh"
         # Centrifuge tool settings for contamination analysis
         centrifuge:
           # When true, this tool will be executed (Default: true)

@@ -1,4 +1,3 @@
-ECMSD_CONDA_ENV = config.get("pipeline", {}).get("raw_reads_processing", {}).get("contamination_analysis", {}).get("tools", {}).get("ecmsd", {}).get("settings", {}).get("conda_env", "../../../../envs/ecmsd.yaml")
 
 def get_ecmsd_database(wildcards):
     configured_db = config.get("pipeline", {}).get("raw_reads_processing", {}).get("contamination_analysis", {}).get("tools", {}).get("ecmsd", {}).get("settings", {}).get("database")
@@ -11,7 +10,7 @@ rule ecmsd_database_setup:
     output:
         directory("resources/ecmsd_database")
     conda:
-        ECMSD_CONDA_ENV
+        "../../../../envs/ecmsd.yaml"
     shell:
         """
         ECMSD --create-db --db-folder {output}
@@ -37,7 +36,7 @@ rule ecmsd_analyze_contamination:
         prefix = "{sample}"
     threads: 15
     conda:
-        ECMSD_CONDA_ENV
+        "../../../../envs/ecmsd.yaml"
     message: "Running ECMSD contamination analysis for {input.fastq}"
     shell:
         """

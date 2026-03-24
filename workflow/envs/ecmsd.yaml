@@ -5,6 +5,7 @@ channels:
   - agbiome
   - defaults
 dependencies:
+  - ecmsd
   - python=3.11
   - numpy
   - r-base=4.3
