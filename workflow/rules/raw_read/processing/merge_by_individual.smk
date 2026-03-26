@@ -15,7 +15,7 @@ def merge_reads_by_individual_input(wildcards):
     # for each raw R1 file, generate the corresponding quality-filtered filename
     quality_filtered_files = []
     for sample in samples_of_individual:
-        qf_file = f"{wildcards.species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered.fastq.gz"
+        qf_file = f"{wildcards.species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered_final.fastq.gz"
         quality_filtered_files.append(qf_file)
     
     return quality_filtered_files

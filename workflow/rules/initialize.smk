@@ -40,7 +40,7 @@ envvars:
 snakemake.utils.min_version("9.9.0")
 basedir = workflow.basedir
 
-pastForward_version = "0.0.1" 
+pastForward_version = "1.0.0" 
 
 # =================================================================================================
 #     Configuration Files and Reporting

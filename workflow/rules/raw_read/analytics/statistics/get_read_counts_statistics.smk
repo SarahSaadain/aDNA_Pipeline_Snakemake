@@ -25,8 +25,17 @@ def get_fastq_read_count(fastq_file):
         with open(fastq_file, "r") as f:
             count = sum(1 for _ in f) // 4
 
-    logger.info(f"Found {count} reads in {fastq_file}")
+    logger.debug(f"Found {count} reads in {fastq_file}")
     return count
+
+def write_count_from_source(source, output_file):
+    """Copy a .count file or count reads from a fastq and write the result."""
+    if source.endswith(".count"):
+        shell(f"cp {source} {output_file}")
+    else:
+        count = get_fastq_read_count(source)
+        with open(output_file, "w") as f:
+            f.write(str(count))
 
 ####################################################
 # Snakemake rules
@@ -48,32 +57,38 @@ rule count_reads_raw:
             f.write(str(count))
 
 # Rule: Count reads in trimmed FASTQ files
+# If adapter removal is inactive, copy count from raw reads instead
 rule count_reads_trimmed:
     input:
-        fastq="{species}/processed/reads/reads_trimmed/{sample}_trimmed_final.fastq.gz"
+        source=lambda wc: (
+            f"{wc.species}/processed/reads/reads_trimmed/{wc.sample}_trimmed_final.fastq.gz"
+            if config.get('pipeline', {}).get('raw_reads_processing', {}).get('adapter_removal', {}).get('execute', True)
+            else f"{wc.species}/processed/reads/statistics/{wc.sample}_raw.count"
+        )
     output:
         counted="{species}/processed/reads/statistics/{sample}_trimmed.count"
-    message: "Counting reads in {input.fastq}"
+    message: "Counting reads in {input.source}"
     conda:
         "../../../../envs/python_and_r.yaml",
     run:
-        count = get_fastq_read_count(input.fastq)
-        with open(output.counted, "w") as f:
-            f.write(str(count))
+        write_count_from_source(input.source, output.counted)
 
 # Rule: Count reads in quality-filtered FASTQ files
+# If quality filtering is inactive, copy count from trimmed reads instead
 rule count_reads_quality_filtered:
     input:
-        fastq="{species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered.fastq.gz"
+        source=lambda wc: (
+            f"{wc.species}/processed/reads/reads_quality_filtered/{wc.sample}_quality_filtered_final.fastq.gz"
+            if config.get('pipeline', {}).get('raw_reads_processing', {}).get('quality_filtering', {}).get('execute', True)
+            else f"{wc.species}/processed/reads/statistics/{wc.sample}_trimmed.count"
+        )
     output:
         counted="{species}/processed/reads/statistics/{sample}_quality_filtered.count"
-    message: "Counting reads in {input.fastq}"
+    message: "Counting reads in {input.source}"
     conda:
         "../../../../envs/python_and_r.yaml",
     run:
-        count = get_fastq_read_count(input.fastq)
-        with open(output.counted, "w") as f:
-            f.write(str(count))
+        write_count_from_source(input.source, output.counted)
 
 # Rule: Combine read counts per sample
 rule combine_counts_per_sample:
@@ -87,12 +102,6 @@ rule combine_counts_per_sample:
     conda:
         "../../../../envs/python_and_r.yaml",
     run:
-
-        #print(input.raw_reads)
-        #print(input.trimmed_reads)
-        #print(input.quality_filtered_reads)
-        #print(output.counts)
-        #print(wildcards.sample)
 
         with open(input.raw_reads, "r") as f:
             raw = int(f.read())

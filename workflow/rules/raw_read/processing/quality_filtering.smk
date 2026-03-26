@@ -19,3 +19,16 @@ rule filter_reads_by_quality:
     threads: 10
     wrapper:
         "v9.3.0/bio/fastp"
+
+rule get_quality_filtered_final:
+    input:
+        source=lambda wildcards: (
+            f"{wildcards.species}/processed/reads/reads_quality_filtered/{wildcards.sample}_quality_filtered.fastq.gz"
+            if config.get('pipeline', {}).get('raw_reads_processing', {}).get('quality_filtering', {}).get('execute', True)
+            else f"{wildcards.species}/processed/reads/reads_trimmed/{wildcards.sample}_trimmed_final.fastq.gz"
+        ),
+    output:
+        final=temp("{species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered_final.fastq.gz")
+    message: "Selecting quality filtered reads for {wildcards.sample}"
+    shell:
+        "cp {input.source} {output.final}"

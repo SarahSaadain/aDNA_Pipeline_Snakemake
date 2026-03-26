@@ -42,7 +42,7 @@ rule download_centrifuge_index:
 
 rule analyze_contamination_with_centrifuge:
     input:
-        fastq = "{species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered.fastq.gz",
+        fastq = "{species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered_final.fastq.gz",
         index = get_centrifuge_index_input
     output:
         output = "{species}/results/contamination_analysis/centrifuge/{individual}/{sample}/{sample}_centrifuge_output.tsv",

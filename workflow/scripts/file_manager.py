@@ -41,10 +41,17 @@ def get_read_files_for_species(species: str) -> list[str]:
 # Get only R1 raw read files for a given species
 def get_r1_read_files_for_species(species: str) -> list[str]:
     files = get_read_files_for_species(species)
+    
+    # since R1 and R2 files should always come in pairs, if there are no R1 files, 
+    # then there is probably something wrong with the file structure or naming. 
+    # Besides R1/R2, the name of the read files should be the same, 
+    # so we can just check for R1 files to build the list of samples and 
+    # individuals for a species. 
+
     r1_files = [f for f in files if "_R1" in os.path.basename(f)]
+
     if len(r1_files) == 0:
-        logger.error(f"No R1 read files found for species {species}.")
-        logger.error(f"Available read files for species {species}: {files}")
+        logger.error(f"No R1 read files found for species {species}. Available read files for species {species}: {files}")
         raise Exception(f"No R1 read files found for species {species}.")
     
     logger.debug(f"R1 read files for species {species}: {r1_files}")
@@ -62,6 +69,10 @@ def get_sample_ids_for_species(species):
         samples.append(filename)
     
     logger.debug(f"Sample IDs for species {species}: {samples}")
+
+    if len(samples) == 0:
+        logger.error(f"No sample IDs found for species {species}.")
+        raise Exception(f"No sample IDs found for species {species}.")
     
     return samples
 
@@ -170,9 +181,22 @@ def get_references_ids_for_species(species):
 # Get sample IDs for a specific individual within a species
 def get_samples_for_species_individual(species, individual):
     samples = get_sample_ids_for_species(species)
+
+    # Currently, a sample is everything before the first "_R1" or "_R2" in the filename.
+    # The first part of the sample name (before the first "_") is considered the individual ID.
+    # The sample might contain additional information after the individual ID, 
+    # but we only want to match the samples with the individual ID at the start of the sample name.
     samples_of_individual = [f for f in samples if f.startswith(f"{individual}_")]
 
+    # in case there is no additional information after the individual ID, 
+    # the sample name will be the same as the individual ID.
+    samples_of_individual += [f for f in samples if f == individual]
+
     logger.debug(f"Samples for individual {individual} in species {species}: {samples_of_individual}")
+
+    if len(samples_of_individual) == 0:
+        logger.error(f"No samples found for individual {individual} in species {species}. Available samples: {samples}")
+        raise Exception(f"No samples found for individual {individual} in species {species}.")
     
     return samples_of_individual
 

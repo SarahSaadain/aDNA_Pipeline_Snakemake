@@ -43,7 +43,7 @@ rule run_fastqc_adapter_removed:
 # Rule: Run FastQC on quality-filtered reads
 rule run_fastqc_quality_filtered:
     input:
-        "{species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered.fastq.gz"
+        "{species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered_final.fastq.gz"
     output:
         html="{species}/results/reads/reads_quality_filtered/fastqc/{sample}_quality_filtered_fastqc.html",
         zip="{species}/results/reads/reads_quality_filtered/fastqc/{sample}_quality_filtered_fastqc.zip"

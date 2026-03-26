@@ -18,7 +18,7 @@ rule ecmsd_database_setup:
 
 rule ecmsd_analyze_contamination:
     input:
-        fastq = "{species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered.fastq.gz",
+        fastq = "{species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered_final.fastq.gz",
         database = get_ecmsd_database
     output:
         summary         = "{species}/results/contamination_analysis/ecmsd/{individual}/{sample}/mapping/{sample}_Mito_summary.txt",

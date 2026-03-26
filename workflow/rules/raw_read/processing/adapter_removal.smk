@@ -4,14 +4,18 @@
 ####################################################
 
 def determine_reads_trimmed_final_input(wildcards):
-    # Determine if the sample is paired-end or single-end
+    adapter_removal_active = config.get('pipeline', {}).get('raw_reads_processing', {}).get('adapter_removal', {}).get('execute', True)
     reads = get_raw_reads_for_sample(wildcards.species, wildcards.sample)
-    if len(reads) == 2:
-        # Paired-end: use the merged reads from fastp_pe
-        return f"{wildcards.species}/processed/reads/reads_trimmed/{wildcards.sample}_trimmed.pe.merged.fastq.gz"
+    if adapter_removal_active:
+        if len(reads) == 2:
+            # Paired-end: use the merged reads from fastp_pe
+            return f"{wildcards.species}/processed/reads/reads_trimmed/{wildcards.sample}_trimmed.pe.merged.fastq.gz"
+        else:
+            # Single-end: use the trimmed reads from fastp_se
+            return f"{wildcards.species}/processed/reads/reads_trimmed/{wildcards.sample}_trimmed.se.fastq.gz"
     else:
-        # Single-end: use the trimmed reads from fastp_se
-        return f"{wildcards.species}/processed/reads/reads_trimmed/{wildcards.sample}_trimmed.se.fastq.gz"
+        # Adapter removal inactive: pass raw reads through directly (SE: 1 file, PE: 2 files)
+        return reads
 
 ####################################################
 # Snakemake rules
@@ -87,7 +91,7 @@ rule remove_adapters_paired_with_fastp:
     wrapper:
         "v9.3.0/bio/fastp"
 
-rule determine_reads_trimmed_final:
+rule get_adapter_removal_final:
     input:
         determine_reads_trimmed_final_input,
     output:
@@ -100,11 +104,11 @@ rule determine_reads_trimmed_final:
         echo "Determining final trimmed reads for {wildcards.sample}" > {log} 2>&1
         echo "Input: {input}" >> {log} 2>&1
         echo "Output: {output}" >> {log} 2>&1
-        mv {input} {output}
+        cat {input} > {output}
         echo "Determination completed for {wildcards.sample}" >> {log} 2>&1
         """
 
-rule merge_reads_trimmed_pe:
+rule merge_reads_adapter_removal_pe:
     input:
         merged="{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.fastq.gz",
         trimmed1="{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.R1.fastq.gz",
