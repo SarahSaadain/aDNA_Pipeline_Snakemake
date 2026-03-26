@@ -1,8 +1,8 @@
-# config.yaml - Configuration file for PastForward
+# config.yaml - Configuration file for pastForward
 # This file contains settings for various stages of the pipeline
 
 
-project_name: "PastForward_Project"
+project_name: "pastForward_Project"
 
 # Pipeline stages and their configurations
 pipeline:
