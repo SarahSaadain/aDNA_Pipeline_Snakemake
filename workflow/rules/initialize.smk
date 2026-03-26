@@ -40,7 +40,12 @@ envvars:
 snakemake.utils.min_version("9.9.0")
 basedir = workflow.basedir
 
-pastForward_version = "1.0.0" 
+_git = subprocess.run(
+    ["git", "describe", "--tags", "--always"],
+    capture_output=True, text=True, cwd=workflow.basedir
+)
+pastForward_version = _git.stdout.strip() if _git.returncode == 0 else "unknown"
+del _git
 
 # =================================================================================================
 #     Configuration Files and Reporting
