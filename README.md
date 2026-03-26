@@ -4,8 +4,6 @@
 
 This project contains a pipeline to analyze raw ancient data, obtained from the sequencing facility. The pipeline includes various Snakemake workflows to process, analyze, and generate reports on the sequence quality, which helps decide if an aDNA extraction and sequencing was successful, and further polishes the data for downstream analyses.
 
-Note: This pipeline is still in the final stages of development. It can already be used for analysis but might still be subject to changes.
-
 ## Workflow Overview
 
 Below is a simplified overview of the processing steps of the pipeline:
