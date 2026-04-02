@@ -8,7 +8,7 @@ This project contains a pipeline to analyze raw historical/ancient data, obtaine
 
 Below is an overview of the steps of the pipeline:
 
-![Pipeline Overview](docs/img/pf_pipeline_process.svg)
+![Pipeline Overview](docs/img/pf_workflow_withoutLogo.svg)
 
 For detailed information about the processing steps, see the [Process Overview](docs/process_overview.md) page.
 
