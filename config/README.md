@@ -227,6 +227,20 @@ pipeline:
       # When true, this sub-stage will be executed (Default: true)
       execute: true
 
+  dynamics:
+    # When true, this stage will be executed (Default: true)
+    execute: true
+    teplotter:
+      # When true, this sub-stage will be executed (Default: true)
+      execute: true
+    pf_normalization:
+      # When true, this sub-stage will be executed (Default: true)
+      execute: true
+  
+  summary_processing:
+    # When true, this stage will be executed (Default: true)
+    execute: true
+
 # Species details
 species:
   Clup:
