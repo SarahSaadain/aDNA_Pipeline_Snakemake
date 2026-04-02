@@ -12,10 +12,7 @@ snakemake --help
 Refer to the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) for more installation options and details.
 
 ## Setup Instructions
-- Before running the pipeline, ensure you have an environment with Snakemake and the required dependencies installed.
-- Required dependencies for pipeline processing will be installed automatically, except for the contamination analysis tools. Those have to be installed separately and their details need to be added to the config file.
-  - The pipeline supports ECMSD for contamination analysis. Ensure ECMSD is configured in the `config.yaml` file under `contamination_analysis`.
-  - The pipeline supports Centrifuge for contamination analysis. Ensure Centrifuge is configured in the `config.yaml` file under `contamination_analysis`.
+- Before running the pipeline, ensure you have an environment with Snakemake and it is activated.
 - You need to add species details to the pipeline (config and files).
 - your reads should be renamed according to the naming convention specifie dbelow
 
