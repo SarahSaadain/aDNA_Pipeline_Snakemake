@@ -14,13 +14,13 @@ Refer to the [Snakemake documentation](https://snakemake.readthedocs.io/en/stabl
 ## Setup Instructions
 - Before running the pipeline, ensure you have an environment with Snakemake and it is activated.
 - You need to add species details to the pipeline (config and files).
-- your reads should be renamed according to the naming convention specifie dbelow
+- Your reads should be renamed according to the naming convention specified below.
 
 ## Folder Structure
 
 ### Species Folders
 
-The project contains folders for different species, which contain the raw data, processed data, and results for each species.
+The project contains folders for different species, which each contain the raw data, processed data, and results for the particular species.
 
 The species folders should be placed in the root folder of your pipeline.
 
@@ -40,11 +40,9 @@ All other folders will be created and populated automatically
 - Folder `<species>/processed/` contains the intermediary files during processing. Most of these files are marked as temporary and will be deleted at the end of the pipeline. Some files are kept to allow reprocessing the pipeline from different points in case something fails.
 - Folder `<species>/results/` contains the final results and reports. 
 
-General reads processing data will be in either `processed`or `results`. 
-
 Everything related to a reference will have a `<reference>` folder under `processed`or `results`. Typically, only the `results` folder will contain information required for further analyis. In case more information is required, the original files can often be found in the `processed` folder. 
 
-Some exemptions include `*.sam` and unsorted `*.bam` files. These are deleted to save storrage space. Most other files are kept in order to allow reprocessing the pipeline from different points in case something fails. If a step should be repeated, the relevant files need to be deleted manually. 
+Some exemptions include `*.sam` and unsorted `*.bam` files. These are deleted to save storage space. Most other files are kept in order to allow reprocessing the pipeline from different points in case something fails. If a step should be repeated, the relevant files need to be deleted manually. 
 
 #### RAW Reads Filenames
 
@@ -58,18 +56,13 @@ Following this convention ensures proper organization and automated processing w
 
 ##### Filename Components:
 - **`<Individual>`** – A unique identifier for the sample or individual.  
-- **`<FreeText>`** – Any additional text or identifier that can be included in the filename. Typically, this is used to differentiate between different samples within the same individual. E.g. the original sample name.  
-- **`R<1/2>`** – Indicates the read pair number, typically `R1` for the first read and `R2` for the second read. 
+- **`<FreeText>`** – Any additional text or identifier that can be included in the filename. Typically, this is used to differentiate between different samples within the same individual, e.g. the same sample was extracted twice using different protocols.
+- **`R<1/2>`** – Indicates the read pair number, typically `R1` for the first read and `R2` for the second read. If the data is single-end, only `R1` should be present.
 - **`.fastq.gz`** – The expected file extension, indicating compressed FASTQ format. Only `.fastq.gz` files are supported.
-
-Notes:
- - This name must contain `_R1` and, if paired-end, `_R2`.
- - For paired-end data, the name of the reads must be identical except for `_R1` and `_R2`.
- - Individual names/IDs will be used to name the output files as well as in the reports and plots.
 
 #### Example:
 ```
-Bger1_326862_S37_R1_001.fastq.gz
+Dmel01_DabneyProtocol_R1_001.fastq.gz
 ```
 
 # Configuration File Structure for aDNA Pipeline (`config.yaml`)
@@ -236,7 +229,7 @@ pipeline:
 
 # Species details
 species:
-  Bger:
-    name: "Blatella germanica"
-  Dsim:
-    name: "Drosophila simulans"
+  Clup:
+    name: "Canis lupus"
+  Dmel:
+    name: "Drosophila melanogaster"
