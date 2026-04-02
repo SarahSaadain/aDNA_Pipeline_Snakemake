@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/img/pastforward_logo_block.svg" width="400"/></p>
+<p align="center"><img src="docs/img/pastforward_logo_block.svg" width="250"/></p>
 
 # pastForward - An aDNA Pipeline based on snakemake
 
