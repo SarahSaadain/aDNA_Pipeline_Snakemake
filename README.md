@@ -2,7 +2,7 @@
 
 # pastForward - An aDNA Pipeline based on snakemake
 
-A Snakemake pipeline for analyzing raw historical/ancient DNA obtained from a sequencing facility. It processes and generates reports on sequence quality and contamination to assess whether an aDNA extraction was successful and the sample is free of major contaminations. Additionally, reads are mapped and rescaled according to their damage profiles, ready for downstream analyses. Optionally the pipeline enables comparisons of key genomic features across samples, such as transposon insertions, gene copy number changes, or endosymbiont strain replacements.
+A Snakemake pipeline for analyzing raw historical/ancient DNA obtained from a sequencing facility. Using Snakemake, it ensures efficient resource management and automated handling of software dependencies. It processes and generates reports on sequence quality and contamination, with checks specifically suited for aDNA short reads, to assess whether an extraction was successful and the sample is free of major contamination. Additionally, reads are mapped and rescaled according to their damage profiles, ready for downstream analyses. It also optionally enables comparisons of key genomic features across time points, such as transposon insertions, gene copy number changes, or endosymbiont strain replacements.
 
 ## Workflow Overview
 
