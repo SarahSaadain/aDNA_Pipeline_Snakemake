@@ -2,11 +2,11 @@
 
 # pastForward - An aDNA Pipeline based on snakemake
 
-This project contains a pipeline to analyze raw ancient data, obtained from the sequencing facility. The pipeline includes various Snakemake workflows to process, analyze, and generate reports on the sequence quality, which helps decide if an aDNA extraction and sequencing was successful, and further polishes the data for downstream analyses.
+This project contains a pipeline to analyze raw historical/ancient data, obtained from the sequencing facility. The pipeline includes various Snakemake workflows to process, analyze, and generate reports on sequence quality and contamination, which helps determine if an aDNA extraction was successful and whether the sample is free from contamination. It also enables comparative examination of key genomic features across time points, such as transposon insertions, gene copy number changes, and endosymbiont strain replacements. Once the pipeline is complete, the data is ready for downstream analyses, with reads mapped and rescaled according to their damage profiles.
 
 ## Workflow Overview
 
-Below is a simplified overview of the processing steps of the pipeline:
+Below is an overview of the steps of the pipeline:
 
 ![Pipeline Overview](docs/img/pf_pipeline_process.svg)
 
@@ -69,44 +69,13 @@ If you want to restart the pipeline, because it has crashed or was terminated, y
 
 ## Reports
 
-The pastForward pipeline generates several MultiQC reports to provide a comprehensive summary of the quality control and analysis results at various stages of the workflow. These reports are essential for assessing the quality of the sequencing data and the results of the processing pipeline.
-
-By leveraging the AI functionality in the MultiQC reports, you can use ai to interpret the results of the pipeline and make informed decisions about the quality of the data and the results of the analysis.
-
-Note: Currently, the report functionality of snakemake is not available for the pastForward pipeline.
-
-### BAM File MultiQC Reports
-
-The BAM file MultiQC reports are a key output of the pastForward pipeline and are essential for downstream analysis and quality checking. These reports are generated at two levels:
-
-1. **Reference-Level BAM File MultiQC Report**:
-   - **Location**: `{species}/results/{reference}/analytics/{individual}_{reference}_multiqc.html`
-   - **Description**: Summarizes the quality metrics of BAM files, including results from reads processing, contamination, coverage analysis, deduplication, and damage rescaling and additiional statistics. Provides a detailed report for each individual and reference.
-
-2. **Individual-Level BAM File MultiQC Report**:
+pastForward generates a MultiQC report for:
+- each species (including all samples from this species, to compare the results across all samples)
    - **Location**: `{species}/results/summary/individual_level/{individual}_multiqc.html`
-   - **Description**: Summarizes the quality metrics of BAM files, including results from reads processing, contamination, coverage analysis, deduplication, and damage rescaling and additiional statistics. Provides a detailed report for each individual across all references.
 
-3. **Species-Level BAM File MultiQC Report**:
+- each individual sample
    - **Location**: `{species}/results/summary/species_level/{species}_multiqc.overall.html`
-   - **Description**: Summarizes the quality metrics of BAM files, including results from reads processing, contamination, coverage analysis, deduplication, and damage rescaling and additiional statistics. Provides a detailed report for all individuals across all references.
 
-### Additional MultiQC Reports for Reads
+The reports include a comprehensive summary of reads before and after trimming, contamination analysis, coverage analysis, deduplication and damage rescaling. The reports are essential for assessing the quality of the sequenced reads and for making decisions about the need of additional library preparation.
 
-In addition to the BAM file reports, the pipeline generates MultiQC reports for raw, trimmed, quality-filtered, and merged reads. These reports provide more detailed insights into the quality of the sequencing reads and can be used for additional analysis if required. The locations of these reports are as follows:
-
-1. **Raw Reads MultiQC Report**:
-   - **Location**: `{species}/results/reads/{species}_multiqc_raw.html`
-   - **Description**: Summarizes the quality metrics of raw sequencing reads.
-
-2. **Trimmed Reads MultiQC Report**:
-   - **Location**: `{species}/results/reads/{species}_multiqc_trimmed.html`
-   - **Description**: Provides quality metrics for reads after adapter trimming.
-
-3. **Quality-Filtered Reads MultiQC Report**:
-   - **Location**: `{species}/results/reads/{species}_multiqc_quality_filtered.html`
-   - **Description**: Details the quality metrics of reads after quality filtering.
-
-4. **Merged Reads MultiQC Report**:
-   - **Location**: `{species}/results/reads/{species}_multiqc_merged.html`
-   - **Description**: Contains quality metrics for reads after merging paired-end reads.
+By leveraging the AI functionality in the MultiQC reports, you can also use AI to interpret the results of the pipeline.
