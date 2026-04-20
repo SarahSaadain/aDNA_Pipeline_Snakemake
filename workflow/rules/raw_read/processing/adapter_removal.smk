@@ -4,15 +4,19 @@
 ####################################################
 
 def determine_reads_trimmed_final_input(wildcards):
+    
+    species = wildcards.species
+    sample = wildcards.sample
+    
     adapter_removal_active = config.get('pipeline', {}).get('raw_reads_processing', {}).get('adapter_removal', {}).get('execute', True)
-    reads = get_raw_reads_for_sample(wildcards.species, wildcards.sample)
+    reads = get_raw_reads_for_sample(species, sample)
     if adapter_removal_active:
         if len(reads) == 2:
             # Paired-end: use the merged reads from fastp_pe
-            return f"{wildcards.species}/processed/reads/reads_trimmed/{wildcards.sample}_trimmed.pe.merged.fastq.gz"
+            return f"{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.merged.fastq.gz"
         else:
             # Single-end: use the trimmed reads from fastp_se
-            return f"{wildcards.species}/processed/reads/reads_trimmed/{wildcards.sample}_trimmed.se.fastq.gz"
+            return f"{species}/processed/reads/reads_trimmed/{sample}_trimmed.se.fastq.gz"
     else:
         # Adapter removal inactive: pass raw reads through directly (SE: 1 file, PE: 2 files)
         return reads
@@ -32,7 +36,7 @@ rule remove_adapters_single_with_fastp:
         json="{species}/results/reads/reads_trimmed/fastp_report/{sample}_trimmed.se.json",
     message: "Trimming adapters from single-end reads in {input.sample}"
     log:
-        "{species}/logs/reads/reads_trimmed/{sample}_trimmed.se.log",
+        "{species}/processed/reads/reads_trimmed/{sample}_trimmed.se.log",
     params:
         adapters=lambda wc: (
             f"--adapter_sequence {config.get('pipeline', {}).get('raw_reads_processing', {}).get('adapter_removal', {}).get('settings', {}).get('adapters_sequences', {}).get('r1')}"
@@ -70,7 +74,7 @@ rule remove_adapters_paired_with_fastp:
         json="{species}/results/reads/reads_trimmed/fastp_report/{sample}_trimmed.pe.json",
     message: "Trimming adapters from paired-end reads and merging for {input.sample}"
     log:
-        "{species}/logs/reads/reads_trimmed/{sample}_trimmed.pe.log",
+        "{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.log",
     params:
         adapters=lambda wc: (
             f"--adapter_sequence {config.get('pipeline', {}).get('raw_reads_processing', {}).get('adapter_removal', {}).get('settings', {}).get('adapters_sequences', {}).get('r1','')} "
@@ -97,7 +101,7 @@ rule get_adapter_removal_final:
     output:
         temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed_final.fastq.gz"),
     log:
-        "{species}/logs/reads/reads_trimmed/{sample}_determine_trimmed_final.log",
+        "{species}/processed/reads/reads_trimmed/{sample}_determine_trimmed_final.log",
     message: "Getting trimmed reads in {wildcards.sample}"
     shell:
         """
@@ -118,7 +122,7 @@ rule merge_reads_adapter_removal_pe:
     output:
         temp("{species}/processed/reads/reads_trimmed/{sample}_trimmed.pe.merged.fastq.gz"),
     log:
-        "{species}/logs/reads/reads_trimmed/{sample}_merge_trimmed_pe.log",
+        "{species}/processed/reads/reads_trimmed/{sample}_merge_trimmed_pe.log",
     message: "Merging trimmed reads for paired-end"
     shell:
         """

@@ -13,7 +13,7 @@ rule filter_reads_by_quality:
         json="{species}/results/reads/reads_quality_filtered/fastp_report/{sample}_quality_filtered.json",
     message: "Quality filtering reads in {input.sample}"
     log:
-        "{species}/logs/reads/reads_quality_filtered/{sample}_quality_filtered.log",
+        "{species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered.log",
     params:
         extra=f"--disable_adapter_trimming --qualified_quality_phred {config.get('pipeline', {}).get('raw_reads_processing', {}).get('quality_filtering', {}).get('settings', {}).get('min_quality','15')} --length_required {config.get('pipeline', {}).get('raw_reads_processing', {}).get('quality_filtering', {}).get('settings', {}).get('min_length','15')} --unqualified_percent_limit 40 --n_base_limit 5"
     threads: 10
@@ -22,6 +22,8 @@ rule filter_reads_by_quality:
 
 rule get_quality_filtered_final:
     input:
+        # If quality filtering is enabled, use the quality filtered reads as input for the next steps in the pipeline.
+        # If quality filtering is not enabled, use the trimmed reads as input for the next steps in the pipeline.
         source=lambda wildcards: (
             f"{wildcards.species}/processed/reads/reads_quality_filtered/{wildcards.sample}_quality_filtered.fastq.gz"
             if config.get('pipeline', {}).get('raw_reads_processing', {}).get('quality_filtering', {}).get('execute', True)

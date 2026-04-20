@@ -10,7 +10,7 @@ rule map_reads_to_reference:
     output:
         temp("{species}/processed/{reference}/mapped/{individual}_{reference}_unsorted.bam")
     log:
-        "{species}/logs/{reference}/mapped/{individual}_{reference}.bam.log"
+        "{species}/processed/{reference}/mapped/{individual}_{reference}.bam.log"
     threads: 15
     wrapper:
         "v9.3.0/bio/bwa/mem"
@@ -24,7 +24,7 @@ rule sort_mapped_reads_bam:
         temp("{species}/processed/{reference}/mapped/{individual}_{reference}_sorted.bam")
     message: "Sorting BAM file for {input}"
     log:
-        "{species}/logs/{reference}/mapped/{individual}_{reference}_sorted_bam.log",
+        "{species}/processed/{reference}/mapped/{individual}_{reference}_sorted_bam.log",
     threads: 10
     wrapper:
         "v9.3.0/bio/samtools/sort"

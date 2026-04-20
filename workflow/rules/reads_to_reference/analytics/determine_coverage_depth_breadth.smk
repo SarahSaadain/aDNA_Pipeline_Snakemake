@@ -9,7 +9,7 @@ rule determine_mapped_reads_coverage:
     output:
         temp("{species}/processed/{reference}/coverage/{individual}/{individual}_{reference}_depth.tsv")
     log:
-        "{species}/logs/{reference}/coverage/{individual}/{individual}_{reference}_depth.log"
+        "{species}/processed/{reference}/coverage/{individual}/{individual}_{reference}_depth.log"
     message: "Calculating coverage depth for {input.bams}"
     params:
         # optional bed file passed to -b

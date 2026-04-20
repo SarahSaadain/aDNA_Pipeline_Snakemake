@@ -9,6 +9,8 @@ rule prepare_raw_reads:
     output:
         raw_read = "{species}/raw/reads/{raw_read}",
     message: "Moving raw read file {input.raw_read} to {output.raw_read}"
-    shell: """
+    shell: 
+        """
         mv {input.raw_read} {output.raw_read}
-    """
+        echo "Done moving raw read file {input.raw_read} to {output.raw_read}"
+        """

@@ -11,6 +11,8 @@ rule ecmsd_database_setup:
         directory("resources/ecmsd_database")
     conda:
         "../../../../envs/ecmsd.yaml"
+    message:
+        "Setting up ECMSD database."
     shell:
         """
         ECMSD --create-db --db-folder {output}

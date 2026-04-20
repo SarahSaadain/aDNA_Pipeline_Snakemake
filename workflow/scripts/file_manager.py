@@ -19,7 +19,7 @@ def get_files_in_folder_matching_pattern(folder: str, pattern: str) -> list:
 # Get all raw read files for a given species    
 def get_read_files_for_species(species: str) -> list[str]:
 
-    read_folder = os.path.join(species, "raw", "reads")
+    read_folder = f"{species}/raw/reads"
 
     try:   
         logger.debug(f"Looking for read files in {read_folder} for species {species}.")
@@ -128,7 +128,7 @@ def get_individuals_for_species(species):
 def get_reference_file_list_for_species(species: str) -> list[tuple[str, str]]:
     # Construct reference folder path
     species_folder = species
-    reference_folder = os.path.join(species, "raw", "ref")
+    reference_folder = f"{species}/raw/ref"
     try:
         # Collect all supported reference files
         logger.debug(f"Looking for reference files in {reference_folder} for species {species}.")
@@ -208,7 +208,7 @@ def get_feature_library_file_list_for_species(species: str) -> list[tuple[str, s
 
     library_files = []
 
-    feature_library_folder = os.path.join(f"{species_folder}/raw/dynamics/feature_library")
+    feature_library_folder = f"{species_folder}/raw/dynamics/feature_library"
     try:
         # Collect all supported reference files
         logger.debug(f"Looking for feature library files in {feature_library_folder} for species {species}.")

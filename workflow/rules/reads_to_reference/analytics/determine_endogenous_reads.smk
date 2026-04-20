@@ -10,7 +10,7 @@ rule determine_mapped_reads_endogenous:
         csv="{species}/results/{reference}/analytics/{individual}/endogenous/{individual}_{reference}.endogenous.csv"
     message: "Determining endogenous reads for {input.stats}"
     log:
-        "{species}/logs/{reference}/analytics/{individual}/endogenous/{individual}_{reference}_endogenous.log"
+        "{species}/processed/{reference}/analytics/{individual}/endogenous/{individual}_{reference}_endogenous.log"
     conda:
         "../../../envs/python_and_r.yaml",
     script:
@@ -29,7 +29,7 @@ rule combine_determine_mapped_reads_endogenous:
         "{species}/results/{reference}/analytics/{species}/endogenous/{reference}_endogenous.csv"
     message: "Combining endogenous reads for species {wildcards.species}"
     log:
-        "{species}/logs/{reference}/analytics/{species}/endogenous/{reference}_endogenous.log"
+        "{species}/processed/{reference}/analytics/{species}/endogenous/{reference}_endogenous.log"
     conda:
         "../../../envs/python_and_r.yaml",
     script:

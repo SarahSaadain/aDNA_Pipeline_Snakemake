@@ -12,7 +12,7 @@ rule plot_mapped_reads_depth_coverage_violin:
     params:
         species="{species}"
     log:
-        "{species}/logs/{reference}/plots/coverage/{species}_{reference}_individual_depth_coverage_violin.log"
+        "{species}/processed/{reference}/plots/coverage/{species}_{reference}_individual_depth_coverage_violin.log"
     conda:
         "../../../envs/python_and_r.yaml"
     script:

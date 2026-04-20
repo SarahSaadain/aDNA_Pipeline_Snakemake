@@ -12,7 +12,7 @@ rule plot_mapped_reads_coverage_breadth_violin:
         species="{species}"
     message: "Plotting coverage breadth violin for species {wildcards.species} and reference {wildcards.reference}"
     log:
-        "{species}/logs/{reference}/plots/coverage/{species}_{reference}_individual_coverage_breadth_violin.log"
+        "{species}/processed/{reference}/plots/coverage/{species}_{reference}_individual_coverage_breadth_violin.log"
     conda:
         "../../../envs/python_and_r.yaml"
     script:

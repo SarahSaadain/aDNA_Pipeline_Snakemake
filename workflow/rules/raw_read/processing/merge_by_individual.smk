@@ -5,17 +5,20 @@
 
 def merge_reads_by_individual_input(wildcards):
 
-    samples_of_individual = get_samples_for_species_individual(wildcards.species, wildcards.individual)   
+    species = wildcards.species
+    individual = wildcards.individual
+
+    samples_of_individual = get_samples_for_species_individual(species, individual)   
     
     if len(samples_of_individual) == 0:
-        logger.info(f"Requested individual: {wildcards.individual}")
-        logger.error(f"No raw read files found for individual {wildcards.individual}. Check that the individual ID is correct and that raw read files are present.")
-        raise Exception(f"No raw read files found for individual {wildcards.individual}. Check that the individual ID is correct and that raw read files are present.")
+        logger.info(f"Requested individual: {individual}")
+        logger.error(f"No raw read files found for individual {individual}. Check that the individual ID is correct and that raw read files are present.")
+        raise Exception(f"No raw read files found for individual {individual}. Check that the individual ID is correct and that raw read files are present.")
     
     # for each raw R1 file, generate the corresponding quality-filtered filename
     quality_filtered_files = []
     for sample in samples_of_individual:
-        qf_file = f"{wildcards.species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered_final.fastq.gz"
+        qf_file = f"{species}/processed/reads/reads_quality_filtered/{sample}_quality_filtered_final.fastq.gz"
         quality_filtered_files.append(qf_file)
     
     return quality_filtered_files
@@ -31,7 +34,7 @@ rule merge_reads_by_individual:
     output:
         "{species}/processed/reads/reads_merged/{individual}.fastq.gz"
     log:
-        "{species}/logs/merge_by_individual/{individual}.log"
+        "{species}/processed/reads/reads_merged/{individual}_merge_reads.log"
     message: 
         "Merging individual {wildcards.individual} of species {wildcards.species}."
     shell:

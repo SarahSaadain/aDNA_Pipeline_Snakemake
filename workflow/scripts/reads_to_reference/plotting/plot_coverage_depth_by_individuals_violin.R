@@ -1,10 +1,12 @@
 #!/usr/bin/env Rscript
 
+suppressPackageStartupMessages({
 library(ggplot2)
 library(dplyr)
 library(readr)
 library(stringr)
 library(scales)
+})
 
 # Access Snakemake variables
 input_file <- snakemake@input[[1]]

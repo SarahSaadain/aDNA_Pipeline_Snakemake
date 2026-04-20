@@ -50,7 +50,7 @@ rule index_reference_for_mapping:
         multiext("{species}/raw/ref/{reference}.fa", ".amb", ".ann", ".bwt", ".pac", ".sa"),
     message: "Indexing reference {wildcards.reference} with BWA"
     log:
-        "{species}/logs/{reference}/index/{reference}_bwa_index.log"
+        "{species}/processed/{reference}/index/{reference}_bwa_index.log"
     resources:
         mem_mb=369000,
     cache: True

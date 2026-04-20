@@ -1,9 +1,11 @@
-# workflow/scripts/plot_read_counts.R
+#!/usr/bin/env Rscript
 
+suppressPackageStartupMessages({
 library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(scales)
+})
 
 plot_read_counts <- function(df, species, target_file) {
   file_path <- file.path(target_file)

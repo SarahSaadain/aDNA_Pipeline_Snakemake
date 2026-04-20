@@ -37,6 +37,8 @@ rule determine_teplotter_of_individual_bam_to_so:
         "{species}/results/dynamics/{feature_library}/teplotter/individual_level/{individual}_bam2so.log"
     conda:
         "../../envs/python_and_r.yaml"
+    message:
+        "Determining teplotter coverage for {wildcards.individual} of {wildcards.species} using bam2so."
     shell:
         """
         python workflow/scripts/dynamics/teplotter/bam2so.py --infile {input.bam} --fasta {input.fasta} --outfile {output.coverage} 2> {log}
@@ -49,6 +51,8 @@ rule normalize_teplotter_of_individual:
         normalized="{species}/results/dynamics/{feature_library}/teplotter/individual_level/{individual}_coverage.normalized.tsv"
     conda:
         "../../envs/python_and_r.yaml"
+    message:
+        "Normalizing teplotter coverage for {wildcards.individual} of {wildcards.species}."
     shell:
         """
         python workflow/scripts/dynamics/teplotter/normalize-so.py --so {input.coverage} --outfile {output.normalized}
@@ -61,6 +65,8 @@ rule estimate_teplotter_of_individual:
         estimation="{species}/results/dynamics/{feature_library}/teplotter/individual_level/{individual}_estimation.tsv"
     conda:
         "../../envs/python_and_r.yaml"
+    message:
+        "Estimating teplotter for {wildcards.individual} of {wildcards.species}."
     shell:
         """
         python workflow/scripts/dynamics/teplotter/estimate-so.py --so {input.coverage} --outfile {output.estimation}
@@ -73,6 +79,8 @@ rule prepare_teplotter_visualization_of_individual:
         plotable=directory("{species}/results/dynamics/{feature_library}/teplotter/individual_level/{individual}_plotable")
     conda:
         "../../envs/python_and_r.yaml"
+    message:
+        "Preparing teplotter visualization for {wildcards.individual} of {wildcards.species}."
     shell:
         """
         python workflow/scripts/dynamics/teplotter/so2plotable.py \
@@ -92,6 +100,8 @@ rule run_teplotter_visualization_of_individual:
     threads: 10
     params:
         log_threshhold = 25
+    message:
+        "Running teplotter visualization for {wildcards.individual} of {wildcards.species}."
     shell:
         """
         python workflow/scripts/dynamics/teplotter/run_plotable.py --folder {input} --outdir {output}  --log {params.log_threshhold}  --threads {threads}
@@ -111,6 +121,8 @@ rule run_teplotter_visualization_of_species:
     threads: 10
     params:
         log_threshhold = 25
+    message:
+        "Running teplotter visualization for {wildcards.species}."
     shell:
         """
         python workflow/scripts/dynamics/teplotter/run_plotable.py --folders {input} --outdir {output} --log {params.log_threshhold} --threads {threads}

@@ -1,6 +1,10 @@
+#!/usr/bin/env Rscript
+
+suppressPackageStartupMessages({
 library(ggplot2)
 library(dplyr)
 library(readr)
+})
 
 plot_coverage_breadth_bins <- function(df, output_file) {
   

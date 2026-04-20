@@ -1,9 +1,11 @@
 #!/usr/bin/env Rscript
 
+suppressPackageStartupMessages({
 library(ggplot2)
 library(dplyr)
 library(readr)
 library(stringr)
+})
 
 
 species <- snakemake@params[["species"]]

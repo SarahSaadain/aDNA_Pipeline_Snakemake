@@ -27,6 +27,8 @@ rule preseq_c_curve:
     threads: 1
     conda:
         "../../../envs/preseq.yaml"
+    message:
+        "Running preseq c_curve for {wildcards.individual} of {wildcards.species}."
     shell:
         """
         preseq c_curve \

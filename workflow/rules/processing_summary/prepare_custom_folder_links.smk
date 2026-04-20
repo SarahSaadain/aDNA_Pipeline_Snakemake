@@ -3,6 +3,8 @@ rule link_qualimap_for_multiqc:
         "{species}/results/{reference}/analytics/{individual}/qualimap"
     output:
         directory("{species}/results/summary/individual_level/{individual}/multiqc_custom_content/qualimap/{individual}_{reference}")
+    message:
+        "Linking qualimap results for {wildcards.individual} of {wildcards.species} to multiqc custom content."
     shell:
         """
         mkdir -p $(dirname {output})
@@ -18,6 +20,8 @@ rule copy_mapdamage_result_for_multiqc:
         GtoA3p  = "{species}/results/summary/individual_level/{individual}/multiqc_custom_content/mapdamage/{individual}_{reference}/3pGtoA_freq.txt",
         CtoT5p  = "{species}/results/summary/individual_level/{individual}/multiqc_custom_content/mapdamage/{individual}_{reference}/5pCtoT_freq.txt",
         lg_dist = "{species}/results/summary/individual_level/{individual}/multiqc_custom_content/mapdamage/{individual}_{reference}/lgdistribution.txt",
+    message:
+        "Copying mapdamage results for {wildcards.individual} of {wildcards.species} to multiqc custom content."
     shell:
         """
         mkdir -p {wildcards.species}/results/summary/individual_level/{wildcards.individual}/multiqc_custom_content/mapdamage/{wildcards.individual}_{wildcards.reference}

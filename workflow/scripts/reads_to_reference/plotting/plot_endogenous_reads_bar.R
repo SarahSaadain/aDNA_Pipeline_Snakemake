@@ -1,7 +1,12 @@
+#!/usr/bin/env Rscript
+
+suppressPackageStartupMessages({
 library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(ggpattern)
+})
+
 
 plot_endogenous_reads_bar <- function(source_file, output_file) {
   

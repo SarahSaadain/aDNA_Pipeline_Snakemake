@@ -11,7 +11,7 @@ rule plot_raw_and_endogenous_reads_as_bar_plot:
         plot = "{species}/results/{reference}/plots/endogenous_reads/{species}_{reference}_raw_and_endogenous_reads_bar_chart.png"
     message: "Plotting raw results and endogenous reads bar chart for species {wildcards.species} and reference {wildcards.reference}"
     log:
-        "{species}/logs/{reference}/plots/endogenous_reads/{species}_{reference}_raw_and_endogenous_reads_bar_chart.log"
+        "{species}/processed/{reference}/plots/endogenous_reads/{species}_{reference}_raw_and_endogenous_reads_bar_chart.log"
     conda:
         "../../../envs/python_and_r.yaml"
     script:

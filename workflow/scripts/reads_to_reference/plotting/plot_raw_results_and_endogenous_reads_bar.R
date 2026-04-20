@@ -1,8 +1,12 @@
+#!/usr/bin/env Rscript
+
+suppressPackageStartupMessages({
 library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(scales)
 library(stringr)
+})
 
 plot_combined_reads <- function(processing_csv, endogenous_csv, output_plot) {
 

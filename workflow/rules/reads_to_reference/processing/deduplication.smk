@@ -201,7 +201,7 @@ rule sort_mapped_dedupped_reads_bam:
         temp("{species}/processed/{reference}/mapped/{individual}_{reference}_sorted_dedupped.bam")
     message: "Sorting deduplicated BAM file for {input}"
     log:
-        "{species}/logs/{reference}/mapped/{individual}_{reference}_sorted_bam.log",
+        "{species}/processed/{reference}/mapped/{individual}_{reference}_sorted_bam.log",
     threads: 10
     wrapper:
         "v9.3.0/bio/samtools/sort"
