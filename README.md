@@ -31,7 +31,7 @@ To run the pipeline, navigate to the root directory containing the `workflow/Sna
 #snakemake --cores <number_of_threads> --use-conda
 
 # suggested command to run the pipeline
-snakemake --cores <number_of_threads> --use-conda --keep-going –rerun-trigger mtime
+snakemake --cores <number_of_threads> --use-conda --keep-going --rerun-trigger mtime
 ```
 
 Replace `<number_of_threads>` with the number of CPU threads you want to allocate for the pipeline.
