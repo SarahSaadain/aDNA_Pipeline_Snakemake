@@ -53,24 +53,30 @@ configfile: "config/config.yaml"
 if workflow.exec_mode != ExecMode.SUBPROCESS:
 
     # --- Git version ---
-    _git = subprocess.run(
-        ["git", "describe", "--tags", "--always"],
-        capture_output=True, text=True, cwd=workflow.basedir
-    )
-    pastForward_version = _git.stdout.strip() if _git.returncode == 0 else "unknown"
-    del _git
+    pastForward_version = "unknown"
+    try:
+        _git = subprocess.run(
+            ["git", "describe", "--tags", "--always"],
+            capture_output=True, text=True, cwd=workflow.basedir
+        )
+        if _git.returncode == 0:
+            pastForward_version = _git.stdout.strip()
+        del _git
+    except Exception:
+        pass
 
     try:
         process = subprocess.Popen(
-            ["git", "rev-parse", "--short", "HEAD"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            ["git", "rev-parse", "--short", "HEAD"], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            cwd=workflow.basedir
         )
         out, err = process.communicate()
         out = out.decode("ascii")
         pastForward_git_hash = out.strip()
-        if pastForward_git_hash:
+        if pastForward_git_hash and pastForward_git_hash not in pastForward_version:
             pastForward_version += "-" + pastForward_git_hash
         del process, out, err, pastForward_git_hash
-    except:
+    except Exception:
         pass
 
     # --- Platform ---
@@ -134,6 +140,7 @@ if workflow.exec_mode != ExecMode.SUBPROCESS:
     # --- Output ---
     logger.info("pastForward " + pastForward_version + " run:")
     logger.info("\tDate:               " + datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    logger.info("\tProcess ID:         " + str(os.getpid()))
     logger.info("\tPlatform:           " + pltfrm)
     logger.info("\tHost:               " + hostname)
     logger.info("\tUser:               " + username)
